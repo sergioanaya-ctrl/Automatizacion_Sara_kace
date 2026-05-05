@@ -1,6 +1,7 @@
 package com.sara.automation.tasks;
 
 import com.sara.automation.interactions.SwitchToOneScriptIframe;
+import com.sara.automation.interactions.OneScriptDynamicElements;
 import com.sara.automation.ui.CasoCreatePage;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
@@ -218,32 +219,34 @@ public class DiligenciarProveedorGestion implements Task {
             throw new RuntimeException("No se pudo acceder al tab de Gestión de Proveedores");
         }
 
-        // Esperar a que el botón Crear sea visible después de acceder al tab
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Boton_Crear_Proveedor, isVisible()).forNoMoreThan(30).seconds());
-        
-        // Hacer clic en el botón Crear del grid de proveedores 
-        actor.attemptsTo(Click.on(CasoCreatePage.Boton_Crear_Proveedor));
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Proveedor_Dialog, isVisible()).forNoMoreThan(20).seconds());
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Nombre_Proveedor_Dropdown_Control, isVisible()).forNoMoreThan(15).seconds());
+        // Re-asegurar contexto iframe antes de buscar elementos dinámicos de proveedor.
+        driver.switchTo().defaultContent();
+        WebElement iframeElement = driver.findElement(By.id("form_onescript_iframe"));
+        driver.switchTo().frame(iframeElement);
 
-        seleccionarDesdeDropdownCustom(
-                actor,
-                CasoCreatePage.Nombre_Proveedor_Dropdown_Control,
-                CasoCreatePage.CustomDropdownSearch,
-                nombreProveedor
-        );
+        System.out.println("  [DiligenciarProveedorGestion] Clic en Crear para abrir modal de proveedor...");
+        try {
+            OneScriptDynamicElements.clickVisibleButtonByText(driver, "Crear");
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] Fallback a locator de Crear Proveedor");
+            actor.attemptsTo(Click.on(CasoCreatePage.Boton_Crear_Proveedor));
+        }
 
-        seleccionarDesdeDropdownCustom(
-                actor,
-                CasoCreatePage.Respuesta_Proveedor_Dropdown_Control,
-                CasoCreatePage.CustomDropdownSearch,
-                servicio
-        );
+        OneScriptDynamicElements.waitForProveedorSection(driver, Duration.ofSeconds(20));
+
+        OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-nombre", nombreProveedor);
+        OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-respuesta_de_proveedor", servicio);
 
         // Estos campos se habilitan después de elegir la respuesta del proveedor (ej. TOMA SERVICIO).
         llenarCampo(actor, CasoCreatePage.Tiempo_Monitoreo_Sitio_Minutos, TIEMPO_MONITOREO_SITIO_DEFAULT);
-        llenarCampo(actor, CasoCreatePage.Tiempo_Monitoreo_Destino_Minutos, TIEMPO_MONITOREO_DESTINO_DEFAULT);
-        llenarCampo(actor, CasoCreatePage.Celular_Tecnico_Proveedor, CELULAR_TECNICO_DEFAULT);
+        llenarCampoJsInteligente(actor,
+            "input[name*='celular_tecnico'], input[id*='celular_tecnico'], input[name*='celular'][name*='tecnico']",
+            "celular tecnico",
+            CELULAR_TECNICO_DEFAULT);
+        llenarCampoJsInteligente(actor,
+            "input[name*='tiempo_monitoreo_destino_minutos'], input[id*='tiempo_monitoreo_destino_minutos'], input[aria-labelledby*='tiempo_monitoreo_destino_minutos']",
+            "tiempo monitoreo destino",
+            TIEMPO_MONITOREO_DESTINO_DEFAULT);
 
         actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Proveedor, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Proveedor));
@@ -259,6 +262,50 @@ public class DiligenciarProveedorGestion implements Task {
         actor.attemptsTo(Enter.theValue(valor).into(campo));
     }
 
+    private <T extends Actor> void llenarCampoJsInteligente(T actor, String selectorCss, String labelHint, String valor) {
+        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+        long deadline = System.currentTimeMillis() + Duration.ofSeconds(20).toMillis();
+        boolean filled = false;
+
+        while (System.currentTimeMillis() < deadline && !filled) {
+            Object result = ((JavascriptExecutor) driver).executeScript(
+                    "const normalize = txt => (txt || '')"
+                            + ".toLowerCase()"
+                            + ".normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')"
+                            + ".replace(/\\s+/g, ' ').trim();"
+                            + "let input = document.querySelector(arguments[0]);"
+                            + "if (!input) {"
+                            + "  const wanted = normalize(arguments[1]);"
+                            + "  const labels = Array.from(document.querySelectorAll('label'));"
+                            + "  const label = labels.find(l => normalize(l.textContent).includes(wanted));"
+                            + "  if (label) {"
+                            + "    const container = label.closest('.formio-component') || label.closest('.form-group') || label.parentElement;"
+                            + "    input = container ? container.querySelector('input:not([type=hidden]), textarea') : null;"
+                            + "  }"
+                            + "}"
+                            + "if (!input) return false;"
+                            + "input.scrollIntoView({block:'center', inline:'nearest'});"
+                            + "input.focus();"
+                            + "input.value = '';"
+                            + "input.value = arguments[2];"
+                            + "input.dispatchEvent(new Event('input', {bubbles:true}));"
+                            + "input.dispatchEvent(new Event('change', {bubbles:true}));"
+                            + "input.dispatchEvent(new Event('blur', {bubbles:true}));"
+                            + "return input.value === arguments[2];",
+                    selectorCss, labelHint, valor
+            );
+
+            filled = result instanceof Boolean && (Boolean) result;
+            if (!filled) {
+                sleep(350);
+            }
+        }
+
+        if (!filled) {
+            System.out.println("  [DiligenciarProveedorGestion] WARN: no se pudo diligenciar campo con selector/hint: " + selectorCss + " | " + labelHint);
+        }
+    }
+
     private <T extends Actor> void seleccionarDesdeDropdownCustom(T actor, Target control, Target searchInput, String valor) {
         actor.attemptsTo(WaitUntil.the(control, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Click.on(control));
@@ -268,5 +315,137 @@ public class DiligenciarProveedorGestion implements Task {
 
         actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
         actor.attemptsTo(Click.on(CasoCreatePage.CustomDropdownListItem.of(valor)));
+    }
+
+    private void waitForProviderDialog(WebDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait.until(d -> {
+            Object dialog = ((JavascriptExecutor) d).executeScript(
+                    "const byComponent = document.querySelector('div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
+                            + "if (byComponent) return byComponent;"
+                            + "const byRespuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
+                            + "if (byRespuesta) return byRespuesta;"
+                            + "const byLabel = Array.from(document.querySelectorAll('label')).find(l => l.textContent.trim().toLowerCase() === 'nombre');"
+                            + "if (!byLabel) return null;"
+                            + "const container = byLabel.closest('.formio-component') || byLabel.parentElement;"
+                            + "return container ? container.querySelector('.custom-dropdown-control') : null;"
+            );
+            return dialog != null;
+        });
+    }
+
+    private void seleccionarDesdeCustomDropdownJS(WebDriver driver, String labelTexto, String valor) {
+        WebElement control = getDropdownControl(driver, labelTexto);
+        if (control == null) {
+            throw new NoSuchElementException("No se encontró el dropdown control para label: " + labelTexto);
+        }
+
+        clickWithJs(driver, control);
+        sleep(500);
+
+        WebElement searchInput = getDropdownSearchInput(driver, labelTexto);
+        if (searchInput != null) {
+            setInputValue(driver, searchInput, valor);
+            sleep(500);
+        }
+
+        WebElement option = findDropdownOption(driver, valor);
+        if (option == null) {
+            throw new NoSuchElementException("No se encontró la opción de dropdown para: " + valor);
+        }
+
+        clickWithJs(driver, option);
+        sleep(500);
+    }
+
+        private WebElement getDropdownControl(WebDriver driver, String labelTexto) {
+        Object element = ((JavascriptExecutor) driver).executeScript(
+            "const wanted = arguments[0].toLowerCase();"
+                    + "if (wanted.includes('respuesta')) {"
+                    + "  const byClassRespuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
+                    + "  if (byClassRespuesta) return byClassRespuesta;"
+                    + "}"
+                    + "if (wanted.includes('nombre')) {"
+                    + "  const byClassNombre = document.querySelector('div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
+                    + "  if (byClassNombre) return byClassNombre;"
+                    + "}"
+                + "if (wanted.includes('nombre')) {"
+                + "  const byId = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control');"
+                + "  if (byId) return byId;"
+                + "}"
+                + "const label = Array.from(document.querySelectorAll('label')).find(l => l.textContent.trim().toLowerCase().includes(wanted));"
+                + "if (!label) return null;"
+                + "const container = label.closest('.formio-component') || label.closest('.formio-component-custom-select') || label.parentElement;"
+                + "if (container) { const control = container.querySelector('.custom-dropdown-control'); if (control) return control; }"
+                + "return document.querySelector('.custom-dropdown-control');",
+            labelTexto);
+
+        return element instanceof WebElement ? (WebElement) element : null;
+        }
+
+        private WebElement getDropdownSearchInput(WebDriver driver, String labelTexto) {
+        Object element = ((JavascriptExecutor) driver).executeScript(
+            "const wanted = arguments[0].toLowerCase();"
+                    + "if (wanted.includes('respuesta')) {"
+                    + "  const byClassInputRespuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor input.custom-dropdown-search, div.formio-component-custom-select.formio-component-respuesta_de_proveedor input[placeholder*=\\\"buscar\\\"], div.formio-component-custom-select.formio-component-respuesta_de_proveedor input[placeholder*=\\\"Buscar\\\"]');"
+                    + "  if (byClassInputRespuesta) return byClassInputRespuesta;"
+                    + "}"
+                    + "if (wanted.includes('nombre')) {"
+                    + "  const byClassInputNombre = document.querySelector('div.formio-component-custom-select.formio-component-nombre input.custom-dropdown-search, div.formio-component-custom-select.formio-component-nombre input[placeholder*=\\\"buscar\\\"], div.formio-component-custom-select.formio-component-nombre input[placeholder*=\\\"Buscar\\\"]');"
+                    + "  if (byClassInputNombre) return byClassInputNombre;"
+                    + "}"
+                + "if (wanted.includes('nombre')) {"
+                + "  const byIdInput = document.querySelector('#custom-select-e75nu5o input.custom-dropdown-search, #custom-select-e75nu5o input[placeholder*=\\\"buscar\\\"], #custom-select-e75nu5o input[placeholder*=\\\"Buscar\\\"]');"
+                + "  if (byIdInput) return byIdInput;"
+                + "}"
+                + "const label = Array.from(document.querySelectorAll('label')).find(l => l.textContent.trim().toLowerCase().includes(wanted));"
+                + "if (!label) return null;"
+                + "const container = label.closest('.formio-component') || label.closest('.formio-component-custom-select') || label.parentElement;"
+                + "if (container) {"
+                + "  const inside = container.querySelector('input.custom-dropdown-search, input[placeholder*=\\\"buscar\\\"], input[placeholder*=\\\"Buscar\\\"]');"
+                + "  if (inside) return inside;"
+                + "}"
+                + "const active = document.activeElement;"
+                + "if (active && active.tagName === 'INPUT') return active;"
+                + "return document.querySelector('input.custom-dropdown-search, input[placeholder*=\\\"buscar\\\"], input[placeholder*=\\\"Buscar\\\"]');",
+            labelTexto);
+
+        return element instanceof WebElement ? (WebElement) element : null;
+        }
+
+    private WebElement findDropdownOption(WebDriver driver, String valor) {
+        Object element = ((JavascriptExecutor) driver).executeScript(
+                "const items = Array.from(document.querySelectorAll('ul.custom-dropdown-list li, div.custom-dropdown-item, div[role=\\\"option\\\"]'));"
+                        + "const exact = items.find(el => el.textContent.trim().toLowerCase() === arguments[0].toLowerCase());"
+                        + "if (exact) { return exact; }"
+                        + "const partial = items.find(el => el.textContent.trim().toLowerCase().includes(arguments[0].toLowerCase()));"
+                        + "return partial || null;",
+                valor);
+
+        return element instanceof WebElement ? (WebElement) element : null;
+    }
+
+    private void clickWithJs(WebDriver driver, WebElement element) {
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});"
+                        + "arguments[0].dispatchEvent(new MouseEvent('mousedown', {bubbles:true}));"
+                        + "arguments[0].dispatchEvent(new MouseEvent('mouseup', {bubbles:true}));"
+                        + "arguments[0].click();",
+                element);
+    }
+
+    private void setInputValue(WebDriver driver, WebElement input, String valor) {
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].focus(); arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input', {bubbles: true}));",
+                input,
+                valor);
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

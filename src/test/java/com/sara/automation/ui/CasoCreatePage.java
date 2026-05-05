@@ -163,7 +163,7 @@ public class CasoCreatePage {
             .located(By.cssSelector("input[name*='tiempo_monitoreo_en_sitio']"));
 
     public static final Target Tiempo_Monitoreo_Destino_Minutos = Target.the("Tiempo Monitoreo Destino (Minutos)")
-            .located(By.cssSelector("input[name*='tiempo_monitoreo_en_destino']"));
+            .located(By.cssSelector("input[name*='tiempo_monitoreo_destino_minutos']"));
 
     public static final Target Celular_Tecnico_Proveedor = Target.the("Celular Técnico Proveedor")
             .located(By.cssSelector("input[name*='celular_tecnico']"));
