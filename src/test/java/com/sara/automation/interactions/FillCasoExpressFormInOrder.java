@@ -214,26 +214,14 @@ public class FillCasoExpressFormInOrder implements Interaction {
             WebElement search = waitLong.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
             search.clear();
             search.sendKeys(valor);
-            Thread.sleep(500);
 
-            System.out.println("  [seleccionarComboMunicipioWebDriver] Escribi: " + valor + ", esperando hasta 60 segundos a que aparezca el municipio...");
+            System.out.println("  [seleccionarComboMunicipioWebDriver] Escribi: " + valor + ", esperando a que el municipio sea visible...");
 
             waitLong.until(driver1 -> {
-                List<WebElement> items = driver1.findElements(listItems);
-                return items.stream().anyMatch(item ->
-                    item.isDisplayed() && valor.equals(item.getText().trim()));
+                List<WebElement> items = driver1.findElements(listItemExact);
+                return items.stream().anyMatch(item -> item.isDisplayed());
             });
 
-            Thread.sleep(300);
-            List<WebElement> items = driver.findElements(listItems);
-            for (WebElement item : items) {
-                if (valor.equals(item.getText().trim()) && item.isDisplayed()) {
-                    System.out.println("  [seleccionarComboMunicipioWebDriver] Haciendo clic en: " + valor);
-                    item.click();
-                    Thread.sleep(300);
-                    return;
-                }
-            }
             WebElement option = waitLong.until(ExpectedConditions.elementToBeClickable(listItemExact));
             option.click();
             return;

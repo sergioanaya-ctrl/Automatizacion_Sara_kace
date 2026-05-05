@@ -154,7 +154,7 @@
             <a href="576946480b52ad056d6f5bddf874399c83582ecf90963cc074a14c70580e7d9f.html"><i class="bi bi-chat-text"></i> Features</a>
         </li>
     </ul>
-    <span class="date-and-time"><a href="build-info.html"><i class="bi bi-info-circle"></i></a> Report generated 05-05-2026 11:19</span>
+    <span class="date-and-time"><a href="build-info.html"><i class="bi bi-info-circle"></i></a> Report generated 05-05-2026 11:24</span>
     <br style="clear:left"/>
 </div>
 
@@ -191,9 +191,9 @@ Para validar que la URL es accesible
                 <table class="outcome-header">
                     <tr>
                         <td colspan="2" class="test-title-bar">
-                            <span class="outcome-icon"><a href='##beforetable'><i class='bi bi-exclamation-triangle-fill error-icon fa-2x' title='ERROR'></i></a></span>
+                            <span class="outcome-icon"><a href='##beforetable'><i class='bi bi-x-circle-fill failure-icon fa-2x' title='FAILURE'></i></a></span>
                             <span class="test-case-title">
-                                <span class="error-color">Abrir la URL, loguearse y navegar a agent
+                                <span class="failing-color">Abrir la URL, loguearse y navegar a agent
                                     <span class="related-issue-title"></span>
                                 </span>
                             </span>
@@ -215,7 +215,7 @@ Para validar que la URL es accesible
         <div class="table">
             <div class="row">
                 <div class="col-sm-10" style="padding-left:1.5em; padding-top:0.5em; padding-bottom:0.5em;">
-                    <span class="error-message error-message-title">Runtime exception: Error seleccionando municipio: MEDELLIN</span>
+                    <span class="error-message error-message-title">Assertion error: Expected: an element that is visible but: no matching element found by [Direcci&oacute;n del destino located with: css: input[name='data[direccion_del_destino]']]</span>
                 </div>
                 <div class="col-sm-2">
                     <a class="btn btn-warning details-button" data-toggle="collapse" href="#stacktraceModal-overall"
@@ -231,26 +231,19 @@ Para validar que la URL es accesible
         <div class="collapse multi-collapse" id="stacktraceModal-overall">
             <div class="card">
                 <div class="card-header">
-                    <h4>java.lang.RuntimeException </h4>
+                    <h4>java.lang.AssertionError </h4>
                 </div>
                 <div class="card-body">
                     <div>
-                        <pre>com.sara.automation.interactions.FillCasoExpressFormInOrder.seleccionarComboMunicipioWebDriver(FillCasoExpressFormInOrder.java:242)<br />com.sara.automation.interactions.FillCasoExpressFormInOrder.llenarCombosGeneralesEnOrden(FillCasoExpressFormInOrder.java:200)<br />com.sara.automation.interactions.FillCasoExpressFormInOrder.performAs(FillCasoExpressFormInOrder.java:85)<br />com.sara.automation.tasks.ClickCasoExpress.performAs(ClickCasoExpress.java:86)<br />com.sara.automation.stepdefinitions.CasesStepDefinitions.completaListasManualesDesdeFeature(CasesStepDefinitions.java:91)<br />com.sara.automation.stepdefinitions.CasesStepDefinitions.diligenciaCasoExpressCompletoDesdeFeature(CasesStepDefinitions.java:105)<br />io.cucumber.java.Invoker.doInvoke(Invoker.java:66)<br />io.cucumber.java.Invoker.invoke(Invoker.java:24)<br />io.cucumber.java.AbstractGlueDefinition.invokeMethod(AbstractGlueDefinition.java:47)<br />io.cucumber.java.JavaStepDefinition.execute(JavaStepDefinition.java:29)<br />io.cucumber.core.runner.CoreStepDefinition.execute(CoreStepDefinition.java:66)<br />io.cucumber.core.runner.PickleStepDefinitionMatch.runStep(PickleStepDefinitionMatch.java:63)<br />io.cucumber.core.runner.TestStep.executeStep(TestStep.java:85)<br />io.cucumber.core.runner.TestStep.run(TestStep.java:57)<br />io.cucumber.core.runner.PickleStepTestStep.run(PickleStepTestStep.java:51)<br />io.cucumber.core.runner.TestCase.run(TestCase.java:84)<br />io.cucumber.core.runner.Runner.runPickle(Runner.java:75)<br />io.cucumber.core.runtime.CucumberExecutionContext.lambda$runTestCase$5(CucumberExecutionContext.java:129)<br />io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java:23)<br />io.cucumber.core.runtime.CucumberExecutionContext.runTestCase(CucumberExecutionContext.java:129)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java:144)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java:28)<br />io.cucumber.junit.FeatureRunner.run(FeatureRunner.java:137)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java:259)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java:59)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)<br /></pre>
+                        <pre>com.sara.automation.interactions.FillCasoExpressFormInOrder.llenarCampo(FillCasoExpressFormInOrder.java:322)<br />com.sara.automation.interactions.FillCasoExpressFormInOrder.llenarDireccionesYUbicacionEnOrden(FillCasoExpressFormInOrder.java:284)<br />com.sara.automation.interactions.FillCasoExpressFormInOrder.performAs(FillCasoExpressFormInOrder.java:88)<br />com.sara.automation.tasks.ClickCasoExpress.performAs(ClickCasoExpress.java:86)<br />com.sara.automation.stepdefinitions.CasesStepDefinitions.completaListasManualesDesdeFeature(CasesStepDefinitions.java:91)<br />com.sara.automation.stepdefinitions.CasesStepDefinitions.diligenciaCasoExpressCompletoDesdeFeature(CasesStepDefinitions.java:105)<br />io.cucumber.java.Invoker.doInvoke(Invoker.java:66)<br />io.cucumber.java.Invoker.invoke(Invoker.java:24)<br />io.cucumber.java.AbstractGlueDefinition.invokeMethod(AbstractGlueDefinition.java:47)<br />io.cucumber.java.JavaStepDefinition.execute(JavaStepDefinition.java:29)<br />io.cucumber.core.runner.CoreStepDefinition.execute(CoreStepDefinition.java:66)<br />io.cucumber.core.runner.PickleStepDefinitionMatch.runStep(PickleStepDefinitionMatch.java:63)<br />io.cucumber.core.runner.TestStep.executeStep(TestStep.java:85)<br />io.cucumber.core.runner.TestStep.run(TestStep.java:57)<br />io.cucumber.core.runner.PickleStepTestStep.run(PickleStepTestStep.java:51)<br />io.cucumber.core.runner.TestCase.run(TestCase.java:84)<br />io.cucumber.core.runner.Runner.runPickle(Runner.java:75)<br />io.cucumber.core.runtime.CucumberExecutionContext.lambda$runTestCase$5(CucumberExecutionContext.java:129)<br />io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java:23)<br />io.cucumber.core.runtime.CucumberExecutionContext.runTestCase(CucumberExecutionContext.java:129)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java:144)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java:28)<br />io.cucumber.junit.FeatureRunner.run(FeatureRunner.java:137)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java:259)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java:59)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)<br /></pre>
                     </div>
 
-                    <h4>
-                        Caused by: org.openqa.selenium.StaleElementReferenceException
-                    </h4>
-                    <div>
-                            <pre>stale element reference: stale element not found in the current frame<br>  (Session info: chrome=147.0.7727.138)<br>For documentation on this error, please visit: https://selenium.dev/exceptions/#stale_element_reference<br>Build info: version: '4.6.0', revision: '79f1c02ae20'<br>System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.8'<br>Driver info: org.openqa.selenium.chrome.ChromeDriver<br>Command: [d63478b9ea056212d8c2d5c343e6e17d, getElementText {id=f.E4013AC3FCAF53BC2A398AD5F558945C.d.5DB18ECD7DD27E83EFEF83286ED8BC1C.e.184}]<br>Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 147.0.7727.138, chrome: {chromedriverVersion: 147.0.7727.117 (474cc805edd..., userDataDir: C:\Users\Sergio\AppData\Loc...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:59920}, goog:processID: 13620, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: WINDOWS, proxy: Proxy(), se:cdp: ws://localhost:59920/devtoo..., se:cdpVersion: 147.0.7727.138, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}<br>Element: [[ChromeDriver: chrome on WINDOWS (d63478b9ea056212d8c2d5c343e6e17d)] -&gt; xpath: //ul[contains(@class,'custom-dropdown-list')]//li]<br>Session ID: d63478b9ea056212d8c2d5c343e6e17d</pre>
-                        <pre>com.sara.automation.interactions.FillCasoExpressFormInOrder.lambda$seleccionarComboMunicipioWebDriver$0(FillCasoExpressFormInOrder.java :224)<br />com.sara.automation.interactions.FillCasoExpressFormInOrder.lambda$seleccionarComboMunicipioWebDriver$1(FillCasoExpressFormInOrder.java :223)<br />com.sara.automation.interactions.FillCasoExpressFormInOrder.seleccionarComboMunicipioWebDriver(FillCasoExpressFormInOrder.java :221)<br />com.sara.automation.interactions.FillCasoExpressFormInOrder.llenarCombosGeneralesEnOrden(FillCasoExpressFormInOrder.java :200)<br />com.sara.automation.interactions.FillCasoExpressFormInOrder.performAs(FillCasoExpressFormInOrder.java :85)<br />com.sara.automation.tasks.ClickCasoExpress.performAs(ClickCasoExpress.java :86)<br />com.sara.automation.stepdefinitions.CasesStepDefinitions.completaListasManualesDesdeFeature(CasesStepDefinitions.java :91)<br />com.sara.automation.stepdefinitions.CasesStepDefinitions.diligenciaCasoExpressCompletoDesdeFeature(CasesStepDefinitions.java :105)<br />io.cucumber.java.Invoker.doInvoke(Invoker.java :66)<br />io.cucumber.java.Invoker.invoke(Invoker.java :24)<br />io.cucumber.java.AbstractGlueDefinition.invokeMethod(AbstractGlueDefinition.java :47)<br />io.cucumber.java.JavaStepDefinition.execute(JavaStepDefinition.java :29)<br />io.cucumber.core.runner.CoreStepDefinition.execute(CoreStepDefinition.java :66)<br />io.cucumber.core.runner.PickleStepDefinitionMatch.runStep(PickleStepDefinitionMatch.java :63)<br />io.cucumber.core.runner.TestStep.executeStep(TestStep.java :85)<br />io.cucumber.core.runner.TestStep.run(TestStep.java :57)<br />io.cucumber.core.runner.PickleStepTestStep.run(PickleStepTestStep.java :51)<br />io.cucumber.core.runner.TestCase.run(TestCase.java :84)<br />io.cucumber.core.runner.Runner.runPickle(Runner.java :75)<br />io.cucumber.core.runtime.CucumberExecutionContext.lambda$runTestCase$5(CucumberExecutionContext.java :129)<br />io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java :23)<br />io.cucumber.core.runtime.CucumberExecutionContext.runTestCase(CucumberExecutionContext.java :129)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java :144)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java :28)<br />io.cucumber.junit.FeatureRunner.run(FeatureRunner.java :137)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java :259)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java :59)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java :69)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java :74)<br /></pre>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
                     <div class="panel-body">
-                        <a href="pagesource3997655271462389552.html" target="_blank" class="btn btn-info">HTML Source</a>
+                        <a href="pagesource249200403944690600.html" target="_blank" class="btn btn-info">HTML Source</a>
                     </div>
             </div>
         <div class="slider-wrapper theme-default">
@@ -264,25 +257,27 @@ Para validar que la URL es accesible
                 <img src="ac1e6c390a60cf01bafd61b0f412d1e32b0b8ae3b6829148ee8a53edc4fc084a.png" title=" Login con Cognito usando credenciales" width="1920"/>
                 <img src="ac1e6c390a60cf01bafd61b0f412d1e32b0b8ae3b6829148ee8a53edc4fc084a.png" title=" Sara opens the browser at https://us-east-1s66ymlwwk.auth.us-east-1.amazoncognito.com/login?client_id=2hfo5293cfbh1h9fbe9m7g07dn&amp;response_type=code&amp;scope=email+openid+profile&amp;redirect_uri=https%3A%2F%2Fasistenciaapp.kit.sura-konecta.com%2Fauth" width="1920"/>
                 <img src="a069bd655c88c07ad299d2b125ef0e88e65f432ffc5faa8a1e3dfa9a14571ca8.png" title=" Sara enters 'BOT01' into cognito username field" width="1920"/>
-                <img src="8938886ca05cdb8871393b973901864c029162ee43935897a928c9c0085d0e3d.png" title=" Sara clicks on cognito next button" width="1920"/>
+                <img src="0d0b20885d78e5da66ccd055580c093b639d9859f37d3ebff060513eaac97c9a.png" title=" Sara clicks on cognito next button" width="1920"/>
                 <img src="9de4434d9c36c22b3a78e5cc367528743e5b6b49ac56dfe539212846f40b88d7.png" title=" Sara enters 'Yt7PNg_VnXkvsQ*tPmfi' into cognito password field" width="1920"/>
-                <img src="0e13b84df2f1c9a8a4676fbffc7e273e8127a59be37b091c6b91780b0b85b545.png" title=" Sara clicks on cognito continue button" width="1920"/>
-                <img src="c0be2f85fff620b5773c20362c955b3121998dc26dcace8d939f4f58730abfcf.png" title=" Sara opens the browser at https://asistenciaapp.kit.sura-konecta.com/agent" width="1920"/>
-                <img src="c0be2f85fff620b5773c20362c955b3121998dc26dcace8d939f4f58730abfcf.png" title=" Login con Cognito usando credenciales (completed)" width="1920"/>
-                <img src="c0be2f85fff620b5773c20362c955b3121998dc26dcace8d939f4f58730abfcf.png" title=" And realiza login con credenciales (completed)" width="1920"/>
-                <img src="68ef04aa5cad941bad89c6fc72ea3d9ab7f9f43e623ca3e4a87556c17f969548.png" title=" And navega a agent" width="1920"/>
-                <img src="68ef04aa5cad941bad89c6fc72ea3d9ab7f9f43e623ca3e4a87556c17f969548.png" title=" Navega a la pagina de agent" width="1920"/>
-                <img src="68ef04aa5cad941bad89c6fc72ea3d9ab7f9f43e623ca3e4a87556c17f969548.png" title=" Sara opens the browser at https://asistenciaapp.kit.sura-konecta.com/agent" width="1920"/>
-                <img src="9bd1d4ea88fda23b2ab2ed5166c6d62cb95a48c6d878ef1a177336d19edd08d3.png" title=" Navega a la pagina de agent (completed)" width="1920"/>
-                <img src="9bd1d4ea88fda23b2ab2ed5166c6d62cb95a48c6d878ef1a177336d19edd08d3.png" title=" And navega a agent (completed)" width="1920"/>
-                <img src="d46e4eba90a1598cb735febb7b338153245f82eec3b8283eb4f6bbdfb790b4b3.png" title=" And diligencia caso express completo desde feature
+                <img src="37f6b6f4aeb47cecf2ad71e98569cc2ad6a16fdd19f17df98c43f9b56a23a6c3.png" title=" Sara clicks on cognito continue button" width="1920"/>
+                <img src="0725a4f626bfee864fee03c7244afec4f395c08e6c1381211742ea81ff8fb28c.png" title=" Sara opens the browser at https://asistenciaapp.kit.sura-konecta.com/agent" width="1920"/>
+                <img src="0725a4f626bfee864fee03c7244afec4f395c08e6c1381211742ea81ff8fb28c.png" title=" Login con Cognito usando credenciales (completed)" width="1920"/>
+                <img src="0725a4f626bfee864fee03c7244afec4f395c08e6c1381211742ea81ff8fb28c.png" title=" And realiza login con credenciales (completed)" width="1920"/>
+                <img src="9b1a2ba5cfb2c7f62bd93bba9cd9e362ce2393de407ceb136ae32e15be82a837.png" title=" And navega a agent" width="1920"/>
+                <img src="9b1a2ba5cfb2c7f62bd93bba9cd9e362ce2393de407ceb136ae32e15be82a837.png" title=" Navega a la pagina de agent" width="1920"/>
+                <img src="9b1a2ba5cfb2c7f62bd93bba9cd9e362ce2393de407ceb136ae32e15be82a837.png" title=" Sara opens the browser at https://asistenciaapp.kit.sura-konecta.com/agent" width="1920"/>
+                <img src="6c33328d79bfa8ea64f5ad6ee74552afd428494d330361e36df0b870f435bf53.png" title=" Navega a la pagina de agent (completed)" width="1920"/>
+                <img src="6c33328d79bfa8ea64f5ad6ee74552afd428494d330361e36df0b870f435bf53.png" title=" And navega a agent (completed)" width="1920"/>
+                <img src="dc4e79c3b641d8a47f29819a27faaf651fce6c9edf06f07027419e24ba69d3b1.png" title=" And diligencia caso express completo desde feature
 | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
 | ANTIOQUIA | MEDELLIN | NO | NO | LINEA EJEMPLO 1 | SERVICIO EJEMPLO 1 |" width="1920"/>
-                <img src="d46e4eba90a1598cb735febb7b338153245f82eec3b8283eb4f6bbdfb790b4b3.png" title=" Abrir Caso Express, seleccionar asistencia, entrar al iframe, habilitar y diligenciar en orden" width="1920"/>
-                <img src="d46e4eba90a1598cb735febb7b338153245f82eec3b8283eb4f6bbdfb790b4b3.png" title=" Sara clicks on Boton Caso Express" width="1920"/>
-                <img src="930b3f15f51c4877ae114b42cb807b836bed0b0ef74453fce4937301168fec3a.png" title=" Sara clicks on Formulario Creaci&oacute;n de Casos (ASISTENCIA)" width="1920"/>
-                <img src="3aa8d97273d4c1943e1ec05a67daeec9208864e6c894b3203773e41e413d21ff.png" title=" Sara switch to one script iframe" width="1920"/>
-                <img src="5fbf6299d32f67868d54f0bf09e37a79adfdbdf771de50407f191eeac1c9d7be.png" title=" Sara fill caso express form in order: <span class='error-color'>ERROR</span>" width="1920"/>
+                <img src="dc4e79c3b641d8a47f29819a27faaf651fce6c9edf06f07027419e24ba69d3b1.png" title=" Abrir Caso Express, seleccionar asistencia, entrar al iframe, habilitar y diligenciar en orden" width="1920"/>
+                <img src="dc4e79c3b641d8a47f29819a27faaf651fce6c9edf06f07027419e24ba69d3b1.png" title=" Sara clicks on Boton Caso Express" width="1920"/>
+                <img src="8215ef1dd57b4ac753324785343b8ea45167bacc9e4452a9f6f30ddf9f289968.png" title=" Sara clicks on Formulario Creaci&oacute;n de Casos (ASISTENCIA)" width="1920"/>
+                <img src="3b0bb202ccb0b6319aa1a247847bf9238c8c7b68cf8c3fc408cdeb6795a0859c.png" title=" Sara switch to one script iframe" width="1920"/>
+                <img src="79bdd2130e63d0914c357bb674d88f4b0a877fbe47f6bd77e1b145dda7788f3b.png" title=" Sara fill caso express form in order" width="1920"/>
+                <img src="79bdd2130e63d0914c357bb674d88f4b0a877fbe47f6bd77e1b145dda7788f3b.png" title=" Sara enters 'Calle 19 #64-50' into Direcci&oacute;n servicio" width="1920"/>
+                <img src="085a570fe86e8ac14f8ed6f1054784d9e8c5c755869805ff87a7011b1646c712.png" title=" Sara fill caso express form in order (completed): <span class='failing-color'>FAILURE</span>" width="1920"/>
             </div>
         </div>
 
