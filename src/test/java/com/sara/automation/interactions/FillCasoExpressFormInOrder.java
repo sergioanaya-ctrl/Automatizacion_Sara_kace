@@ -20,6 +20,7 @@ import net.serenitybdd.screenplay.waits.WaitUntil;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
@@ -196,33 +197,92 @@ public class FillCasoExpressFormInOrder implements Interaction {
         // Estos combos aparecen en la sección General y dependen de los valores enviados desde el feature.
         WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
         seleccionarComboWebDriver(driver, "//div[contains(@class,'formio-component-departamento_solicita')]//div[contains(@class,'custom-dropdown-control')]", departamento);
-        seleccionarComboWebDriver(driver, "//div[contains(@class,'formio-component-municipio_solicita')]//div[contains(@class,'custom-dropdown-control')]", municipio);
+        seleccionarComboMunicipioWebDriver(driver, "//div[contains(@class,'formio-component-municipio_solicita')]//div[contains(@class,'custom-dropdown-control')]", municipio);
+    }
+
+    private void seleccionarComboMunicipioWebDriver(WebDriver driver, String comboXpath, String valor) {
+        WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
+        WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(60));
+
+        By searchSelector = By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar'], input[placeholder*='Buscar']");
+        By listItemExact = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='" + valor + "'] | //li[normalize-space(.)='" + valor + "']");
+        By listItems = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li");
+
+        try {
+            WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
+            combo.click();
+            WebElement search = waitLong.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
+            search.clear();
+            search.sendKeys(valor);
+            Thread.sleep(500);
+
+            System.out.println("  [seleccionarComboMunicipioWebDriver] Escribi: " + valor + ", esperando hasta 60 segundos a que aparezca el municipio...");
+
+            waitLong.until(driver1 -> {
+                List<WebElement> items = driver1.findElements(listItems);
+                return items.stream().anyMatch(item ->
+                    item.isDisplayed() && valor.equals(item.getText().trim()));
+            });
+
+            Thread.sleep(300);
+            List<WebElement> items = driver.findElements(listItems);
+            for (WebElement item : items) {
+                if (valor.equals(item.getText().trim()) && item.isDisplayed()) {
+                    System.out.println("  [seleccionarComboMunicipioWebDriver] Haciendo clic en: " + valor);
+                    item.click();
+                    Thread.sleep(300);
+                    return;
+                }
+            }
+            WebElement option = waitLong.until(ExpectedConditions.elementToBeClickable(listItemExact));
+            option.click();
+            return;
+        } catch (Exception e) {
+            System.out.println("  [seleccionarComboMunicipioWebDriver] ERROR: " + e.getMessage());
+            throw new RuntimeException("Error seleccionando municipio: " + valor, e);
+        }
     }
 
     private void seleccionarComboWebDriver(WebDriver driver, String comboXpath, String valor) {
-        WebElement combo = driver.findElement(By.xpath(comboXpath));
-        combo.click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
+
+        By searchSelector = By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar'], input[placeholder*='Buscar']");
+        By listItemExact = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='" + valor + "'] | //li[normalize-space(.)='" + valor + "']");
+        By listItems = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li");
 
         try {
-            WebElement search = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar']")));
+            WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
+            combo.click();
+            WebElement search = waitShort.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
             search.clear();
             search.sendKeys(valor);
-            search.sendKeys(Keys.ENTER);
-            return;
-        } catch (Exception ignore) {
-            // Si no aparece búsqueda, probar la lista visible.
-        }
+            Thread.sleep(300);
 
-        try {
-            WebElement option = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@role='option' and normalize-space(.)='" + valor + "']")));
+            System.out.println("  [seleccionarComboWebDriver] Escribi: " + valor + ", esperando a que aparezca el listado...");
+
+            waitShort.until(driver1 -> {
+                List<WebElement> items = driver1.findElements(listItems);
+                return items.stream().anyMatch(item ->
+                    item.isDisplayed() && valor.equals(item.getText().trim()));
+            });
+
+            Thread.sleep(200);
+            List<WebElement> items = driver.findElements(listItems);
+            for (WebElement item : items) {
+                if (valor.equals(item.getText().trim()) && item.isDisplayed()) {
+                    System.out.println("  [seleccionarComboWebDriver] Haciendo clic en: " + valor);
+                    item.click();
+                    Thread.sleep(300);
+                    return;
+                }
+            }
+            WebElement option = waitShort.until(ExpectedConditions.elementToBeClickable(listItemExact));
             option.click();
             return;
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            System.out.println("  [seleccionarComboWebDriver] ERROR: " + e.getMessage());
+            throw new RuntimeException("Error seleccionando combo: " + valor, e);
         }
-
-        WebElement optionContains = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@role='option' and contains(normalize-space(.), '" + valor + "')]))"));
-        optionContains.click();
     }
 
     private <T extends Actor> void llenarDireccionesYUbicacionEnOrden(T actor) {
