@@ -147,32 +147,82 @@ public class FillCasoExpressFormInOrder implements Interaction {
         System.out.println("  Nombre: " + nombreSolicitante);
         
         // 3) Cedula
-        WebElement cedulaField = driver.findElement(By.cssSelector("input[name='data[cedula_solicitante]']"));
-        cedulaField.clear();
-        cedulaField.sendKeys(cedulaSolicitante);
-        System.out.println("  Cedula: " + cedulaSolicitante);
+        try {
+            WebElement cedulaField = driver.findElement(By.cssSelector("input[name='data[cedula_del_solicitante]'], input[name='data[cedula_solicitante]']"));
+            cedulaField.clear();
+            cedulaField.sendKeys(cedulaSolicitante);
+            System.out.println("  Cedula: " + cedulaSolicitante);
+        } catch (Exception e) {
+            System.out.println("  ERROR en cedula: " + e.getMessage());
+            throw e;
+        }
         
         // 4) Telefono 1
-        WebElement tel1Field = driver.findElement(By.cssSelector("input[name='data[telefono_1]']"));
-        tel1Field.clear();
-        tel1Field.sendKeys(telefono1);
+        try {
+            WebElement tel1Field = driver.findElement(By.cssSelector("input[name='data[telefono_1]']"));
+            tel1Field.clear();
+            tel1Field.sendKeys(telefono1);
+            System.out.println("  Telefono 1: " + telefono1);
+        } catch (Exception e) {
+            System.out.println("  ERROR en telefono 1: " + e.getMessage());
+            throw e;
+        }
         
         // 5) Telefono 2
-        WebElement tel2Field = driver.findElement(By.cssSelector("input[name='data[telefono_2]']"));
-        tel2Field.clear();
-        tel2Field.sendKeys(telefono2);
+        try {
+            WebElement tel2Field = driver.findElement(By.cssSelector("input[name='data[telefono_2]']"));
+            tel2Field.clear();
+            tel2Field.sendKeys(telefono2);
+            System.out.println("  Telefono 2: " + telefono2);
+        } catch (Exception e) {
+            System.out.println("  ERROR en telefono 2: " + e.getMessage());
+            throw e;
+        }
         
         // 6) Placa
-        WebElement placaField = driver.findElement(By.cssSelector("input[name='data[placa]']"));
-        placaField.clear();
-        placaField.sendKeys(placa);
+        try {
+            WebElement placaField = driver.findElement(By.cssSelector("input[name='data[placa]']"));
+            placaField.clear();
+            placaField.sendKeys(placa);
+            System.out.println("  Placa: " + placa);
+        } catch (Exception e) {
+            System.out.println("  ERROR en placa: " + e.getMessage());
+            throw e;
+        }
         System.out.println("  Datos basicos completados OK");
     }
 
     private <T extends Actor> void llenarCombosGeneralesEnOrden(T actor) {
         // Estos combos aparecen en la sección General y dependen de los valores enviados desde el feature.
-        seleccionar(actor, CasoCreatePage.Departamento_Solicita_Combo, departamento);
-        seleccionar(actor, CasoCreatePage.Municipio_Solicita_Combo, municipio);
+        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+        seleccionarComboWebDriver(driver, "//div[contains(@class,'formio-component-departamento_solicita')]//div[contains(@class,'custom-dropdown-control')]", departamento);
+        seleccionarComboWebDriver(driver, "//div[contains(@class,'formio-component-municipio_solicita')]//div[contains(@class,'custom-dropdown-control')]", municipio);
+    }
+
+    private void seleccionarComboWebDriver(WebDriver driver, String comboXpath, String valor) {
+        WebElement combo = driver.findElement(By.xpath(comboXpath));
+        combo.click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        try {
+            WebElement search = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar']")));
+            search.clear();
+            search.sendKeys(valor);
+            search.sendKeys(Keys.ENTER);
+            return;
+        } catch (Exception ignore) {
+            // Si no aparece búsqueda, probar la lista visible.
+        }
+
+        try {
+            WebElement option = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@role='option' and normalize-space(.)='" + valor + "']")));
+            option.click();
+            return;
+        } catch (Exception ignore) {
+        }
+
+        WebElement optionContains = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@role='option' and contains(normalize-space(.), '" + valor + "')]))"));
+        optionContains.click();
     }
 
     private <T extends Actor> void llenarDireccionesYUbicacionEnOrden(T actor) {
@@ -226,8 +276,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private <T extends Actor> void seleccionar(T actor, Target combo, String valor) {
-        // Helper común para listas: abre el combo e intenta primero el dropdown custom;
-        // si no existe, usa opciones estándar por texto.
+        // Helper común para listas: abre el combo y busca la opción.
         actor.attemptsTo(WaitUntil.the(combo, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Click.on(combo));
 
@@ -237,17 +286,20 @@ public class FillCasoExpressFormInOrder implements Interaction {
             actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
             actor.attemptsTo(Click.on(CasoCreatePage.CustomDropdownListItem.of(valor)));
             return;
-        } catch (Exception ignore) {
-            // Si no es un dropdown custom, continuar con estrategia estándar.
+        } catch (Throwable ignore) {
+            // Si no existe búsqueda custom, continuar con opciones visibles.
         }
 
         try {
             actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista.of(valor), isVisible()).forNoMoreThan(10).seconds());
             actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista.of(valor)));
-        } catch (Exception e) {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista_Contiene.of(valor), isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista_Contiene.of(valor)));
+            return;
+        } catch (Throwable ignore) {
+            // Ignorar y probar la opción por texto parcial.
         }
+
+        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista_Contiene.of(valor), isVisible()).forNoMoreThan(10).seconds());
+        actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista_Contiene.of(valor)));
     }
 
     private String generarNumeroExpediente15() {

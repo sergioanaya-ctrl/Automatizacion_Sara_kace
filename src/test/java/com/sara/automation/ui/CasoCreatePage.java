@@ -44,7 +44,7 @@ public class CasoCreatePage {
             .located(By.cssSelector("input[name='data[nombre_solicitante]']"));
 
     public static final Target Cedula_Solicitante = Target.the("Cédula del solicitante")
-            .located(By.cssSelector("input[name='data[cedula_solicitante]']"));
+            .located(By.cssSelector("input[name='data[cedula_del_solicitante]'], input[name='data[cedula_solicitante]']"));
 
     public static final Target Telefono_1 = Target.the("Teléfono 1")
             .located(By.cssSelector("input[name='data[telefono_1]']"));
@@ -80,10 +80,10 @@ public class CasoCreatePage {
 
     // Combos en seccion General (listas dependientes)
     public static final Target Departamento_Solicita_Combo = Target.the("Departamento solicita")
-            .located(By.xpath("//label[contains(normalize-space(.),'Departamento solicita')]/following::div[contains(@class,'input-group') or contains(@class,'form-group') or self::div][1]//*[self::input or self::button or self::div[contains(@class,'select')]][1]"));
+            .located(By.xpath("//div[contains(@class,'formio-component-departamento_solicita')]//div[contains(@class,'custom-dropdown-control')]"));
 
     public static final Target Municipio_Solicita_Combo = Target.the("Municipio solicita")
-            .located(By.xpath("//label[contains(normalize-space(.),'Municipio solicita')]/following::div[contains(@class,'input-group') or contains(@class,'form-group') or self::div][1]//*[self::input or self::button or self::div[contains(@class,'select')]][1]"));
+            .located(By.xpath("//div[contains(@class,'formio-component-municipio_solicita')]//div[contains(@class,'custom-dropdown-control')]"));
 
     // Municipio por name (si existe como input/select estándar)
     public static final Target Municipio_Solicita_Input = Target.the("Municipio solicita (input/select by name)")
@@ -111,7 +111,7 @@ public class CasoCreatePage {
 
     // Custom dropdown helpers
     public static final Target CustomDropdownSearch = Target.the("Custom dropdown search input")
-            .located(By.xpath("//input[@placeholder='Buscar' or @class[contains(., 'search')]]"));
+            .located(By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar']"));
 
     public static final Target CustomDropdownListItem = Target.the("Custom dropdown list item {0}")
             .locatedBy("//div[@class='custom-dropdown-item' and contains(normalize-space(), '{0}')] | //div[@role='option' and contains(normalize-space(), '{0}')]");
