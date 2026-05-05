@@ -231,6 +231,78 @@ public class FillCasoExpressFormInOrder implements Interaction {
         }
     }
 
+    private void seleccionarComboLineaWebDriver(WebDriver driver, String comboXpath, String valor) {
+        WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
+        WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(60));
+
+        // Asegurar que estamos en el iframe
+        driver.switchTo().defaultContent();
+        new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+
+        By searchSelector = By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar'], input[placeholder*='Buscar']");
+        By listItemExact = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='" + valor + "'] | //li[normalize-space(.)='" + valor + "']");
+        By listItems = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li");
+
+        try {
+            WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
+            combo.click();
+            WebElement search = waitLong.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
+            search.clear();
+            search.sendKeys(valor);
+
+            System.out.println("  [seleccionarComboLineaWebDriver] Escribi: " + valor + ", esperando a que la línea sea visible...");
+
+            waitLong.until(driver1 -> {
+                List<WebElement> items = driver1.findElements(listItemExact);
+                return items.stream().anyMatch(item -> item.isDisplayed());
+            });
+
+            WebElement option = waitLong.until(ExpectedConditions.elementToBeClickable(listItemExact));
+            option.click();
+            return;
+        } catch (Exception e) {
+            System.out.println("  [seleccionarComboLineaWebDriver] ERROR: " + e.getMessage());
+            throw new RuntimeException("Error seleccionando línea: " + valor, e);
+        }
+    }
+
+    private void seleccionarComboServicioWebDriver(WebDriver driver, String comboXpath, String valor) {
+        WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
+        WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(60));
+
+        // Asegurar que estamos en el iframe
+        driver.switchTo().defaultContent();
+        new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+
+        By searchSelector = By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar'], input[placeholder*='Buscar']");
+        By listItemExact = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='" + valor + "'] | //li[normalize-space(.)='" + valor + "']");
+        By listItems = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li");
+
+        try {
+            WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
+            combo.click();
+            WebElement search = waitLong.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
+            search.clear();
+            search.sendKeys(valor);
+
+            System.out.println("  [seleccionarComboServicioWebDriver] Escribi: " + valor + ", esperando a que el servicio sea visible...");
+
+            waitLong.until(driver1 -> {
+                List<WebElement> items = driver1.findElements(listItemExact);
+                return items.stream().anyMatch(item -> item.isDisplayed());
+            });
+
+            WebElement option = waitLong.until(ExpectedConditions.elementToBeClickable(listItemExact));
+            option.click();
+            return;
+        } catch (Exception e) {
+            System.out.println("  [seleccionarComboServicioWebDriver] ERROR: " + e.getMessage());
+            throw new RuntimeException("Error seleccionando servicio: " + valor, e);
+        }
+    }
+
     private void seleccionarComboWebDriver(WebDriver driver, String comboXpath, String valor) {
         WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
 
@@ -292,16 +364,31 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private <T extends Actor> void llenarServiciosEspecialesYAsignacionEnOrden(T actor) {
-        // Cierre de sección General
-        if (serviciosEspeciales != null && !serviciosEspeciales.trim().isEmpty()) {
-            seleccionar(actor, CasoCreatePage.Servicios_Especiales_Combo, serviciosEspeciales);
+        // Servicios especiales deshabilitado - saltamos directo a Línea y Servicio
+        
+        // Obtener el driver y asegurar contexto del iframe
+        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+        
+        // Asegurar que estamos en el iframe antes de cualquier scroll
+        driver.switchTo().defaultContent();
+        new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+        System.out.println("  [llenarServiciosEspecialesYAsignacionEnOrden] Contexto del iframe OK");
+        
+        // Hacer scroll dentro del iframe usando JavaScriptExecutor
+        try {
+            String scrollScript = "var linea = document.evaluate(\"//label[normalize-space()='Línea *' or normalize-space()='Línea']\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue; " +
+                                  "if (linea) { linea.scrollIntoView(true); }";
+            ((JavascriptExecutor) driver).executeScript(scrollScript);
+            Thread.sleep(500);
+            System.out.println("  [llenarServiciosEspecialesYAsignacionEnOrden] Scroll a Línea OK");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
-
-        // Sección Asignación: este bloque ocurre al final y requiere scroll dentro del iframe.
-        actor.attemptsTo(Scroll.to(CasoCreatePage.Seccion_Asignacion));
-        seleccionar(actor, CasoCreatePage.Gestor_Coordinacion_Combo, gestor);
-        seleccionar(actor, CasoCreatePage.Linea_Combo, linea);
-        seleccionar(actor, CasoCreatePage.Servicio_Combo, servicio);
+        
+        // Línea y Servicio usan custom dropdowns con la lógica de municipio
+        seleccionarComboLineaWebDriver(driver, "//div[contains(@class,'formio-component-linea')]//div[contains(@class,'custom-dropdown-control')] | //label[normalize-space()='Línea *' or normalize-space()='Línea']/following::div[contains(@class,'custom-dropdown-control')][1]", linea);
+        seleccionarComboServicioWebDriver(driver, "//div[contains(@class,'formio-component-servicio')]//div[contains(@class,'custom-dropdown-control')] | //label[normalize-space()='Servicio *' or normalize-space()='Servicio']/following::div[contains(@class,'custom-dropdown-control')][1]", servicio);
     }
 
     private <T extends Actor> void llenarObservacionFinal(T actor) {

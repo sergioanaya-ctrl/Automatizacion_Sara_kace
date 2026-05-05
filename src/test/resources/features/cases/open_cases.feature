@@ -10,7 +10,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea             | servicio           |
-      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | LINEA EJEMPLO 1   | SERVICIO EJEMPLO 1 |
+      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS             | PASO DE GASOLINA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
