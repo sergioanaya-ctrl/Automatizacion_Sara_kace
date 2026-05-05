@@ -131,10 +131,16 @@ public class CasoCreatePage {
 
     // Provider Management Tab
     public static final Target Tab_Gestion_Proveedores = Target.the("Tab Gestión de Proveedores")
-            .located(By.xpath("//a[contains(normalize-space(.), 'Gestión de proveedores')] | //li[@role='tab']//a[contains(normalize-space(.), 'Gestión')]"));
+            .located(By.xpath("//a[contains(normalize-space(.), 'Gestión de Proveedores') or contains(normalize-space(.), 'Proveedor') or contains(@href, 'gestion') and contains(@href, 'proveedor')] | //button[contains(normalize-space(.), 'Gestión de Proveedores') or contains(normalize-space(.), 'Proveedor')]"));
+
+    public static final Target Tab_Gestion_Proveedores_FALLBACK = Target.the("Tab Gestión de Proveedores (Fallback)")
+            .located(By.xpath("//a[contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'gestión') or contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'proveedor')]"));
 
     public static final Target Boton_Crear_Proveedor = Target.the("Botón Crear Proveedor")
-            .located(By.xpath("//button[contains(normalize-space(.), 'Crear') and @ref='editgrid-gestion_proveedor_asistencia_movilidad-addRow']"));
+            .located(By.xpath("//button[contains(normalize-space(.), 'Crear') and contains(@ref, 'gestion_proveedor')]"));
+
+    public static final Target Boton_Crear_Proveedor_FALLBACK = Target.the("Botón Crear Proveedor (Fallback)")
+            .located(By.xpath("//button[contains(normalize-space(.), 'Crear') and contains(@class, 'btn-primary')]")); 
 
     // Provider dropdown controls
     public static final Target Nombre_Proveedor_Dropdown_Control = Target.the("Nombre Proveedor Dropdown Control")

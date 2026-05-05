@@ -154,7 +154,7 @@
             <a href="576946480b52ad056d6f5bddf874399c83582ecf90963cc074a14c70580e7d9f.html"><i class="bi bi-chat-text"></i> Features</a>
         </li>
     </ul>
-    <span class="date-and-time"><a href="build-info.html"><i class="bi bi-info-circle"></i></a> Report generated 05-05-2026 13:28</span>
+    <span class="date-and-time"><a href="build-info.html"><i class="bi bi-info-circle"></i></a> Report generated 05-05-2026 14:03</span>
     <br style="clear:left"/>
 </div>
 
@@ -191,9 +191,9 @@ Para validar que la URL es accesible
                 <table class="outcome-header">
                     <tr>
                         <td colspan="2" class="test-title-bar">
-                            <span class="outcome-icon"><a href='##beforetable'><i class='bi bi-x-circle-fill failure-icon fa-2x' title='FAILURE'></i></a></span>
+                            <span class="outcome-icon"><a href='##beforetable'><i class='bi bi-exclamation-triangle-fill error-icon fa-2x' title='ERROR'></i></a></span>
                             <span class="test-case-title">
-                                <span class="failing-color">Abrir la URL, loguearse y navegar a agent
+                                <span class="error-color">Abrir la URL, loguearse y navegar a agent
                                     <span class="related-issue-title"></span>
                                 </span>
                             </span>
@@ -215,7 +215,7 @@ Para validar que la URL es accesible
         <div class="table">
             <div class="row">
                 <div class="col-sm-10" style="padding-left:1.5em; padding-top:0.5em; padding-bottom:0.5em;">
-                    <span class="error-message error-message-title">Assertion error: Expected: an element that is visible but: no matching element found by [Tab Gesti&oacute;n de Proveedores located with: xpath: //a[contains(normalize-space(.), 'Gesti&oacute;n de proveedores')] | //li[@role='tab']//a[contains(normalize-space(.), 'Gesti&oacute;n')]]</span>
+                    <span class="error-message error-message-title">No such element exception: no such element: Unable to locate element: {'method':'xpath','selector':'//a[contains(normalize-space(.), 'Gesti&oacute;n de Proveedores') or contains(normalize-space(.), 'Proveedor') or contains(@href, 'gestion') and contains(@href, 'proveedor')] | //button[contains(normalize-space(.), 'Gesti&oacute;n de Proveedores') or contains(normalize-space(.), 'Proveedor')]'}</span>
                 </div>
                 <div class="col-sm-2">
                     <a class="btn btn-warning details-button" data-toggle="collapse" href="#stacktraceModal-overall"
@@ -231,11 +231,11 @@ Para validar que la URL es accesible
         <div class="collapse multi-collapse" id="stacktraceModal-overall">
             <div class="card">
                 <div class="card-header">
-                    <h4>java.lang.AssertionError </h4>
+                    <h4>org.openqa.selenium.NoSuchElementException </h4>
                 </div>
                 <div class="card-body">
                     <div>
-                        <pre>com.sara.automation.tasks.DiligenciarProveedorGestion.performAs(DiligenciarProveedorGestion.java:42)<br />com.sara.automation.stepdefinitions.CasesStepDefinitions.diligenciamosElProveedor(CasesStepDefinitions.java:117)<br />io.cucumber.java.Invoker.doInvoke(Invoker.java:66)<br />io.cucumber.java.Invoker.invoke(Invoker.java:24)<br />io.cucumber.java.AbstractGlueDefinition.invokeMethod(AbstractGlueDefinition.java:47)<br />io.cucumber.java.JavaStepDefinition.execute(JavaStepDefinition.java:29)<br />io.cucumber.core.runner.CoreStepDefinition.execute(CoreStepDefinition.java:66)<br />io.cucumber.core.runner.PickleStepDefinitionMatch.runStep(PickleStepDefinitionMatch.java:63)<br />io.cucumber.core.runner.TestStep.executeStep(TestStep.java:85)<br />io.cucumber.core.runner.TestStep.run(TestStep.java:57)<br />io.cucumber.core.runner.PickleStepTestStep.run(PickleStepTestStep.java:51)<br />io.cucumber.core.runner.TestCase.run(TestCase.java:84)<br />io.cucumber.core.runner.Runner.runPickle(Runner.java:75)<br />io.cucumber.core.runtime.CucumberExecutionContext.lambda$runTestCase$5(CucumberExecutionContext.java:129)<br />io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java:23)<br />io.cucumber.core.runtime.CucumberExecutionContext.runTestCase(CucumberExecutionContext.java:129)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java:144)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java:28)<br />io.cucumber.junit.FeatureRunner.run(FeatureRunner.java:137)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java:259)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java:59)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)<br /></pre>
+                        <pre>com.sara.automation.tasks.DiligenciarProveedorGestion.performAs(DiligenciarProveedorGestion.java:52)<br />com.sara.automation.stepdefinitions.CasesStepDefinitions.diligenciamosElProveedor(CasesStepDefinitions.java:117)<br />io.cucumber.java.Invoker.doInvoke(Invoker.java:66)<br />io.cucumber.java.Invoker.invoke(Invoker.java:24)<br />io.cucumber.java.AbstractGlueDefinition.invokeMethod(AbstractGlueDefinition.java:47)<br />io.cucumber.java.JavaStepDefinition.execute(JavaStepDefinition.java:29)<br />io.cucumber.core.runner.CoreStepDefinition.execute(CoreStepDefinition.java:66)<br />io.cucumber.core.runner.PickleStepDefinitionMatch.runStep(PickleStepDefinitionMatch.java:63)<br />io.cucumber.core.runner.TestStep.executeStep(TestStep.java:85)<br />io.cucumber.core.runner.TestStep.run(TestStep.java:57)<br />io.cucumber.core.runner.PickleStepTestStep.run(PickleStepTestStep.java:51)<br />io.cucumber.core.runner.TestCase.run(TestCase.java:84)<br />io.cucumber.core.runner.Runner.runPickle(Runner.java:75)<br />io.cucumber.core.runtime.CucumberExecutionContext.lambda$runTestCase$5(CucumberExecutionContext.java:129)<br />io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java:23)<br />io.cucumber.core.runtime.CucumberExecutionContext.runTestCase(CucumberExecutionContext.java:129)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java:144)<br />io.cucumber.junit.FeatureRunner.runChild(FeatureRunner.java:28)<br />io.cucumber.junit.FeatureRunner.run(FeatureRunner.java:137)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java:259)<br />io.cucumber.junit.CucumberSerenityRunner.runChild(CucumberSerenityRunner.java:59)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)<br />worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)<br /></pre>
                     </div>
 
                 </div>
@@ -243,7 +243,7 @@ Para validar que la URL es accesible
         </div>
     </div>
                     <div class="panel-body">
-                        <a href="pagesource1890698061917072223.html" target="_blank" class="btn btn-info">HTML Source</a>
+                        <a href="pagesource7428586292808485436.html" target="_blank" class="btn btn-info">HTML Source</a>
                     </div>
             </div>
         <div class="slider-wrapper theme-default">
@@ -257,44 +257,44 @@ Para validar que la URL es accesible
                 <img src="ac1e6c390a60cf01bafd61b0f412d1e32b0b8ae3b6829148ee8a53edc4fc084a.png" title=" Login con Cognito usando credenciales" width="1920"/>
                 <img src="ac1e6c390a60cf01bafd61b0f412d1e32b0b8ae3b6829148ee8a53edc4fc084a.png" title=" Sara opens the browser at https://us-east-1s66ymlwwk.auth.us-east-1.amazoncognito.com/login?client_id=2hfo5293cfbh1h9fbe9m7g07dn&amp;response_type=code&amp;scope=email+openid+profile&amp;redirect_uri=https%3A%2F%2Fasistenciaapp.kit.sura-konecta.com%2Fauth" width="1920"/>
                 <img src="a069bd655c88c07ad299d2b125ef0e88e65f432ffc5faa8a1e3dfa9a14571ca8.png" title=" Sara enters 'BOT01' into cognito username field" width="1920"/>
-                <img src="3bb1889b59e3416a0011356ae42e4d2ec56e2a58e1803fef3acbd859b27516cd.png" title=" Sara clicks on cognito next button" width="1920"/>
+                <img src="ba2235c86da700a1520d89c6f4b9d32d58267906a5741937101714b9f89008d7.png" title=" Sara clicks on cognito next button" width="1920"/>
                 <img src="9de4434d9c36c22b3a78e5cc367528743e5b6b49ac56dfe539212846f40b88d7.png" title=" Sara enters 'Yt7PNg_VnXkvsQ*tPmfi' into cognito password field" width="1920"/>
-                <img src="7b77f2d1f57cec91f9ae038a3e38fa50b09d581894c3b73c61e8443a53439682.png" title=" Sara clicks on cognito continue button" width="1920"/>
-                <img src="8b2aed1e79c0b8b82cbf00b889321ebb25f86be4b23e4ed5c85befd7c2929a40.png" title=" Sara opens the browser at https://asistenciaapp.kit.sura-konecta.com/agent" width="1920"/>
-                <img src="8b2aed1e79c0b8b82cbf00b889321ebb25f86be4b23e4ed5c85befd7c2929a40.png" title=" Login con Cognito usando credenciales (completed)" width="1920"/>
-                <img src="8b2aed1e79c0b8b82cbf00b889321ebb25f86be4b23e4ed5c85befd7c2929a40.png" title=" And realiza login con credenciales (completed)" width="1920"/>
-                <img src="ad453b0916a881c1e7c166a8308b83e836f574867d0e57b3e67f59f383167fec.png" title=" And navega a agent" width="1920"/>
-                <img src="ad453b0916a881c1e7c166a8308b83e836f574867d0e57b3e67f59f383167fec.png" title=" Navega a la pagina de agent" width="1920"/>
-                <img src="ad453b0916a881c1e7c166a8308b83e836f574867d0e57b3e67f59f383167fec.png" title=" Sara opens the browser at https://asistenciaapp.kit.sura-konecta.com/agent" width="1920"/>
-                <img src="7c631673192ec8e87e4e8c3b197c938235582b5c5050bdd37d413d545104c63f.png" title=" Navega a la pagina de agent (completed)" width="1920"/>
-                <img src="7c631673192ec8e87e4e8c3b197c938235582b5c5050bdd37d413d545104c63f.png" title=" And navega a agent (completed)" width="1920"/>
-                <img src="0995b44b1e4b619e5672b27e996af17b29d151b01fd442623872488f6a4dd3d2.png" title=" And diligencia caso express completo desde feature
+                <img src="98f429ceae3eed0e97a7f25ee29cb5d65807b8284e0e7cb2ce39ea1ac21a1670.png" title=" Sara clicks on cognito continue button" width="1920"/>
+                <img src="0665cc12ad33f01c3567cb20983290055087c51bbf936119e6391b169e5df6f8.png" title=" Sara opens the browser at https://asistenciaapp.kit.sura-konecta.com/agent" width="1920"/>
+                <img src="0665cc12ad33f01c3567cb20983290055087c51bbf936119e6391b169e5df6f8.png" title=" Login con Cognito usando credenciales (completed)" width="1920"/>
+                <img src="0665cc12ad33f01c3567cb20983290055087c51bbf936119e6391b169e5df6f8.png" title=" And realiza login con credenciales (completed)" width="1920"/>
+                <img src="e694cc23b91e6614652900d625d62fc7ada47c5d01ba73d709daf534b4938c0b.png" title=" And navega a agent" width="1920"/>
+                <img src="e694cc23b91e6614652900d625d62fc7ada47c5d01ba73d709daf534b4938c0b.png" title=" Navega a la pagina de agent" width="1920"/>
+                <img src="e694cc23b91e6614652900d625d62fc7ada47c5d01ba73d709daf534b4938c0b.png" title=" Sara opens the browser at https://asistenciaapp.kit.sura-konecta.com/agent" width="1920"/>
+                <img src="c7a71ef5bcbc9c4a083c66a09f8c71265db4e5999180a0af089eb28852fb03d9.png" title=" Navega a la pagina de agent (completed)" width="1920"/>
+                <img src="c7a71ef5bcbc9c4a083c66a09f8c71265db4e5999180a0af089eb28852fb03d9.png" title=" And navega a agent (completed)" width="1920"/>
+                <img src="a9af8681682f1b2f4f7903a8a8ca78191a7dacdcafc73f88eb94bc9f8b893575.png" title=" And diligencia caso express completo desde feature
 | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
 | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | PASO DE GASOLINA |" width="1920"/>
-                <img src="0995b44b1e4b619e5672b27e996af17b29d151b01fd442623872488f6a4dd3d2.png" title=" Abrir Caso Express, seleccionar asistencia, entrar al iframe, habilitar y diligenciar en orden" width="1920"/>
-                <img src="0995b44b1e4b619e5672b27e996af17b29d151b01fd442623872488f6a4dd3d2.png" title=" Sara clicks on Boton Caso Express" width="1920"/>
-                <img src="c2b1f18ee131f21a2207f03c85b460ba8fcf9e1f565b1ac3c971f87485164f1c.png" title=" Sara clicks on Formulario Creaci&oacute;n de Casos (ASISTENCIA)" width="1920"/>
-                <img src="87beae0e007be15f1881de2799c41247c65af98081ac70f0928c0b0ac6f9849d.png" title=" Sara switch to one script iframe" width="1920"/>
-                <img src="44bfbcd131199a26aecd7b1faf0322e6a5e457afd33b4eca5d2d2a4782e58cc8.png" title=" Sara fill caso express form in order" width="1920"/>
-                <img src="44bfbcd131199a26aecd7b1faf0322e6a5e457afd33b4eca5d2d2a4782e58cc8.png" title=" Sara enters 'Calle 20 #18-19' into Direcci&oacute;n servicio" width="1920"/>
-                <img src="7743357d2a37488ebb19c738ca1a484064d4eb1ad5693690d5d2ce33bdf399ff.png" title=" Sara enters 'Carrera 23 #83-34' into Direcci&oacute;n del destino" width="1920"/>
-                <img src="f42976c481731d8d1635736f0b590e6e38f4678937f155e62a064320da655404.png" title=" Sara enters 'Referencia XQGRR 505' into Detalle direcci&oacute;n destino" width="1920"/>
-                <img src="e98587ef2ba710ff59262aeac311423b190f8ab459e040f58c5ccad40706b5ce.png" title=" Sara enters 'Apto 14, Torre D' into Detalle direcci&oacute;n servicio" width="1920"/>
-                <img src="147ccbcdbc40efe3317e7c259dfdaf820369c33ccbdc863a59b788f287ca2e20.png" title=" Sara enters 'Marca ZFMX' into Marca veh&iacute;culo" width="1920"/>
-                <img src="14fc63917d3582e9d6147766ceb69c7f9285132f447bf0c243ce9d633a46146a.png" title=" Sara enters 'produccion' into Ubicaci&oacute;n servicio" width="1920"/>
-                <img src="19041cdf7ae3a781ed52b24698313b41a4128409c28502a5c4f914608c224b91.png" title=" Sara enters 'hola' into Observaci&oacute;n final del caso" width="1920"/>
-                <img src="c410dbb96350911cb698a6b4e147c28c94aa8c6a2f1987a744e24fd9e8ec3d3b.png" title=" Sara clicks on Guardar Formulario" width="1920"/>
-                <img src="c410dbb96350911cb698a6b4e147c28c94aa8c6a2f1987a744e24fd9e8ec3d3b.png" title=" Sara fill caso express form in order (completed)" width="1920"/>
-                <img src="c410dbb96350911cb698a6b4e147c28c94aa8c6a2f1987a744e24fd9e8ec3d3b.png" title=" Abrir Caso Express, seleccionar asistencia, entrar al iframe, habilitar y diligenciar en orden (completed)" width="1920"/>
-                <img src="c410dbb96350911cb698a6b4e147c28c94aa8c6a2f1987a744e24fd9e8ec3d3b.png" title=" And diligencia caso express completo desde feature
+                <img src="a9af8681682f1b2f4f7903a8a8ca78191a7dacdcafc73f88eb94bc9f8b893575.png" title=" Abrir Caso Express, seleccionar asistencia, entrar al iframe, habilitar y diligenciar en orden" width="1920"/>
+                <img src="a9af8681682f1b2f4f7903a8a8ca78191a7dacdcafc73f88eb94bc9f8b893575.png" title=" Sara clicks on Boton Caso Express" width="1920"/>
+                <img src="f25b7981a099069afef3d4b7d66d273d8aad33ab99e8890f04fd69c33870e380.png" title=" Sara clicks on Formulario Creaci&oacute;n de Casos (ASISTENCIA)" width="1920"/>
+                <img src="ba2338f615c6bfa194101e50accccfc35e99740e598641990e21b8724e6e2f11.png" title=" Sara switch to one script iframe" width="1920"/>
+                <img src="94cb57bc279df63b392c3c78872bb03d4f1d37114b26601aa68b099754060403.png" title=" Sara fill caso express form in order" width="1920"/>
+                <img src="94cb57bc279df63b392c3c78872bb03d4f1d37114b26601aa68b099754060403.png" title=" Sara enters 'Calle 11 #74-41' into Direcci&oacute;n servicio" width="1920"/>
+                <img src="421432a3ccbc8cf224321b7ffcaf9f0693d5c586626867e91c849ba252154d3f.png" title=" Sara enters 'Carrera 60 #88-55' into Direcci&oacute;n del destino" width="1920"/>
+                <img src="f79c25f137219323e556210e4b5e663bad3fa340afc88d62e42f65cddc792398.png" title=" Sara enters 'Referencia QCDCS 028' into Detalle direcci&oacute;n destino" width="1920"/>
+                <img src="1d31ba77608c90e86d4e5e9e635f1e836d34acd95b418149577612c6712aae53.png" title=" Sara enters 'Apto 22, Torre E' into Detalle direcci&oacute;n servicio" width="1920"/>
+                <img src="3324bc2c539ac4a36c47628145f50111f91ad43728906e6eb74eff7432675262.png" title=" Sara enters 'Marca JVYO' into Marca veh&iacute;culo" width="1920"/>
+                <img src="69f1c4578b2a5d04610b62c8fa6f4f2de815cc6e457a15d1062c78d73c865e98.png" title=" Sara enters 'produccion' into Ubicaci&oacute;n servicio" width="1920"/>
+                <img src="e6afe5f3a734f4282017a8b3e13b6ec0fcf31ae05e57d4fcc6f051dd4b696259.png" title=" Sara enters 'hola' into Observaci&oacute;n final del caso" width="1920"/>
+                <img src="4f58e2bad67fd6c3ab9c1c0ee50be3d47bb4b9bdfa8668d48ef9a4ad041de7e9.png" title=" Sara clicks on Guardar Formulario" width="1920"/>
+                <img src="a1b7e7da5f7ab19c6e20be4cddef0109c7bfa792296e7e2c42a1a3b618bfd4c1.png" title=" Sara fill caso express form in order (completed)" width="1920"/>
+                <img src="a1b7e7da5f7ab19c6e20be4cddef0109c7bfa792296e7e2c42a1a3b618bfd4c1.png" title=" Abrir Caso Express, seleccionar asistencia, entrar al iframe, habilitar y diligenciar en orden (completed)" width="1920"/>
+                <img src="a1b7e7da5f7ab19c6e20be4cddef0109c7bfa792296e7e2c42a1a3b618bfd4c1.png" title=" And diligencia caso express completo desde feature
 | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
 | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | PASO DE GASOLINA | (completed)" width="1920"/>
-                <img src="1cfa915058b91f433f08cde76ddc34168ecc13e2bbda48cbcb4ac93e33183740.png" title=" And diligenciamos el proveedor
+                <img src="1f64d59ee266a4f1434991fd68f132549a54209b0a982804ccd6b06fd774d321.png" title=" And diligenciamos el proveedor
 | Nombre del proveedor | Servicio |
 | PROVEEDOR PRUEBA | TOMA SERVICIO |" width="1920"/>
-                <img src="1cfa915058b91f433f08cde76ddc34168ecc13e2bbda48cbcb4ac93e33183740.png" title=" Gestionar proveedor: abrir tab, crear, seleccionar nombre/respuesta y guardar" width="1920"/>
-                <img src="1cfa915058b91f433f08cde76ddc34168ecc13e2bbda48cbcb4ac93e33183740.png" title=" Sara switch to one script iframe" width="1920"/>
-                <img src="5b09c87ec7aadea7c4fd9e10550fac95de2810ec24fc2ecd8bb2e1f545160d4c.png" title=" Gestionar proveedor: abrir tab, crear, seleccionar nombre/respuesta y guardar (completed): <span class='failing-color'>FAILURE</span>" width="1920"/>
+                <img src="1f64d59ee266a4f1434991fd68f132549a54209b0a982804ccd6b06fd774d321.png" title=" Gestionar proveedor: abrir tab, crear, seleccionar nombre/respuesta y guardar" width="1920"/>
+                <img src="1f64d59ee266a4f1434991fd68f132549a54209b0a982804ccd6b06fd774d321.png" title=" Sara switch to one script iframe" width="1920"/>
+                <img src="3c86ee6a74bebbefd632cbce09465cde90e2c4f1503444cc76f08f0cd22673c2.png" title=" Gestionar proveedor: abrir tab, crear, seleccionar nombre/respuesta y guardar (completed): <span class='error-color'>ERROR</span>" width="1227"/>
             </div>
         </div>
 

@@ -39,10 +39,28 @@ public class DiligenciarProveedorGestion implements Task {
         // Este paso ocurre dentro del formulario OneScript luego de crear el caso.
         actor.attemptsTo(SwitchToOneScriptIframe.required());
 
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Tab_Gestion_Proveedores, isVisible()).forNoMoreThan(20).seconds());
-        actor.attemptsTo(Click.on(CasoCreatePage.Tab_Gestion_Proveedores));
+        // Esperar a que la página se recargue completamente después de guardar
+        // La página hace reload y vuelve a mostrar los elementos del formulario
+        try {
+            Thread.sleep(8000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Boton_Crear_Proveedor, isVisible()).forNoMoreThan(20).seconds());
+        // El tab "Gestión de proveedores" está en los tabs de la sección de creación/edición
+        // Primero, hacer scroll para encontrar el tab
+        actor.attemptsTo(Scroll.to(CasoCreatePage.Tab_Gestion_Proveedores));
+        
+        // Esperar a que el tab sea visible y clickeable
+        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Tab_Gestion_Proveedores, isVisible()).forNoMoreThan(30).seconds());
+        
+        // Hacer clic en el tab de Gestión de Proveedores
+        actor.attemptsTo(Click.on(CasoCreatePage.Tab_Gestion_Proveedores));
+        
+        // Después de hacer clic en el tab, esperar a que los elementos dentro del tab estén visibles
+        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Boton_Crear_Proveedor, isVisible()).forNoMoreThan(30).seconds());
+        
+        // Finalmente, hacer clic en el botón Crear del grid de proveedores
         actor.attemptsTo(Click.on(CasoCreatePage.Boton_Crear_Proveedor));
 
         seleccionarDesdeDropdownCustom(
