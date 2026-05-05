@@ -232,62 +232,113 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private void seleccionarComboLineaWebDriver(WebDriver driver, String comboXpath, String valor) {
-        seleccionarComboConBusquedaWebDriver(driver, comboXpath, valor, "línea");
+        seleccionarComboMunicipioWebDriver(driver, comboXpath, valor);
     }
 
     private void seleccionarComboServicioWebDriver(WebDriver driver, String comboXpath, String valor) {
-        seleccionarComboConBusquedaWebDriver(driver, comboXpath, valor, "servicio");
-    }
-
-    private void seleccionarComboConBusquedaWebDriver(WebDriver driver, String comboXpath, String valor, String elementoNombre) {
         WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
         WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(60));
-
-        // Asegurar que estamos en el iframe
-        driver.switchTo().defaultContent();
-        new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
 
         By searchSelector = By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar'], input[placeholder*='Buscar']");
         By listItemExact = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='" + valor + "'] | //li[normalize-space(.)='" + valor + "']");
 
-        try {
-            WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
-            combo.click();
-            WebElement search = waitLong.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
-            search.clear();
-            search.sendKeys(valor);
+        Exception lastError = null;
+        for (int intento = 1; intento <= 3; intento++) {
+            try {
+                // Asegurar iframe en cada intento para evitar referencias obsoletas
+                driver.switchTo().defaultContent();
+                new WebDriverWait(driver, Duration.ofSeconds(20))
+                        .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
 
-            System.out.println("  [seleccionarComboConBusquedaWebDriver] Escribi: " + valor + ", esperando a que el " + elementoNombre + " sea visible...");
+                // 1) Clic en el combo Servicio
+                WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
+                combo.click();
 
-            waitLong.until(driver1 -> {
-                List<WebElement> items = driver1.findElements(listItemExact);
-                return items.stream().anyMatch(item -> item.isDisplayed());
-            });
-
-            boolean clicked = waitLong.until(driver1 -> {
-                List<WebElement> items = driver1.findElements(listItemExact);
-                for (WebElement item : items) {
-                    if (item.isDisplayed()) {
-                        try {
-                            item.click();
-                            return true;
-                        } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
-                            // Reintentar si el DOM se actualiza después de la búsqueda
+                // 2) Escribir en el campo de búsqueda del dropdown
+                WebElement search = waitLong.until(driver1 -> {
+                    List<WebElement> inputs = driver1.findElements(searchSelector);
+                    for (WebElement input : inputs) {
+                        if (input.isDisplayed() && input.isEnabled()) {
+                            return input;
                         }
                     }
-                }
-                return false;
-            });
+                    return null;
+                });
 
-            if (!clicked) {
-                throw new RuntimeException("No se encontró opción visible para " + elementoNombre + ": " + valor);
+                try {
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].focus();", search);
+                    search.click();
+                    search.sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.DELETE);
+                    search.sendKeys(valor);
+                } catch (org.openqa.selenium.ElementNotInteractableException e) {
+                    ((JavascriptExecutor) driver).executeScript(
+                            "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input', {bubbles:true}));",
+                            search,
+                            valor
+                    );
+                }
+
+                System.out.println("  [seleccionarComboServicioWebDriver] Escribi: " + valor + ", esperando a que el servicio sea visible... (intento " + intento + ")");
+
+                // 3) Esperar opción visible
+                waitLong.until(driver1 -> {
+                    List<WebElement> items = driver1.findElements(listItemExact);
+                    return items.stream().anyMatch(WebElement::isDisplayed);
+                });
+
+                // 4) Clic en la opción visible
+                boolean clicked = waitLong.until(driver1 -> {
+                    List<WebElement> items = driver1.findElements(listItemExact);
+                    for (WebElement item : items) {
+                        if (item.isDisplayed()) {
+                            try {
+                                item.click();
+                                return true;
+                            } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
+                                // Reintentar en el siguiente poll
+                            } catch (org.openqa.selenium.ElementNotInteractableException ignored) {
+                                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", item);
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                });
+
+                if (!clicked) {
+                    throw new RuntimeException("No se pudo hacer clic en la opción visible de Servicio: " + valor);
+                }
+                return;
+            } catch (org.openqa.selenium.StaleElementReferenceException stale) {
+                lastError = stale;
+                System.out.println("  [seleccionarComboServicioWebDriver] Stale detectado, reintentando... intento " + intento);
+            } catch (Exception e) {
+                lastError = e;
+                if (e.getCause() instanceof org.openqa.selenium.StaleElementReferenceException && intento < 3) {
+                    System.out.println("  [seleccionarComboServicioWebDriver] Stale en causa, reintentando... intento " + intento);
+                    continue;
+                }
+                break;
             }
-            return;
-        } catch (Exception e) {
-            System.out.println("  [seleccionarComboConBusquedaWebDriver] ERROR: " + e.getMessage());
-            throw new RuntimeException("Error seleccionando " + elementoNombre + ": " + valor, e);
         }
+
+        System.out.println("  [seleccionarComboServicioWebDriver] ERROR: " + (lastError != null ? lastError.getMessage() : "sin detalle"));
+        throw new RuntimeException("Error seleccionando servicio: " + valor, lastError);
+    }
+
+    private void esperarServicioHabilitado(WebDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        By servicioDropdown = By.cssSelector("#custom-select-et5p1mg .custom-dropdown");
+        By servicioControl = By.cssSelector("#custom-select-et5p1mg .custom-dropdown-control");
+
+        wait.until(d -> {
+            WebElement dropdown = d.findElement(servicioDropdown);
+            String classes = dropdown.getAttribute("class");
+            return classes != null && !classes.contains("kace-component--disabled");
+        });
+
+        wait.until(ExpectedConditions.elementToBeClickable(servicioControl));
+        System.out.println("  [esperarServicioHabilitado] Servicio habilitado y clickable.");
     }
 
     private void seleccionarComboWebDriver(WebDriver driver, String comboXpath, String valor) {
@@ -377,6 +428,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
         seleccionarComboLineaWebDriver(driver, "//div[@id='custom-select-ef1mmig']//div[contains(@class,'custom-dropdown-control')]", linea);
         // Asegurarse de que el dropdown de Línea se cerró antes de abrir Servicio
         ((JavascriptExecutor) driver).executeScript("document.activeElement.blur();");
+        esperarServicioHabilitado(driver);
         seleccionarComboServicioWebDriver(driver, "//div[@id='custom-select-et5p1mg']//div[contains(@class,'custom-dropdown-control')]", servicio);
     }
 
