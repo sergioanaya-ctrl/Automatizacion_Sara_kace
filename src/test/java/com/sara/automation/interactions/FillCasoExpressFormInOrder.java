@@ -232,42 +232,14 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private void seleccionarComboLineaWebDriver(WebDriver driver, String comboXpath, String valor) {
-        WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
-        WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(60));
-
-        // Asegurar que estamos en el iframe
-        driver.switchTo().defaultContent();
-        new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
-
-        By searchSelector = By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar'], input[placeholder*='Buscar']");
-        By listItemExact = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='" + valor + "'] | //li[normalize-space(.)='" + valor + "']");
-        By listItems = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li");
-
-        try {
-            WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
-            combo.click();
-            WebElement search = waitLong.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
-            search.clear();
-            search.sendKeys(valor);
-
-            System.out.println("  [seleccionarComboLineaWebDriver] Escribi: " + valor + ", esperando a que la línea sea visible...");
-
-            waitLong.until(driver1 -> {
-                List<WebElement> items = driver1.findElements(listItemExact);
-                return items.stream().anyMatch(item -> item.isDisplayed());
-            });
-
-            WebElement option = waitLong.until(ExpectedConditions.elementToBeClickable(listItemExact));
-            option.click();
-            return;
-        } catch (Exception e) {
-            System.out.println("  [seleccionarComboLineaWebDriver] ERROR: " + e.getMessage());
-            throw new RuntimeException("Error seleccionando línea: " + valor, e);
-        }
+        seleccionarComboConBusquedaWebDriver(driver, comboXpath, valor, "línea");
     }
 
     private void seleccionarComboServicioWebDriver(WebDriver driver, String comboXpath, String valor) {
+        seleccionarComboConBusquedaWebDriver(driver, comboXpath, valor, "servicio");
+    }
+
+    private void seleccionarComboConBusquedaWebDriver(WebDriver driver, String comboXpath, String valor, String elementoNombre) {
         WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
         WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(60));
 
@@ -278,7 +250,6 @@ public class FillCasoExpressFormInOrder implements Interaction {
 
         By searchSelector = By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar'], input[placeholder*='Buscar']");
         By listItemExact = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='" + valor + "'] | //li[normalize-space(.)='" + valor + "']");
-        By listItems = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li");
 
         try {
             WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
@@ -287,19 +258,35 @@ public class FillCasoExpressFormInOrder implements Interaction {
             search.clear();
             search.sendKeys(valor);
 
-            System.out.println("  [seleccionarComboServicioWebDriver] Escribi: " + valor + ", esperando a que el servicio sea visible...");
+            System.out.println("  [seleccionarComboConBusquedaWebDriver] Escribi: " + valor + ", esperando a que el " + elementoNombre + " sea visible...");
 
             waitLong.until(driver1 -> {
                 List<WebElement> items = driver1.findElements(listItemExact);
                 return items.stream().anyMatch(item -> item.isDisplayed());
             });
 
-            WebElement option = waitLong.until(ExpectedConditions.elementToBeClickable(listItemExact));
-            option.click();
+            boolean clicked = waitLong.until(driver1 -> {
+                List<WebElement> items = driver1.findElements(listItemExact);
+                for (WebElement item : items) {
+                    if (item.isDisplayed()) {
+                        try {
+                            item.click();
+                            return true;
+                        } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
+                            // Reintentar si el DOM se actualiza después de la búsqueda
+                        }
+                    }
+                }
+                return false;
+            });
+
+            if (!clicked) {
+                throw new RuntimeException("No se encontró opción visible para " + elementoNombre + ": " + valor);
+            }
             return;
         } catch (Exception e) {
-            System.out.println("  [seleccionarComboServicioWebDriver] ERROR: " + e.getMessage());
-            throw new RuntimeException("Error seleccionando servicio: " + valor, e);
+            System.out.println("  [seleccionarComboConBusquedaWebDriver] ERROR: " + e.getMessage());
+            throw new RuntimeException("Error seleccionando " + elementoNombre + ": " + valor, e);
         }
     }
 
@@ -387,8 +374,10 @@ public class FillCasoExpressFormInOrder implements Interaction {
         }
         
         // Línea y Servicio usan custom dropdowns con la lógica de municipio
-        seleccionarComboLineaWebDriver(driver, "//div[contains(@class,'formio-component-linea')]//div[contains(@class,'custom-dropdown-control')] | //label[normalize-space()='Línea *' or normalize-space()='Línea']/following::div[contains(@class,'custom-dropdown-control')][1]", linea);
-        seleccionarComboServicioWebDriver(driver, "//div[contains(@class,'formio-component-servicio')]//div[contains(@class,'custom-dropdown-control')] | //label[normalize-space()='Servicio *' or normalize-space()='Servicio']/following::div[contains(@class,'custom-dropdown-control')][1]", servicio);
+        seleccionarComboLineaWebDriver(driver, "//div[@id='custom-select-ef1mmig']//div[contains(@class,'custom-dropdown-control')]", linea);
+        // Asegurarse de que el dropdown de Línea se cerró antes de abrir Servicio
+        ((JavascriptExecutor) driver).executeScript("document.activeElement.blur();");
+        seleccionarComboServicioWebDriver(driver, "//div[@id='custom-select-et5p1mg']//div[contains(@class,'custom-dropdown-control')]", servicio);
     }
 
     private <T extends Actor> void llenarObservacionFinal(T actor) {

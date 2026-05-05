@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="1" failures="0" name="Apertura de la pagina de casos" skipped="0" tests="1" time="168.08" timestamp="2026-05-05 12:08:34"><testcase name="Abrir la URL, loguearse y navegar a agent"><error message="Error seleccionando línea: LINEA EJEMPLO 1" type="java.lang.RuntimeException">Error seleccionando línea: LINEA EJEMPLO 1</error><system-err>Error seleccionando línea: LINEA EJEMPLO 1&#13;
-com.sara.automation.interactions.FillCasoExpressFormInOrder.seleccionarComboLineaWebDriver(FillCasoExpressFormInOrder.java:266)&#13;
-com.sara.automation.interactions.FillCasoExpressFormInOrder.llenarServiciosEspecialesYAsignacionEnOrden(FillCasoExpressFormInOrder.java:390)&#13;
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="1" failures="0" name="Apertura de la pagina de casos" skipped="0" tests="1" time="117.12" timestamp="2026-05-05 12:15:57"><testcase name="Abrir la URL, loguearse y navegar a agent"><error message="Error seleccionando servicio: PASO DE GASOLINA" type="java.lang.RuntimeException">Error seleccionando servicio: PASO DE GASOLINA</error><system-err>Error seleccionando servicio: PASO DE GASOLINA&#13;
+com.sara.automation.interactions.FillCasoExpressFormInOrder.seleccionarComboServicioWebDriver(FillCasoExpressFormInOrder.java:302)&#13;
+com.sara.automation.interactions.FillCasoExpressFormInOrder.llenarServiciosEspecialesYAsignacionEnOrden(FillCasoExpressFormInOrder.java:393)&#13;
 com.sara.automation.interactions.FillCasoExpressFormInOrder.performAs(FillCasoExpressFormInOrder.java:91)&#13;
 com.sara.automation.tasks.ClickCasoExpress.performAs(ClickCasoExpress.java:86)&#13;
 com.sara.automation.stepdefinitions.CasesStepDefinitions.completaListasManualesDesdeFeature(CasesStepDefinitions.java:91)&#13;
