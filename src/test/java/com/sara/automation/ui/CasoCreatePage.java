@@ -142,18 +142,21 @@ public class CasoCreatePage {
     public static final Target Boton_Crear_Proveedor_FALLBACK = Target.the("Botón Crear Proveedor (Fallback)")
             .located(By.xpath("//button[contains(normalize-space(.), 'Crear') and contains(@class, 'btn-primary')]")); 
 
+    public static final Target Proveedor_Dialog = Target.the("Proveedor dialog")
+            .located(By.xpath("//div[contains(@class,'formio-dialog') and descendant::label[normalize-space()='Nombre'] and descendant::label[normalize-space()='Respuesta de proveedor']]") );
+
     // Provider dropdown controls
     public static final Target Nombre_Proveedor_Dropdown_Control = Target.the("Nombre Proveedor Dropdown Control")
-            .located(By.xpath("//div[@id='custom-select-nombre_proveedor']//div[@class='custom-dropdown-control']"));
+            .located(By.xpath("//div[contains(@class,'formio-dialog')]//div[contains(@class,'formio-component-custom-select') and contains(@class,'formio-component-nombre')]//div[contains(@class,'custom-dropdown-control')]") );
 
     public static final Target Nombre_Proveedor_Dropdown_Search = Target.the("Nombre Proveedor Dropdown Search")
-            .located(By.xpath("//div[@id='custom-select-nombre_proveedor']//input[@placeholder='Buscar']"));
+            .located(By.xpath("//div[contains(@class,'formio-dialog')]//div[contains(@class,'formio-component-custom-select') and contains(@class,'formio-component-nombre')]//input[contains(@class,'custom-dropdown-search') or contains(translate(@placeholder,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'buscar')]") );
 
     public static final Target Respuesta_Proveedor_Dropdown_Control = Target.the("Respuesta Proveedor Dropdown Control")
-            .located(By.xpath("//div[@id='custom-select-respuesta_proveedor']//div[@class='custom-dropdown-control']"));
+            .located(By.xpath("//div[contains(@class,'formio-dialog')]//div[contains(@class,'formio-component-custom-select') and contains(@class,'formio-component-respuesta_de_proveedor')]//div[contains(@class,'custom-dropdown-control')]") );
 
     public static final Target Respuesta_Proveedor_Dropdown_Search = Target.the("Respuesta Proveedor Dropdown Search")
-            .located(By.xpath("//div[@id='custom-select-respuesta_proveedor']//input[@placeholder='Buscar']"));
+            .located(By.xpath("//div[contains(@class,'formio-dialog')]//div[contains(@class,'formio-component-custom-select') and contains(@class,'formio-component-respuesta_de_proveedor')]//input[contains(@class,'custom-dropdown-search') or contains(translate(@placeholder,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'buscar')]") );
 
     // Provider form fields
     public static final Target Tiempo_Monitoreo_Sitio_Minutos = Target.the("Tiempo Monitoreo Sitio (Minutos)")

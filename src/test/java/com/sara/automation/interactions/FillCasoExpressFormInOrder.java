@@ -446,12 +446,12 @@ public class FillCasoExpressFormInOrder implements Interaction {
             actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Formulario));
             // Esperar a que la página procese el guardado y se recargue completamente
             // La página hace reload dentro del iframe, necesitamos dar tiempo para que termine
-            Thread.sleep(8000);
+            Thread.sleep(500);
         } catch (Throwable e) {
             actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Formulario_FALLBACK, isVisible()).forNoMoreThan(10).seconds());
             actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Formulario_FALLBACK));
             try {
-                Thread.sleep(8000);
+                Thread.sleep(500);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
