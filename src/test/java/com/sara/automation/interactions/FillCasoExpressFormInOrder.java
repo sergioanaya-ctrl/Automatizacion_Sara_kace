@@ -1,0 +1,274 @@
+package com.sara.automation.interactions;
+
+import com.sara.automation.ui.CasoCreatePage;
+import net.serenitybdd.screenplay.Actor;
+import net.serenitybdd.screenplay.Interaction;
+import net.serenitybdd.screenplay.Performable;
+import net.serenitybdd.screenplay.actions.Click;
+import net.serenitybdd.screenplay.actions.Enter;
+import net.serenitybdd.screenplay.actions.Scroll;
+import net.serenitybdd.screenplay.targets.Target;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import net.serenitybdd.screenplay.waits.WaitUntil;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
+
+import static net.serenitybdd.screenplay.Tasks.instrumented;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
+
+public class FillCasoExpressFormInOrder implements Interaction {
+
+    // Esta interacción se ejecuta después de ClickCasoExpress.
+    // Asume que el actor ya:
+    // 1) abrió el formulario correcto,
+    // 2) entró al iframe OneScript,
+    // 3) habilitó la edición del formulario.
+    // Su responsabilidad es solo diligenciar y guardar.
+
+    private static final Random RANDOM = new Random();
+    private static final String UBICACION_SERVICIO_DEFAULT = "produccion";
+    private static final String OBSERVACION_FINAL_DEFAULT = "Caso creado desde automatización Screenplay dentro del iframe OneScript.";
+
+    private final String departamento;
+    private final String municipio;
+    private final String serviciosEspeciales;
+    private final String gestor;
+    private final String linea;
+    private final String servicio;
+
+    public FillCasoExpressFormInOrder(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
+        this.departamento = departamento;
+        this.municipio = municipio;
+        this.serviciosEspeciales = serviciosEspeciales;
+        this.gestor = gestor;
+        this.linea = linea;
+        this.servicio = servicio;
+    }
+
+    public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
+        return instrumented(FillCasoExpressFormInOrder.class, departamento, municipio, serviciosEspeciales, gestor, linea, servicio);
+    }
+
+    public static Performable randomData() {
+        return instrumented(FillCasoExpressFormInOrder.class, null, null, null, null, null, null);
+    }
+
+    @Override
+    public <T extends Actor> void performAs(T actor) {
+        // Garantiza que el driver este dentro del iframe antes de cualquier accion.
+        // Screenplay puede resetear el contexto entre interacciones.
+        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+        driver.switchTo().defaultContent();
+        new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+        System.out.println("[FillCasoExpressFormInOrder] Switched to iframe OK");
+
+        // Orden global de ejecucion dentro del iframe, siguiendo la UI:
+        // datos básicos -> combos generales -> direcciones/ubicación -> asignación -> guardar.
+        try {
+            llenarDatosBasicosEnOrden(actor);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al llenar datos básicos", e);
+        }
+
+        if (tieneListasManuales()) {
+            llenarCombosGeneralesEnOrden(actor);
+        }
+
+        llenarDireccionesYUbicacionEnOrden(actor);
+
+        if (tieneListasManuales()) {
+            llenarServiciosEspecialesYAsignacionEnOrden(actor);
+        }
+
+        llenarObservacionFinal(actor);
+
+        guardarFormulario(actor);
+    }
+
+    private boolean tieneListasManuales() {
+        return departamento != null && municipio != null && serviciosEspeciales != null
+                && gestor != null && linea != null && servicio != null;
+    }
+
+    private <T extends Actor> void llenarDatosBasicosEnOrden(T actor) throws Exception {
+        String numeroExpediente = generarNumeroExpediente15();
+        String nombreSolicitante = "Solicitante " + randomLetras(6);
+        String cedulaSolicitante = randomDigitos(10);
+        String telefono1 = "3" + randomDigitos(9);
+        String telefono2 = "3" + randomDigitos(9);
+        String placa = randomLetras(3) + randomDigitos(3);
+
+        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+        
+        // Re-asegura que estamos en el iframe
+        driver.switchTo().defaultContent();
+        new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+        System.out.println("  Driver en iframe OK");
+
+        // Esperar a que campos sean visibles
+        new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='data[numero_expediente]']")));
+        System.out.println("  Campos del formulario visibles OK");
+        
+        // TODO con raw WebDriver - mantener contexto del iframe sin llamar a Screenplay
+        
+        // 1) Numero expediente - pegar desde clipboard
+        WebElement expedienteField = driver.findElement(By.cssSelector("input[name='data[numero_expediente]']"));
+        expedienteField.click();
+        ((JavascriptExecutor) driver).executeScript(
+            "var text = arguments[0];" +
+            "var textarea = document.createElement('textarea');" +
+            "textarea.textContent = text;" +
+            "document.body.appendChild(textarea);" +
+            "textarea.select();" +
+            "document.execCommand('copy');" +
+            "document.body.removeChild(textarea);",
+            numeroExpediente
+        );
+        expedienteField.sendKeys(Keys.chord(Keys.CONTROL, "v"));
+        Thread.sleep(300);
+        System.out.println("  Numero expediente: " + numeroExpediente);
+        
+        // 2) Nombre solicitante
+        WebElement nombreField = driver.findElement(By.cssSelector("input[name='data[nombre_solicitante]']"));
+        nombreField.clear();
+        nombreField.sendKeys(nombreSolicitante);
+        System.out.println("  Nombre: " + nombreSolicitante);
+        
+        // 3) Cedula
+        WebElement cedulaField = driver.findElement(By.cssSelector("input[name='data[cedula_solicitante]']"));
+        cedulaField.clear();
+        cedulaField.sendKeys(cedulaSolicitante);
+        System.out.println("  Cedula: " + cedulaSolicitante);
+        
+        // 4) Telefono 1
+        WebElement tel1Field = driver.findElement(By.cssSelector("input[name='data[telefono_1]']"));
+        tel1Field.clear();
+        tel1Field.sendKeys(telefono1);
+        
+        // 5) Telefono 2
+        WebElement tel2Field = driver.findElement(By.cssSelector("input[name='data[telefono_2]']"));
+        tel2Field.clear();
+        tel2Field.sendKeys(telefono2);
+        
+        // 6) Placa
+        WebElement placaField = driver.findElement(By.cssSelector("input[name='data[placa]']"));
+        placaField.clear();
+        placaField.sendKeys(placa);
+        System.out.println("  Datos basicos completados OK");
+    }
+
+    private <T extends Actor> void llenarCombosGeneralesEnOrden(T actor) {
+        // Estos combos aparecen en la sección General y dependen de los valores enviados desde el feature.
+        seleccionar(actor, CasoCreatePage.Departamento_Solicita_Combo, departamento);
+        seleccionar(actor, CasoCreatePage.Municipio_Solicita_Combo, municipio);
+    }
+
+    private <T extends Actor> void llenarDireccionesYUbicacionEnOrden(T actor) {
+        String direccionServicio = "Calle " + (10 + RANDOM.nextInt(80)) + " #" + (1 + RANDOM.nextInt(99)) + "-" + (1 + RANDOM.nextInt(99));
+        String direccionDestino = "Carrera " + (10 + RANDOM.nextInt(80)) + " #" + (1 + RANDOM.nextInt(99)) + "-" + (1 + RANDOM.nextInt(99));
+        String detalleDireccionServicio = "Apto " + (1 + RANDOM.nextInt(50)) + ", Torre " + (char) ('A' + RANDOM.nextInt(6));
+        String detalleDireccionDestino = "Referencia " + randomLetras(5) + " " + randomDigitos(3);
+
+        // Bloque de direcciones respetando la vista del formulario.
+        llenarCampo(actor, CasoCreatePage.Direccion_Servicio, direccionServicio);
+        llenarCampo(actor, CasoCreatePage.Direccion_Destino, direccionDestino);
+        llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Destino, detalleDireccionDestino);
+        llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Servicio, detalleDireccionServicio);
+        llenarCampo(actor, CasoCreatePage.Ubicacion_Servicio, UBICACION_SERVICIO_DEFAULT);
+    }
+
+    private <T extends Actor> void llenarServiciosEspecialesYAsignacionEnOrden(T actor) {
+        // Cierre de sección General
+        if (serviciosEspeciales != null && !serviciosEspeciales.trim().isEmpty()) {
+            seleccionar(actor, CasoCreatePage.Servicios_Especiales_Combo, serviciosEspeciales);
+        }
+
+        // Sección Asignación: este bloque ocurre al final y requiere scroll dentro del iframe.
+        actor.attemptsTo(Scroll.to(CasoCreatePage.Seccion_Asignacion));
+        seleccionar(actor, CasoCreatePage.Gestor_Coordinacion_Combo, gestor);
+        seleccionar(actor, CasoCreatePage.Linea_Combo, linea);
+        seleccionar(actor, CasoCreatePage.Servicio_Combo, servicio);
+    }
+
+    private <T extends Actor> void llenarObservacionFinal(T actor) {
+        // Último campo editable del formulario antes de accionar Guardar.
+        actor.attemptsTo(Scroll.to(CasoCreatePage.Observacion_Final));
+        llenarCampo(actor, CasoCreatePage.Observacion_Final, OBSERVACION_FINAL_DEFAULT);
+    }
+
+    private <T extends Actor> void guardarFormulario(T actor) {
+        try {
+            actor.attemptsTo(Scroll.to(CasoCreatePage.Guardar_Formulario));
+            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Formulario, isVisible()).forNoMoreThan(20).seconds());
+            actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Formulario));
+        } catch (Throwable e) {
+            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Formulario_FALLBACK, isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Formulario_FALLBACK));
+        }
+    }
+
+    private <T extends Actor> void llenarCampo(T actor, Target target, String valor) {
+        // Helper común: espera el campo visible y luego escribe el valor.
+        actor.attemptsTo(WaitUntil.the(target, isVisible()).forNoMoreThan(20).seconds());
+        actor.attemptsTo(Enter.theValue(valor).into(target));
+    }
+
+    private <T extends Actor> void seleccionar(T actor, Target combo, String valor) {
+        // Helper común para listas: abre el combo e intenta primero el dropdown custom;
+        // si no existe, usa opciones estándar por texto.
+        actor.attemptsTo(WaitUntil.the(combo, isVisible()).forNoMoreThan(20).seconds());
+        actor.attemptsTo(Click.on(combo));
+
+        try {
+            actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownSearch, isVisible()).forNoMoreThan(3).seconds());
+            actor.attemptsTo(Enter.theValue(valor).into(CasoCreatePage.CustomDropdownSearch));
+            actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoCreatePage.CustomDropdownListItem.of(valor)));
+            return;
+        } catch (Exception ignore) {
+            // Si no es un dropdown custom, continuar con estrategia estándar.
+        }
+
+        try {
+            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista.of(valor)));
+        } catch (Exception e) {
+            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista_Contiene.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista_Contiene.of(valor)));
+        }
+    }
+
+    private String generarNumeroExpediente15() {
+        String fecha = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+        return fecha + randomDigitos(7);
+    }
+
+    private String randomDigitos(int longitud) {
+        StringBuilder sb = new StringBuilder(longitud);
+        for (int i = 0; i < longitud; i++) {
+            sb.append(RANDOM.nextInt(10));
+        }
+        return sb.toString();
+    }
+
+    private String randomLetras(int longitud) {
+        StringBuilder sb = new StringBuilder(longitud);
+        for (int i = 0; i < longitud; i++) {
+            sb.append((char) ('A' + RANDOM.nextInt(26)));
+        }
+        return sb.toString();
+    }
+}
+

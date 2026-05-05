@@ -4,25 +4,37 @@ import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
 
 public class CasoCreatePage {
-    // Localizador principal: busca el botón que contiene un span con el texto "Caso Express"
+    // Localizador principal: busca el botón o enlace que contiene el texto "Caso Express"
     public static final Target Caso_Express = Target.the("Boton Caso Express")
-            .located(By.xpath("//button[.//span[normalize-space(text())='Caso Express']]"));
+            .located(By.xpath("//button[contains(normalize-space(.), 'Caso Express')] | //a[contains(normalize-space(.), 'Caso Express')]"));
 
-    // Fallback (antiguo), por si la estructura cambia y hace falta un localizador más específico
+    // Fallback más flexible para casos donde el elemento es un enlace del menú lateral.
     public static final Target Caso_Express_FALLBACK = Target.the("Boton Caso Express (fallback)")
-            .located(By.xpath("/html/body/div[5]/div/div[1]/div/a[2]"));
+            .located(By.xpath("//button[contains(normalize-space(.), 'Caso Express')] | //a[contains(normalize-space(.), 'Caso Express')]"));
 
     // Nuevo: item de menú que aparece al abrir Caso Express
     public static final Target Formulario_Creacion_ASISTENCIA = Target.the("Formulario Creación de Casos (ASISTENCIA)")
             .located(By.xpath("//div[.//span[normalize-space(text())='Formulario Creación de Casos (ASISTENCIA)'] and @role='menuitem']"));
 
-    // Boton que aparece en la pantalla de creación/edición para habilitar el formulario
+    // Boton que aparece en la pantalla de creación/edición para habilitar el formulario (dentro del panel card-body)
+    // Usa CSS selector para evitar problemas con corchetes en XPath
     public static final Target Habilitar_Formulario = Target.the("Boton Habilitar Formulario")
-            .located(By.cssSelector("button[name='data[habilitar_edicion_del_caso]']"));
+            .located(By.cssSelector("button[name*='habilitar_edicion_del_caso']"));
 
-    // Fallback por texto visible
-    public static final Target Habilitar_Formulario_FALLBACK = Target.the("Boton Habilitar Formulario (texto)")
+    // Fallback: buscar por clase dentro del panel específico
+    public static final Target Habilitar_Formulario_FALLBACK = Target.the("Boton Habilitar Formulario (ref button)")
+            .located(By.xpath("//div[@id='eoq0dnq-habilitar_edicion_del_caso_panel']//button[@ref='button']"));
+    
+    // Fallback 2: búsqueda más flexible por contenido
+    public static final Target Habilitar_Formulario_FALLBACK2 = Target.the("Boton Habilitar Formulario (flexible)")
+            .located(By.xpath("//div[contains(@class, 'card-body') and .//button[contains(normalize-space(.), 'Habilitar')]]//button[contains(@class, 'btn-primary')]"));
+    
+    // Fallback 3: búsqueda genérica dentro de panel
+    public static final Target Habilitar_Formulario_FALLBACK3 = Target.the("Boton Habilitar Formulario (genérico)")
             .located(By.xpath("//button[contains(normalize-space(.), 'Habilitar Formulario')]"));
+
+    // OneScript Iframe selector
+    public static final By Form_OneScript_Iframe_By = By.id("form_onescript_iframe");
 
     // Campos a diligenciar automaticamente (selectores por atributo name para mayor estabilidad)
     public static final Target Numero_Expediente = Target.the("Número expediente")
@@ -46,6 +58,9 @@ public class CasoCreatePage {
     public static final Target Direccion_Servicio = Target.the("Dirección servicio")
             .located(By.cssSelector("input[name='data[direccion_servicio]']"));
 
+    public static final Target Direccion_Destino = Target.the("Dirección del destino")
+            .located(By.cssSelector("input[name='data[direccion_del_destino]']"));
+
     public static final Target Detalle_Direccion_Servicio = Target.the("Detalle dirección servicio")
             .located(By.cssSelector("input[name='data[detalle_direccion_servicio]']"));
 
@@ -58,6 +73,10 @@ public class CasoCreatePage {
     // Seccion inferior para anclar combos dependientes
     public static final Target Seccion_Asignacion = Target.the("Sección Asignación")
             .located(By.xpath("//div[contains(@class,'panel') or contains(@class,'card')][.//*[normalize-space(.)='Asignación'] or .//h3[normalize-space(.)='Asignación']]"));
+
+    // Campo de observaciones/comentario libre al final del formulario, antes de Guardar.
+    public static final Target Observacion_Final = Target.the("Observación final del caso")
+            .located(By.xpath("//button[contains(@class,'mic-button')]/ancestor::div[contains(@class,'form-group')][1]//textarea[@maxlength='1024' and @rows='6'] | //textarea[contains(@class,'form-control') and @maxlength='1024' and @rows='6']"));
 
     // Combos en seccion General (listas dependientes)
     public static final Target Departamento_Solicita_Combo = Target.the("Departamento solicita")
@@ -90,14 +109,66 @@ public class CasoCreatePage {
     public static final Target Opcion_Lista_Contiene = Target.the("Opcion lista contiene {0}")
             .locatedBy("//div[@role='option' and contains(normalize-space(.),'{0}')] | //li[contains(normalize-space(.),'{0}')] | //span[contains(normalize-space(.),'{0}')]");
 
-    // Custom dropdown helpers (visibles cuando el combo es del tipo custom)
+    // Custom dropdown helpers
     public static final Target CustomDropdownSearch = Target.the("Custom dropdown search input")
-            .located(By.cssSelector(".custom-dropdown-search"));
+            .located(By.xpath("//input[@placeholder='Buscar' or @class[contains(., 'search')]]"));
 
-    public static final Target CustomDropdownListItem = Target.the("Custom dropdown item {0}")
-            .locatedBy("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='{0}']");
+    public static final Target CustomDropdownListItem = Target.the("Custom dropdown list item {0}")
+            .locatedBy("//div[@class='custom-dropdown-item' and contains(normalize-space(), '{0}')] | //div[@role='option' and contains(normalize-space(), '{0}')]");
 
-    // Iframe del formulario OneScript
-    public static final Target Form_OneScript_Iframe = Target.the("Iframe formulario OneScript")
-            .located(By.cssSelector("iframe#form_onescript_iframe, iframe[data-testid='form_onescript_iframe']"));
+    // Save buttons
+    public static final Target Guardar_Formulario = Target.the("Guardar Formulario")
+            .located(By.xpath("//button[@class='kaceCustomSubmit' or @name='submit' and contains(normalize-space(.), 'Guardar')]"));
+
+    public static final Target Guardar_Formulario_FALLBACK = Target.the("Guardar Formulario (Fallback)")
+            .located(By.xpath("//button[contains(@class, 'kaceCustomSubmit')]"));
+
+    public static final Target Guardar_General_Flotante = Target.the("Guardar General (Flotante)")
+            .located(By.xpath("//button[@class='kaceCustomSubmit1' or contains(@class, 'btn-success') and contains(normalize-space(.), 'Guardar')]"));
+
+    // Provider Management Tab
+    public static final Target Tab_Gestion_Proveedores = Target.the("Tab Gestión de Proveedores")
+            .located(By.xpath("//a[contains(normalize-space(.), 'Gestión de proveedores')] | //li[@role='tab']//a[contains(normalize-space(.), 'Gestión')]"));
+
+    public static final Target Boton_Crear_Proveedor = Target.the("Botón Crear Proveedor")
+            .located(By.xpath("//button[contains(normalize-space(.), 'Crear') and @ref='editgrid-gestion_proveedor_asistencia_movilidad-addRow']"));
+
+    // Provider dropdown controls
+    public static final Target Nombre_Proveedor_Dropdown_Control = Target.the("Nombre Proveedor Dropdown Control")
+            .located(By.xpath("//div[@id='custom-select-nombre_proveedor']//div[@class='custom-dropdown-control']"));
+
+    public static final Target Nombre_Proveedor_Dropdown_Search = Target.the("Nombre Proveedor Dropdown Search")
+            .located(By.xpath("//div[@id='custom-select-nombre_proveedor']//input[@placeholder='Buscar']"));
+
+    public static final Target Respuesta_Proveedor_Dropdown_Control = Target.the("Respuesta Proveedor Dropdown Control")
+            .located(By.xpath("//div[@id='custom-select-respuesta_proveedor']//div[@class='custom-dropdown-control']"));
+
+    public static final Target Respuesta_Proveedor_Dropdown_Search = Target.the("Respuesta Proveedor Dropdown Search")
+            .located(By.xpath("//div[@id='custom-select-respuesta_proveedor']//input[@placeholder='Buscar']"));
+
+    // Provider form fields
+    public static final Target Tiempo_Monitoreo_Sitio_Minutos = Target.the("Tiempo Monitoreo Sitio (Minutos)")
+            .located(By.cssSelector("input[name*='tiempo_monitoreo_en_sitio']"));
+
+    public static final Target Tiempo_Monitoreo_Destino_Minutos = Target.the("Tiempo Monitoreo Destino (Minutos)")
+            .located(By.cssSelector("input[name*='tiempo_monitoreo_en_destino']"));
+
+    public static final Target Celular_Tecnico_Proveedor = Target.the("Celular Técnico Proveedor")
+            .located(By.cssSelector("input[name*='celular_tecnico']"));
+
+    public static final Target Guardar_Proveedor = Target.the("Guardar Proveedor")
+            .located(By.xpath("//button[contains(@class, 'editgrid-action-save') or @type='button' and contains(normalize-space(.), 'Guardar')]"));
+
+    // State transition buttons
+    public static final Target Boton_Estado_Programado = Target.the("Botón Estado Programado")
+            .located(By.xpath("//button[contains(normalize-space(.), 'Programado')]"));
+
+    public static final Target Boton_Estado_Aceptado_Desplazamiento = Target.the("Botón Estado Aceptado y en Desplazamiento")
+            .located(By.xpath("//button[contains(normalize-space(.), 'Aceptado')]"));
+
+    public static final Target Boton_Estado_Concluido = Target.the("Botón Estado Concluido")
+            .located(By.xpath("//button[contains(normalize-space(.), 'Concluido')]"));
+
+    public static final Target Boton_Estado_Finalizado = Target.the("Botón Estado Finalizado")
+            .located(By.xpath("//button[contains(normalize-space(.), 'Finalizado')]"));
 }

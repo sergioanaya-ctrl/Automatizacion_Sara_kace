@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 
 public class LoginPage {
 
+    // Generic locators for compatibility
     public static final Target USERNAME = Target.the("username field")
             .located(By.cssSelector("input[name='username'], input[id='username'], input[name='email'], input[type='email']"));
 
@@ -13,6 +14,21 @@ public class LoginPage {
 
     public static final Target LOGIN_BUTTON = Target.the("login button")
             .located(By.cssSelector("button[type='submit'], input[type='submit'], button[id*='login'], button[class*='login']"));
+
+    // Cognito specific locators
+    public static final String COGNITO_LOGIN_URL = "https://us-east-1s66ymlwwk.auth.us-east-1.amazoncognito.com/login?client_id=2hfo5293cfbh1h9fbe9m7g07dn&response_type=code&scope=email+openid+profile&redirect_uri=https%3A%2F%2Fasistenciaapp.kit.sura-konecta.com%2Fauth";
+
+    public static final Target COGNITO_USERNAME = Target.the("cognito username field")
+            .located(By.cssSelector("input[name='username']"));
+
+    public static final Target COGNITO_NEXT_BUTTON = Target.the("cognito next button")
+            .located(By.cssSelector("button[type='submit']"));
+
+    public static final Target COGNITO_PASSWORD = Target.the("cognito password field")
+            .located(By.cssSelector("input[name='password']"));
+
+    public static final Target COGNITO_CONTINUE_BUTTON = Target.the("cognito continue button")
+            .located(By.cssSelector("button[type='submit']"));
 
     private LoginPage() {}
 }

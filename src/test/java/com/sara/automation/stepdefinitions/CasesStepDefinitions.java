@@ -1,9 +1,11 @@
 package com.sara.automation.stepdefinitions;
 
 import com.sara.automation.tasks.ClickCasoExpress;
+import com.sara.automation.tasks.DiligenciarProveedorGestion;
 import com.sara.automation.tasks.GoToAgentPage;
-import com.sara.automation.tasks.LoginWithCredentials;
+import com.sara.automation.tasks.LoginWithCognito;
 import com.sara.automation.tasks.OpenCasesPage;
+import com.sara.automation.tasks.TransicionarEstadosCaso;
 import com.sara.automation.utils.CredentialsReader;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
@@ -49,7 +51,7 @@ public class CasesStepDefinitions {
     public void realizaLoginConCredenciales() {
         String user = CredentialsReader.getUsuario();
         String pass = CredentialsReader.getContrasena();
-        actor.attemptsTo(LoginWithCredentials.with(user, pass));
+        actor.attemptsTo(LoginWithCognito.with(user, pass));
     }
 
     @When("navega a agent")
@@ -73,11 +75,16 @@ public class CasesStepDefinitions {
 
     @When("diligencia caso express con datos aleatorios")
     public void diligenciaCasoExpressConDatosAleatorios() {
+        // El StepDefinition no llena campos directamente.
+        // Solo dispara la Task principal, que a su vez orquesta interacciones y navegación al iframe.
         actor.attemptsTo(ClickCasoExpress.now());
     }
 
     @When("completa listas manuales desde feature")
     public void completaListasManualesDesdeFeature(DataTable dataTable) {
+        // La DataTable del feature alimenta la Task principal.
+        // Esta Task abre el formulario, entra al iframe OneScript y delega el diligenciamiento
+        // a la interacción FillCasoExpressFormInOrder.
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         Map<String, String> row = rows.get(0);
 
@@ -93,7 +100,21 @@ public class CasesStepDefinitions {
 
     @When("diligencia caso express completo desde feature")
     public void diligenciaCasoExpressCompletoDesdeFeature(DataTable dataTable) {
+        // Este step funciona como alias legible del feature.
+        // Reutiliza el mismo flujo para no duplicar lógica de negocio en los steps.
         completaListasManualesDesdeFeature(dataTable);
+    }
+
+    @When("diligenciamos el proveedor")
+    @When("digilenciamos el poriveedor")
+    public void diligenciamosElProveedor(DataTable dataTable) {
+        List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
+        Map<String, String> row = rows.get(0);
+
+        String nombreProveedor = requiredAnyKey(row, "Nombre del proveedor", "nombre del proveedor", "proveedor", "Nombre");
+        String servicio = requiredAnyKey(row, "Servicio", "servicio", "Respuesta", "respuesta de proveedor");
+
+        actor.attemptsTo(DiligenciarProveedorGestion.conDatos(nombreProveedor, servicio));
     }
 
     private String required(Map<String, String> row, String key) {
@@ -102,5 +123,25 @@ public class CasesStepDefinitions {
             throw new IllegalArgumentException("Falta valor requerido en feature para: " + key);
         }
         return value.trim();
+    }
+
+    private String requiredAnyKey(Map<String, String> row, String... keys) {
+        for (String key : keys) {
+            for (Map.Entry<String, String> entry : row.entrySet()) {
+                if (entry.getKey() != null && entry.getKey().trim().equalsIgnoreCase(key.trim())) {
+                    String value = entry.getValue();
+                    if (value != null && !value.trim().isEmpty()) {
+                        return value.trim();
+                    }
+                }
+            }
+        }
+        throw new IllegalArgumentException("Falta valor requerido en feature. Llaves esperadas: " + String.join(", ", keys));
+    }
+
+    @When("transicionamos los estados del caso")
+    public void transicionamosLosEstadosDelCaso() {
+        // Transiciona el caso a través de: Programado -> Aceptado y en desplazamiento -> Concluido -> Finalizado
+        actor.attemptsTo(TransicionarEstadosCaso.completarSecuencia());
     }
 }

@@ -39,11 +39,12 @@ public class SelectManualLists implements Task {
     @Override
     @Step("Selecciona listas manuales respetando la secuencia de la pantalla")
     public <T extends Actor> void performAs(T actor) {
+        // Esta tarea asume que ya estamos dentro del iframe OneScript.
+
         // 1) Seccion General
         seleccionar(actor, CasoCreatePage.Departamento_Solicita_Combo, departamento);
         seleccionar(actor, CasoCreatePage.Municipio_Solicita_Combo, municipio);
 
-        // Nuevo: seleccionar Servicios especiales en General (si aplica)
         if (serviciosEspeciales != null && !serviciosEspeciales.isEmpty()) {
             seleccionar(actor, CasoCreatePage.Servicios_Especiales_Combo, serviciosEspeciales);
         }
@@ -61,7 +62,6 @@ public class SelectManualLists implements Task {
         actor.attemptsTo(WaitUntil.the(combo, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Click.on(combo));
 
-        // 1) Si aparece el input de búsqueda personalizado, escribir y seleccionar el item
         try {
             actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownSearch, isVisible()).forNoMoreThan(3).seconds());
             actor.attemptsTo(Enter.theValue(valor).into(CasoCreatePage.CustomDropdownSearch));
@@ -69,10 +69,9 @@ public class SelectManualLists implements Task {
             actor.attemptsTo(Click.on(CasoCreatePage.CustomDropdownListItem.of(valor)));
             return;
         } catch (Exception ignore) {
-            // continúa a la estrategia estándar
+            // Continua a estrategia estandar.
         }
 
-        // 2) Estrategia estándar: buscar opción exacta o por contiene
         try {
             actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista.of(valor), isVisible()).forNoMoreThan(10).seconds());
             actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista.of(valor)));

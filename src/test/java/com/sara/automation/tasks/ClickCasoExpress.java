@@ -1,27 +1,35 @@
 package com.sara.automation.tasks;
 
+import com.sara.automation.interactions.FillCasoExpressFormInOrder;
+import com.sara.automation.interactions.SwitchToOneScriptIframe;
 import com.sara.automation.ui.CasoCreatePage;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
-import net.serenitybdd.screenplay.actions.Enter;
+import net.serenitybdd.screenplay.targets.Target;
 import net.serenitybdd.screenplay.waits.WaitUntil;
 import net.thucydides.core.annotations.Step;
-import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Random;
+import java.time.Duration;
+import java.util.List;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
+import static net.serenitybdd.screenplay.abilities.BrowseTheWeb.as;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
 public class ClickCasoExpress implements Task {
 
-    private static final Random RANDOM = new Random();
+    // Esta es la Task orquestadora del caso express.
+    // Relación de ejecución:
+    // StepDefinition -> ClickCasoExpress (Task) -> SwitchToOneScriptIframe (Interaction)
+    // -> FillCasoExpressFormInOrder (Interaction que llena el formulario y guarda).
 
     private final String departamento;
     private final String municipio;
@@ -57,41 +65,56 @@ public class ClickCasoExpress implements Task {
     }
 
     @Override
-    @Step("Abrir Caso Express, seleccionar asistencia, habilitar y diligenciar formulario")
+    @Step("Abrir Caso Express, seleccionar asistencia, entrar al iframe, habilitar y diligenciar en orden")
     public <T extends Actor> void performAs(T actor) {
-        entrarAlIframeSiExiste(actor);
+        // 1) Asegura que arrancamos fuera de cualquier iframe previo.
+        salirDeIframe(actor);
+
+        // 2) Abre el menú y selecciona el formulario correcto antes de entrar al iframe.
         abrirCasoExpress(actor);
         seleccionarFormularioAsistencia(actor);
-        habilitarFormulario(actor);
-        diligenciarCampos(actor);
 
-        // Si vienen valores manuales, ejecuta la selección dependiente en secuencia.
-        if (departamento != null && municipio != null && serviciosEspeciales != null && gestor != null && linea != null && servicio != null) {
-            actor.attemptsTo(SelectManualLists.withValues(departamento, municipio, serviciosEspeciales, gestor, linea, servicio));
+        // 3) Desde aquí, el flujo se mantiene dentro del iframe OneScript.
+        // Si el actor no entra al iframe, ninguno de los campos del formulario será visible para Screenplay.
+        actor.attemptsTo(SwitchToOneScriptIframe.required());
+
+        // 4) Habilita la edición del formulario ya estando dentro del iframe.
+        habilitarFormulario(actor);
+
+        // 5) Delega el diligenciamiento campo a campo a la interacción especializada.
+        if (tieneListasManuales()) {
+            actor.attemptsTo(FillCasoExpressFormInOrder.withManualLists(
+                    departamento,
+                    municipio,
+                    serviciosEspeciales,
+                    gestor,
+                    linea,
+                    servicio
+            ));
+        } else {
+            actor.attemptsTo(FillCasoExpressFormInOrder.randomData());
         }
     }
 
-    private <T extends Actor> void entrarAlIframeSiExiste(T actor) {
-        try {
-            WebDriver driver = BrowseTheWeb.as(actor).getDriver();
-            driver.switchTo().defaultContent();
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Form_OneScript_Iframe, isVisible()).forNoMoreThan(8).seconds());
-            WebElement iframe = CasoCreatePage.Form_OneScript_Iframe.resolveFor(actor);
-            driver.switchTo().frame(iframe);
-        } catch (Exception ignored) {
-            // Si el formulario no está dentro de iframe en este entorno, continuar sin switch.
-        }
+    private boolean tieneListasManuales() {
+        return departamento != null && municipio != null && serviciosEspeciales != null
+                && gestor != null && linea != null && servicio != null;
+    }
+
+    private <T extends Actor> void salirDeIframe(T actor) {
+        // Resetea el contexto del driver al documento principal.
+        as(actor).getDriver().switchTo().defaultContent();
     }
 
     private <T extends Actor> void abrirCasoExpress(T actor) {
         try {
             actor.attemptsTo(WaitUntil.the(CasoCreatePage.Caso_Express, isVisible()).forNoMoreThan(8).seconds());
             actor.attemptsTo(Click.on(CasoCreatePage.Caso_Express));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             try {
                 actor.attemptsTo(Click.on(CasoCreatePage.Caso_Express_FALLBACK));
-            } catch (Exception ex) {
-                throw new RuntimeException("No se pudo abrir el menú 'Caso Express'", ex);
+            } catch (Throwable ex) {
+                throw new RuntimeException("No se pudo abrir el menu 'Caso Express'", ex);
             }
         }
     }
@@ -100,71 +123,106 @@ public class ClickCasoExpress implements Task {
         try {
             actor.attemptsTo(WaitUntil.the(CasoCreatePage.Formulario_Creacion_ASISTENCIA, isVisible()).forNoMoreThan(10).seconds());
             actor.attemptsTo(Click.on(CasoCreatePage.Formulario_Creacion_ASISTENCIA));
-        } catch (Exception e) {
-            throw new RuntimeException("No se pudo seleccionar 'Formulario Creación de Casos (ASISTENCIA)'", e);
+        } catch (Throwable e) {
+            throw new RuntimeException("No se pudo seleccionar 'Formulario Creacion de Casos (ASISTENCIA)'", e);
         }
     }
 
     private <T extends Actor> void habilitarFormulario(T actor) {
+        WebDriver driver = as(actor).getDriver();
+
+        // CRITICAL: Screenplay puede resetear el contexto del iframe entre interacciones.
+        // Por eso re-cambiamos explicitamente al iframe aqui con raw WebDriver.
+        System.out.println("\n=== [habilitarFormulario] Re-switching to OneScript iframe ===");
+        driver.switchTo().defaultContent();
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Habilitar_Formulario, isVisible()).forNoMoreThan(25).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Habilitar_Formulario));
+            new WebDriverWait(driver, Duration.ofSeconds(20))
+                    .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+            System.out.println("  Switched to iframe OK");
         } catch (Exception e) {
-            try {
-                actor.attemptsTo(WaitUntil.the(CasoCreatePage.Habilitar_Formulario_FALLBACK, isVisible()).forNoMoreThan(10).seconds());
-                actor.attemptsTo(Click.on(CasoCreatePage.Habilitar_Formulario_FALLBACK));
-            } catch (Exception ex) {
-                throw new RuntimeException("No se pudo hacer click en 'Habilitar Formulario'", ex);
+            throw new RuntimeException("[habilitarFormulario] No se pudo cambiar al iframe form_onescript_iframe", e);
+        }
+
+        // Intento 1: CSS selector - el atributo name contiene 'habilitar_edicion_del_caso'
+        System.out.println("=== Buscando boton Habilitar Formulario (CSS) ===");
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+            WebElement button = wait.until(
+                    ExpectedConditions.elementToBeClickable(By.cssSelector("button[name*='habilitar_edicion_del_caso']"))
+            );
+            System.out.println("  Boton encontrado! Texto: '" + button.getText() + "'");
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
+            Thread.sleep(300);
+            button.click();
+            System.out.println("  Clic en boton Habilitar exitoso (CSS)");
+            Thread.sleep(2000);
+            return;
+        } catch (Exception e1) {
+            System.err.println("  CSS click FALLO: " + e1.getMessage());
+        }
+
+        // Intento 2: XPath por texto visible
+        System.out.println("=== Buscando boton Habilitar Formulario (XPath texto) ===");
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebElement button = wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                            By.xpath("//button[contains(normalize-space(.), 'Habilitar Formulario')]"))
+            );
+            System.out.println("  Boton encontrado por texto! Texto: '" + button.getText() + "'");
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
+            Thread.sleep(300);
+            button.click();
+            System.out.println("  Clic en boton Habilitar exitoso (XPath texto)");
+            Thread.sleep(2000);
+            return;
+        } catch (Exception e2) {
+            System.err.println("  XPath texto FALLO: " + e2.getMessage());
+        }
+
+        // Intento 3: XPath por clase formio-component y ref=button
+        System.out.println("=== Buscando boton Habilitar Formulario (clase formio) ===");
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebElement button = wait.until(
+                    ExpectedConditions.elementToBeClickable(
+                            By.xpath("//div[contains(@class,'formio-component-habilitar_edicion_del_caso')]//button[@ref='button']"))
+            );
+            System.out.println("  Boton encontrado por clase formio! Texto: '" + button.getText() + "'");
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
+            Thread.sleep(300);
+            button.click();
+            System.out.println("  Clic en boton Habilitar exitoso (clase formio)");
+            Thread.sleep(2000);
+            return;
+        } catch (Exception e3) {
+            System.err.println("  Clase formio FALLO: " + e3.getMessage());
+        }
+
+        // Intento 4: JavaScript click directo dentro del iframe (driver ya esta en iframe)
+        System.out.println("=== Buscando boton Habilitar Formulario (JavaScript) ===");
+        try {
+            Object result = ((JavascriptExecutor) driver).executeScript(
+                "var buttons = document.querySelectorAll('button[name*=\'habilitar_edicion_del_caso\']'); " +
+                "if (buttons.length > 0) { " +
+                "  buttons[0].scrollIntoView(true); " +
+                "  buttons[0].click(); " +
+                "  return 'clicked:' + buttons[0].textContent; " +
+                "} " +
+                "var all = document.querySelectorAll('button'); " +
+                "var hab = Array.from(all).find(b => b.textContent.includes('Habilitar')); " +
+                "if (hab) { hab.scrollIntoView(true); hab.click(); return 'clicked-by-text:' + hab.textContent; } " +
+                "return 'not-found:' + all.length;"
+            );
+            System.out.println("  JavaScript resultado: " + result);
+            if (result != null && result.toString().startsWith("clicked")) {
+                Thread.sleep(2000);
+                return;
             }
+            throw new RuntimeException("JavaScript no encontro el boton: " + result);
+        } catch (Exception e4) {
+            throw new RuntimeException("Todos los intentos fallaron al hacer clic en 'Habilitar Formulario'", e4);
         }
     }
-
-    private <T extends Actor> void diligenciarCampos(T actor) {
-        String numeroExpediente = generarNumeroExpediente15();
-        String nombreSolicitante = "Solicitante " + randomLetras(6);
-        String cedulaSolicitante = randomDigitos(10);
-        String telefono1 = "3" + randomDigitos(9);
-        String telefono2 = "3" + randomDigitos(9);
-        String placa = randomLetras(3) + randomDigitos(3);
-        String direccionServicio = "Calle " + (10 + RANDOM.nextInt(80)) + " #" + (1 + RANDOM.nextInt(99)) + "-" + (1 + RANDOM.nextInt(99));
-        String detalleDireccionServicio = "Apto " + (1 + RANDOM.nextInt(50)) + ", Torre " + (char) ('A' + RANDOM.nextInt(6));
-        String detalleDireccionDestino = "Referencia " + randomLetras(5) + " " + randomDigitos(3);
-
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Numero_Expediente, isVisible()).forNoMoreThan(20).seconds());
-
-        actor.attemptsTo(
-                Enter.theValue(numeroExpediente).into(CasoCreatePage.Numero_Expediente),
-                Enter.theValue(nombreSolicitante).into(CasoCreatePage.Nombre_Solicitante),
-                Enter.theValue(cedulaSolicitante).into(CasoCreatePage.Cedula_Solicitante),
-                Enter.theValue(telefono1).into(CasoCreatePage.Telefono_1),
-                Enter.theValue(telefono2).into(CasoCreatePage.Telefono_2),
-                Enter.theValue(placa).into(CasoCreatePage.Placa),
-                Enter.theValue(direccionServicio).into(CasoCreatePage.Direccion_Servicio),
-                Enter.theValue(detalleDireccionServicio).into(CasoCreatePage.Detalle_Direccion_Servicio),
-                Enter.theValue(detalleDireccionDestino).into(CasoCreatePage.Detalle_Direccion_Destino),
-                Enter.theValue("produccion").into(CasoCreatePage.Ubicacion_Servicio)
-        );
-    }
-
-    private String generarNumeroExpediente15() {
-        // 15 dígitos: yyyyMMdd + 7 aleatorios
-        String fecha = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-        return fecha + randomDigitos(7);
-    }
-
-    private String randomDigitos(int longitud) {
-        StringBuilder sb = new StringBuilder(longitud);
-        for (int i = 0; i < longitud; i++) {
-            sb.append(RANDOM.nextInt(10));
-        }
-        return sb.toString();
-    }
-
-    private String randomLetras(int longitud) {
-        StringBuilder sb = new StringBuilder(longitud);
-        for (int i = 0; i < longitud; i++) {
-            sb.append((char) ('A' + RANDOM.nextInt(26)));
-        }
-        return sb.toString();
-    }
+    
 }
