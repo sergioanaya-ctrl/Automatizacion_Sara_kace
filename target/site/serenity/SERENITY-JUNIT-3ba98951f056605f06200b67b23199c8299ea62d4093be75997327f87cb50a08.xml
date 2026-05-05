@@ -1,7 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="1" failures="0" name="Apertura de la pagina de casos" skipped="0" tests="1" time="102.03" timestamp="2026-05-05 11:19:07"><testcase name="Abrir la URL, loguearse y navegar a agent"><error message="Error seleccionando municipio: MEDELLIN" type="java.lang.RuntimeException">Error seleccionando municipio: MEDELLIN</error><system-err>Error seleccionando municipio: MEDELLIN&#13;
-com.sara.automation.interactions.FillCasoExpressFormInOrder.seleccionarComboMunicipioWebDriver(FillCasoExpressFormInOrder.java:242)&#13;
-com.sara.automation.interactions.FillCasoExpressFormInOrder.llenarCombosGeneralesEnOrden(FillCasoExpressFormInOrder.java:200)&#13;
-com.sara.automation.interactions.FillCasoExpressFormInOrder.performAs(FillCasoExpressFormInOrder.java:85)&#13;
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="0" failures="1" name="Apertura de la pagina de casos" skipped="0" tests="1" time="131.17" timestamp="2026-05-05 11:41:06"><testcase name="Abrir la URL, loguearse y navegar a agent"><failure message="&#13;&#10;Expected: an element that is visible&#13;&#10;     but: no matching element found by [Servicios especiales located with: css: select[name='data[servicios_especiales]'], input[name='data[servicios_especiales]'], div[data-name='servicios_especiales']]" type="java.lang.AssertionError">&#13;
+Expected: an element that is visible&#13;
+     but: no matching element found by [Servicios especiales located with: css: select[name='data[servicios_especiales]'], input[name='data[servicios_especiales]'], div[data-name='servicios_especiales']]</failure><system-err>&#13;
+Expected: an element that is visible&#13;
+     but: no matching element found by [Servicios especiales located with: css: select[name='data[servicios_especiales]'], input[name='data[servicios_especiales]'], div[data-name='servicios_especiales']]&#13;
+com.sara.automation.interactions.FillCasoExpressFormInOrder.seleccionar(FillCasoExpressFormInOrder.java:341)&#13;
+com.sara.automation.interactions.FillCasoExpressFormInOrder.llenarServiciosEspecialesYAsignacionEnOrden(FillCasoExpressFormInOrder.java:297)&#13;
+com.sara.automation.interactions.FillCasoExpressFormInOrder.performAs(FillCasoExpressFormInOrder.java:91)&#13;
 com.sara.automation.tasks.ClickCasoExpress.performAs(ClickCasoExpress.java:86)&#13;
 com.sara.automation.stepdefinitions.CasesStepDefinitions.completaListasManualesDesdeFeature(CasesStepDefinitions.java:91)&#13;
 com.sara.automation.stepdefinitions.CasesStepDefinitions.diligenciaCasoExpressCompletoDesdeFeature(CasesStepDefinitions.java:105)&#13;

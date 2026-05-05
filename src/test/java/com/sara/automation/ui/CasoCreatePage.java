@@ -55,6 +55,9 @@ public class CasoCreatePage {
     public static final Target Placa = Target.the("Placa")
             .located(By.cssSelector("input[name='data[placa]']"));
 
+    public static final Target Marca_Vehiculo = Target.the("Marca vehículo")
+            .located(By.cssSelector("input[name='data[marca_vehiculo]']"));
+
     public static final Target Direccion_Servicio = Target.the("Dirección servicio")
             .located(By.cssSelector("input[name='data[direccion_servicio]']"));
 

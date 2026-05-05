@@ -274,16 +274,20 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private <T extends Actor> void llenarDireccionesYUbicacionEnOrden(T actor) {
+        ensureIframeContext(actor);
+
         String direccionServicio = "Calle " + (10 + RANDOM.nextInt(80)) + " #" + (1 + RANDOM.nextInt(99)) + "-" + (1 + RANDOM.nextInt(99));
         String direccionDestino = "Carrera " + (10 + RANDOM.nextInt(80)) + " #" + (1 + RANDOM.nextInt(99)) + "-" + (1 + RANDOM.nextInt(99));
         String detalleDireccionServicio = "Apto " + (1 + RANDOM.nextInt(50)) + ", Torre " + (char) ('A' + RANDOM.nextInt(6));
         String detalleDireccionDestino = "Referencia " + randomLetras(5) + " " + randomDigitos(3);
+        String marcaVehiculo = "Marca " + randomLetras(4).toUpperCase();
 
         // Bloque de direcciones respetando la vista del formulario.
         llenarCampo(actor, CasoCreatePage.Direccion_Servicio, direccionServicio);
         llenarCampo(actor, CasoCreatePage.Direccion_Destino, direccionDestino);
         llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Destino, detalleDireccionDestino);
         llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Servicio, detalleDireccionServicio);
+        llenarCampo(actor, CasoCreatePage.Marca_Vehiculo, marcaVehiculo);
         llenarCampo(actor, CasoCreatePage.Ubicacion_Servicio, UBICACION_SERVICIO_DEFAULT);
     }
 
@@ -318,9 +322,18 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private <T extends Actor> void llenarCampo(T actor, Target target, String valor) {
-        // Helper común: espera el campo visible y luego escribe el valor.
+        // Reingresar al iframe antes de interactuar con el campo.
+        ensureIframeContext(actor);
+        actor.attemptsTo(Scroll.to(target));
         actor.attemptsTo(WaitUntil.the(target, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Enter.theValue(valor).into(target));
+    }
+
+    private <T extends Actor> void ensureIframeContext(T actor) {
+        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+        driver.switchTo().defaultContent();
+        new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
     }
 
     private <T extends Actor> void seleccionar(T actor, Target combo, String valor) {
