@@ -121,10 +121,10 @@ public class CasoCreatePage {
 
     // Save buttons
     public static final Target Guardar_Formulario = Target.the("Guardar Formulario")
-            .located(By.xpath("//button[@class='kaceCustomSubmit' or @name='submit' and contains(normalize-space(.), 'Guardar')]"));
+            .located(By.xpath("//button[@name='data[kaceCustomSubmit]' or contains(normalize-space(.), 'Guardar')]") );
 
     public static final Target Guardar_Formulario_FALLBACK = Target.the("Guardar Formulario (Fallback)")
-            .located(By.xpath("//button[contains(@class, 'kaceCustomSubmit')]"));
+            .located(By.xpath("//button[@name='data[kaceCustomSubmit]' or contains(@class, 'btn-info') and contains(normalize-space(.), 'Guardar')]") );
 
     public static final Target Guardar_General_Flotante = Target.the("Guardar General (Flotante)")
             .located(By.xpath("//button[@class='kaceCustomSubmit1' or contains(@class, 'btn-success') and contains(normalize-space(.), 'Guardar')]"));

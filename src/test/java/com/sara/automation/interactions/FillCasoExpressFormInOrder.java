@@ -37,7 +37,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
 
     private static final Random RANDOM = new Random();
     private static final String UBICACION_SERVICIO_DEFAULT = "produccion";
-    private static final String OBSERVACION_FINAL_DEFAULT = "Caso creado desde automatización Screenplay dentro del iframe OneScript.";
+    private static final String OBSERVACION_FINAL_DEFAULT = "hola";
 
     private final String departamento;
     private final String municipio;
@@ -439,6 +439,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private <T extends Actor> void guardarFormulario(T actor) {
+        ensureIframeContext(actor);
         try {
             actor.attemptsTo(Scroll.to(CasoCreatePage.Guardar_Formulario));
             actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Formulario, isVisible()).forNoMoreThan(20).seconds());
