@@ -55,7 +55,31 @@ public class UserPoolManager {
             }
         }
         
+        System.out.println("[UserPoolManager] =====================================");
         System.out.println("[UserPoolManager] Cargados " + availableUsers.size() + " usuarios disponibles");
+        System.out.println("[UserPoolManager] Usuarios: pruebas1 - pruebas" + availableUsers.size());
+        System.out.println("[UserPoolManager] Disponibles para asignación paralela");
+        System.out.println("[UserPoolManager] =====================================");
+    }
+
+    /**
+     * Obtiene un usuario específico basado en su número
+     * Útil para asignar determinísticamente usuarios a runners específicos
+     */
+    public static UserCredentials getUserByNumber(int userNumber) {
+        if (userNumber < 1 || userNumber > availableUsers.size()) {
+            // Si el número está fuera de rango, usar round-robin estándar
+            return getCredentialsForCurrentThread();
+        }
+        
+        long threadId = Thread.currentThread().getId();
+        String threadName = Thread.currentThread().getName();
+        UserCredentials user = availableUsers.get(userNumber - 1); // userNumber es 1-indexed
+        
+        threadUsers.put(threadId, user);
+        System.out.println("[UserPoolManager] Thread ID=" + threadId + " (Name=" + threadName + ") asignado a usuario específico: " + user.getUsuario() + " [Número: " + userNumber + "]");
+        
+        return user;
     }
 
     /**
@@ -64,13 +88,14 @@ public class UserPoolManager {
      */
     public static UserCredentials getCredentialsForCurrentThread() {
         long threadId = Thread.currentThread().getId();
+        String threadName = Thread.currentThread().getName();
         
         return threadUsers.computeIfAbsent(threadId, id -> {
             synchronized (lock) {
                 // Asignar el siguiente usuario disponible (round-robin)
                 int index = currentUserIndex.getAndIncrement() % availableUsers.size();
                 UserCredentials user = availableUsers.get(index);
-                System.out.println("[UserPoolManager] Thread " + threadId + " asignado a usuario: " + user.getUsuario());
+                System.out.println("[UserPoolManager] Thread ID=" + threadId + " (Name=" + threadName + ") asignado a usuario: " + user.getUsuario() + " [Índice: " + index + " de " + availableUsers.size() + "]");
                 return user;
             }
         });
