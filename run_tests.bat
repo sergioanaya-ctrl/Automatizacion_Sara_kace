@@ -10,18 +10,73 @@ REM - Luego permite elegir cuántos tests ejecutar
 setlocal enabledelayedexpansion
 
 REM ========================================================
-REM FASE 0: Limpiar variables de entorno problemáticas
+REM FASE 0: Detectar y configurar Java (si está instalado)
 REM ========================================================
 
-REM Si JAVA_HOME está mal configurado, lo eliminamos
-REM Gradle descargará su propio JDK automáticamente
+REM Buscar Java 1.8+ en rutas comunes
+set JAVA_FOUND=0
+
+REM 1. Primero, si JAVA_HOME está bien configurado, usarlo
 if not "%JAVA_HOME%"=="" (
-    if not exist "%JAVA_HOME%\bin\java.exe" (
-        echo ADVERTENCIA: JAVA_HOME está mal configurado
-        echo Limpiando JAVA_HOME para usar JDK de Gradle...
-        set JAVA_HOME=
+    if exist "%JAVA_HOME%\bin\java.exe" (
+        echo [OK] Java detectado en JAVA_HOME: %JAVA_HOME%
+        set JAVA_FOUND=1
     )
 )
+
+REM 2. Si no, buscar en Program Files
+if %JAVA_FOUND% equ 0 (
+    if exist "C:\Program Files\Java\jdk1.8.0_291\bin\java.exe" (
+        set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_291
+        echo [OK] Java 1.8 detectado en Program Files
+        set JAVA_FOUND=1
+    )
+)
+
+REM 3. Buscar en Program Files (x86)
+if %JAVA_FOUND% equ 0 (
+    if exist "C:\Program Files (x86)\Java\jdk1.8.0_291\bin\java.exe" (
+        set JAVA_HOME=C:\Program Files (x86)\Java\jdk1.8.0_291
+        echo [OK] Java 1.8 detectado en Program Files (x86)
+        set JAVA_FOUND=1
+    )
+)
+
+REM 4. Buscar cualquier versión en Program Files\Java
+if %JAVA_FOUND% equ 0 (
+    for /d %%D in (C:\Program Files\Java\jdk*) do (
+        if exist "%%D\bin\java.exe" (
+            set JAVA_HOME=%%D
+            echo [OK] Java detectado en: %%D
+            set JAVA_FOUND=1
+            goto java_found
+        )
+    )
+)
+
+REM 5. Buscar cualquier versión en Program Files (x86)\Java
+if %JAVA_FOUND% equ 0 (
+    for /d %%D in (C:\Program Files (x86)\Java\jdk*) do (
+        if exist "%%D\bin\java.exe" (
+            set JAVA_HOME=%%D
+            echo [OK] Java detectado en: %%D
+            set JAVA_FOUND=1
+            goto java_found
+        )
+    )
+)
+
+:java_found
+
+if %JAVA_FOUND% equ 0 (
+    echo [NOTA] Java no encontrado en rutas comunes
+    echo Gradle descargará su propio JDK automaticamente
+    set JAVA_HOME=
+) else (
+    REM Exportar JAVA_HOME para que Gradle lo use
+    set PATH=!JAVA_HOME!\bin;!PATH!
+)
+
 
 REM ========================================================
 REM FASE 1: Verificar y descargar dependencias
