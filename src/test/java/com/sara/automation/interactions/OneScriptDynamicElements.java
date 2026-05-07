@@ -17,11 +17,10 @@ public final class OneScriptDynamicElements {
         new WebDriverWait(driver, timeout).until(d -> {
             Object found = ((JavascriptExecutor) d).executeScript(
                     "const normalize = text => text.replace(/\s+/g, ' ').trim().toLowerCase();"
-                            + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control');"
+                            + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
                             + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
-                            + "const labelNombre = Array.from(document.querySelectorAll('label')).find(l => normalize(l.textContent) === 'nombre');"
-                            + "const labelRespuesta = Array.from(document.querySelectorAll('label')).find(l => normalize(l.textContent).includes('respuesta de proveedor'));"
-                            + "return nombre || respuesta || labelNombre || labelRespuesta || null;"
+                            + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => b.offsetParent !== null && normalize(b.textContent).includes('guardar'));"
+                            + "return (nombre && respuesta) || (nombre && saveBtn) || null;"
             );
             return found != null;
         });

@@ -23,6 +23,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
@@ -239,14 +240,9 @@ public class DiligenciarProveedorGestion implements Task {
 
         // Estos campos se habilitan después de elegir la respuesta del proveedor (ej. TOMA SERVICIO).
         llenarCampo(actor, CasoCreatePage.Tiempo_Monitoreo_Sitio_Minutos, TIEMPO_MONITOREO_SITIO_DEFAULT);
-        llenarCampoJsInteligente(actor,
-            "input[name*='celular_tecnico'], input[id*='celular_tecnico'], input[name*='celular'][name*='tecnico']",
-            "celular tecnico",
-            CELULAR_TECNICO_DEFAULT);
-        llenarCampoJsInteligente(actor,
-            "input[name*='tiempo_monitoreo_destino_minutos'], input[id*='tiempo_monitoreo_destino_minutos'], input[aria-labelledby*='tiempo_monitoreo_destino_minutos']",
-            "tiempo monitoreo destino",
-            TIEMPO_MONITOREO_DESTINO_DEFAULT);
+        
+        // Escribir campos dinámicos por ID directo (SOLUCIÓN VALIDADA)
+        llenarCamposConNavegacionTab(actor);
 
         actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Proveedor, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Proveedor));
@@ -260,6 +256,89 @@ public class DiligenciarProveedorGestion implements Task {
         actor.attemptsTo(Scroll.to(campo));
         actor.attemptsTo(WaitUntil.the(campo, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Enter.theValue(valor).into(campo));
+    }
+
+    /**
+     * Escribir directamente en campos por ID (evitando TABs complejos)
+     * IDs identificados: celular_tecnico, e9g8h7-tiempo_monitoreo_destino_minutos
+     */
+    private <T extends Actor> boolean llenarCamposConNavegacionTab(T actor) {
+        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+        try {
+            // Switchear al iframe
+            WebElement iframe = driver.findElement(By.id("form_onescript_iframe"));
+            driver.switchTo().frame(iframe);
+            System.out.println("  [CAMPOS POR ID] ✓ Switched to iframe");
+            sleep(100);
+            
+            // Buscar y escribir en celular_tecnico por ID
+            System.out.println("  [CAMPOS POR ID] Buscando celular_tecnico...");
+            List<WebElement> celularInputs = driver.findElements(By.id("celular_tecnico"));
+            if (!celularInputs.isEmpty()) {
+                WebElement celularInput = celularInputs.get(0);
+                System.out.println("  [CAMPOS POR ID] ✓ Celular encontrado por ID, escribiendo: " + CELULAR_TECNICO_DEFAULT);
+                setInputValueAndDispatchEvents(driver, celularInput, CELULAR_TECNICO_DEFAULT);
+                sleep(150);
+            } else {
+                System.out.println("  [CAMPOS POR ID] ✗ Celular NO encontrado por ID");
+            }
+            
+            // Buscar y escribir en tiempo_monitoreo_destino_minutos
+            System.out.println("  [CAMPOS POR ID] Buscando tiempo_monitoreo_destino_minutos...");
+            List<WebElement> tiempoInputs = driver.findElements(By.xpath("//input[contains(@id, 'tiempo_monitoreo_destino')]"));
+            if (!tiempoInputs.isEmpty()) {
+                WebElement tiempoInput = tiempoInputs.get(0);
+                String tiempoId = tiempoInput.getAttribute("id");
+                System.out.println("  [CAMPOS POR ID] ✓ Tiempo encontrado con id=" + tiempoId + ", escribiendo: " + TIEMPO_MONITOREO_DESTINO_DEFAULT);
+                setInputValueAndDispatchEvents(driver, tiempoInput, TIEMPO_MONITOREO_DESTINO_DEFAULT);
+                sleep(150);
+            } else {
+                System.out.println("  [CAMPOS POR ID] ✗ Tiempo NO encontrado");
+            }
+            
+            // Salir del iframe
+            driver.switchTo().defaultContent();
+            sleep(250);
+            
+            // Verificar resultados
+            driver.switchTo().frame(iframe);
+            Object validacion = ((JavascriptExecutor) driver).executeScript(
+                "const cel = document.getElementById('celular_tecnico');" +
+                "const des = document.querySelector(\"input[id*='tiempo_monitoreo_destino']\");" +
+                "const celVal = cel ? cel.value : 'NOT_FOUND';" +
+                "const desVal = des ? des.value : 'NOT_FOUND';" +
+                "return 'cel=' + celVal + '|des=' + desVal;"
+            );
+            driver.switchTo().defaultContent();
+            
+            String validacionStr = validacion != null ? validacion.toString() : "NULL";
+            System.out.println("  [VALIDACION POR ID] " + validacionStr);
+            
+            return validacionStr.contains(CELULAR_TECNICO_DEFAULT) && validacionStr.contains(TIEMPO_MONITOREO_DESTINO_DEFAULT);
+        } catch (Exception e) {
+            System.out.println("  [CAMPOS POR ID] ERROR: " + e.getMessage());
+            e.printStackTrace();
+            try {
+                driver.switchTo().defaultContent();
+            } catch (Exception ignored) {}
+            return false;
+        }
+    }
+
+    /**
+     * Establece valor en un input y dispara eventos necesarios para Form.io
+     */
+    private void setInputValueAndDispatchEvents(WebDriver driver, WebElement input, String value) {
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].focus();" +
+                "arguments[0].value = '';" +
+                "arguments[0].value = arguments[1];" +
+                "arguments[0].dispatchEvent(new Event('input', {bubbles:true}));" +
+                "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));" +
+                "arguments[0].dispatchEvent(new Event('blur', {bubbles:true}));",
+                input,
+                value
+        );
     }
 
     private <T extends Actor> void llenarCampoJsInteligente(T actor, String selectorCss, String labelHint, String valor) {

@@ -1,12 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="1" failures="0" name="Apertura de la pagina de casos" skipped="0" tests="1" time="233.44" timestamp="2026-05-05 06:42:18"><testcase name="Abrir la URL, loguearse y navegar a agent"><error message="Expected condition failed: waiting for com.sara.automation.tasks.DiligenciarProveedorGestion$$Lambda/0x000002933b32c990@233cd973 (tried for 20 second(s) with 500 milliseconds interval)&#10;Build info: version: '4.6.0', revision: '79f1c02ae20'&#10;System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.8'&#10;Driver info: net.thucydides.core.webdriver.DevToolsWebDriverFacade" type="org.openqa.selenium.TimeoutException">Expected condition failed: waiting for com.sara.automation.tasks.DiligenciarProveedorGestion$$Lambda/0x000002933b32c990@233cd973 (tried for 20 second(s) with 500 milliseconds interval)
-Build info: version: '4.6.0', revision: '79f1c02ae20'
-System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.8'
-Driver info: net.thucydides.core.webdriver.DevToolsWebDriverFacade</error><system-err>Expected condition failed: waiting for com.sara.automation.tasks.DiligenciarProveedorGestion$$Lambda/0x000002933b32c990@233cd973 (tried for 20 second(s) with 500 milliseconds interval)
-Build info: version: '4.6.0', revision: '79f1c02ae20'
-System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.8'
-Driver info: net.thucydides.core.webdriver.DevToolsWebDriverFacade&#13;
-com.sara.automation.tasks.DiligenciarProveedorGestion.llenarCampoJsInteligente(DiligenciarProveedorGestion.java:268)&#13;
-com.sara.automation.tasks.DiligenciarProveedorGestion.performAs(DiligenciarProveedorGestion.java:242)&#13;
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="0" failures="1" name="Apertura de la pagina de casos" skipped="0" tests="1" time="226.65" timestamp="2026-05-07 09:50:55"><testcase name="Abrir la URL, loguearse y navegar a agent"><failure message="&#13;&#10;Expected: an element that is visible&#13;&#10;     but: no matching element found by [Guardar Proveedor located with: xpath: //button[contains(@class, 'editgrid-action-save') or @type='button' and contains(normalize-space(.), 'Guardar')]]" type="java.lang.AssertionError">&#13;
+Expected: an element that is visible&#13;
+     but: no matching element found by [Guardar Proveedor located with: xpath: //button[contains(@class, 'editgrid-action-save') or @type='button' and contains(normalize-space(.), 'Guardar')]]</failure><system-err>&#13;
+Expected: an element that is visible&#13;
+     but: no matching element found by [Guardar Proveedor located with: xpath: //button[contains(@class, 'editgrid-action-save') or @type='button' and contains(normalize-space(.), 'Guardar')]]&#13;
+com.sara.automation.tasks.DiligenciarProveedorGestion.performAs(DiligenciarProveedorGestion.java:247)&#13;
 com.sara.automation.stepdefinitions.CasesStepDefinitions.diligenciamosElProveedor(CasesStepDefinitions.java:117)&#13;
 io.cucumber.java.Invoker.doInvoke(Invoker.java:66)&#13;
 io.cucumber.java.Invoker.invoke(Invoker.java:24)&#13;
