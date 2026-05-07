@@ -10,6 +10,20 @@ REM - Luego permite elegir cuántos tests ejecutar
 setlocal enabledelayedexpansion
 
 REM ========================================================
+REM FASE 0: Limpiar variables de entorno problemáticas
+REM ========================================================
+
+REM Si JAVA_HOME está mal configurado, lo eliminamos
+REM Gradle descargará su propio JDK automáticamente
+if not "%JAVA_HOME%"=="" (
+    if not exist "%JAVA_HOME%\bin\java.exe" (
+        echo ADVERTENCIA: JAVA_HOME está mal configurado
+        echo Limpiando JAVA_HOME para usar JDK de Gradle...
+        set JAVA_HOME=
+    )
+)
+
+REM ========================================================
 REM FASE 1: Verificar y descargar dependencias
 REM ========================================================
 
