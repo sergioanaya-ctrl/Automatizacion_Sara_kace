@@ -1,9 +1,46 @@
 @echo off
 REM ========================================================
-REM Ejecutor de Pruebas - Interface Fácil
+REM Ejecutor de Pruebas - PORTABLE (descarga deps automático)
 REM ========================================================
+REM Este script es PORTABLE: funciona en cualquier máquina
+REM - Descarga dependencias automáticamente
+REM - Compila el proyecto
+REM - Luego permite elegir cuántos tests ejecutar
 
 setlocal enabledelayedexpansion
+
+REM ========================================================
+REM FASE 1: Verificar y descargar dependencias
+REM ========================================================
+
+echo.
+echo ========================================================
+echo         DESCARGANDO DEPENDENCIAS (primera vez)
+echo ========================================================
+echo.
+
+REM Intentar compilar - esto descargará todas las dependencias si no existen
+echo Descargando Gradle y compilando proyecto...
+echo (Esto puede tomar 2-5 minutos la primera vez)
+echo.
+
+call .\gradlew.bat compileTestJava -q
+if %errorlevel% neq 0 (
+    echo.
+    echo ERROR: No se pudo descargar dependencias o compilar
+    echo Verifica tu conexion a internet
+    pause
+    exit /b 1
+)
+
+echo.
+echo ✓ Dependencias descargadas correctamente
+echo ✓ Proyecto compilado
+echo.
+
+REM ========================================================
+REM FASE 2: Mostrar menú de selección
+REM ========================================================
 
 :menu
 cls
@@ -12,14 +49,14 @@ echo ========================================================
 echo         AUTOMATIZACION SARA3 - EJECUCION DE PRUEBAS
 echo ========================================================
 echo.
-echo 1. Ejecutar numero personalizado de runners en paralelo
+echo 1. Ejecutar numero PERSONALIZADO de runners en paralelo
 echo 2. Ejecutar 2 runners (paralelo)
 echo 3. Ejecutar 4 runners (paralelo)
 echo 4. Ejecutar 8 runners (paralelo)
 echo 5. Ejecutar 12 runners (paralelo)
 echo 6. Ejecutar todos los 50 runners
 echo 7. Ejecutar solo 1 runner (test individual)
-echo 8. Ver reporte de resultados
+echo 8. Ver reporte de resultados (Serenity)
 echo 9. Salir
 echo.
 set /p choice="Selecciona opcion (1-9): "
@@ -65,8 +102,18 @@ echo Configurando maxParallelForks=%num_runners% en gradle.properties...
 move /y gradle.properties.tmp gradle.properties > nul
 echo.
 echo Ejecutando %num_runners% runners en paralelo...
+echo Espera a que terminen todos los tests...
 echo.
 call .\gradlew.bat test
+if %errorlevel% equ 0 (
+    echo.
+    echo ✓ Tests completados exitosamente
+    echo Los resultados están en: target/site/serenity/index.html
+) else (
+    echo.
+    echo ✗ Algunos tests fallaron
+    echo Revisa los logs para más detalles
+)
 pause
 goto menu
 
@@ -85,7 +132,17 @@ echo Configurando 2 runners en paralelo...
 ) > gradle.properties.tmp
 move /y gradle.properties.tmp gradle.properties > nul
 echo.
+echo Ejecutando 2 runners en paralelo...
+echo.
 call .\gradlew.bat test
+if %errorlevel% equ 0 (
+    echo.
+    echo ✓ Tests completados exitosamente
+    echo Los resultados están en: target/site/serenity/index.html
+) else (
+    echo.
+    echo ✗ Algunos tests fallaron
+)
 pause
 goto menu
 
@@ -104,7 +161,17 @@ echo Configurando 4 runners en paralelo...
 ) > gradle.properties.tmp
 move /y gradle.properties.tmp gradle.properties > nul
 echo.
+echo Ejecutando 4 runners en paralelo...
+echo.
 call .\gradlew.bat test
+if %errorlevel% equ 0 (
+    echo.
+    echo ✓ Tests completados exitosamente
+    echo Los resultados están en: target/site/serenity/index.html
+) else (
+    echo.
+    echo ✗ Algunos tests fallaron
+)
 pause
 goto menu
 
@@ -123,7 +190,17 @@ echo Configurando 8 runners en paralelo...
 ) > gradle.properties.tmp
 move /y gradle.properties.tmp gradle.properties > nul
 echo.
+echo Ejecutando 8 runners en paralelo...
+echo.
 call .\gradlew.bat test
+if %errorlevel% equ 0 (
+    echo.
+    echo ✓ Tests completados exitosamente
+    echo Los resultados están en: target/site/serenity/index.html
+) else (
+    echo.
+    echo ✗ Algunos tests fallaron
+)
 pause
 goto menu
 
@@ -142,7 +219,17 @@ echo Configurando 12 runners en paralelo...
 ) > gradle.properties.tmp
 move /y gradle.properties.tmp gradle.properties > nul
 echo.
+echo Ejecutando 12 runners en paralelo...
+echo.
 call .\gradlew.bat test
+if %errorlevel% equ 0 (
+    echo.
+    echo ✓ Tests completados exitosamente
+    echo Los resultados están en: target/site/serenity/index.html
+) else (
+    echo.
+    echo ✗ Algunos tests fallaron
+)
 pause
 goto menu
 
@@ -150,6 +237,8 @@ goto menu
 cls
 echo.
 echo Configurando 50 runners en paralelo...
+echo ADVERTENCIA: Esto requiere mucha memoria (minimo 8 GB RAM)
+echo.
 (
     for /f "tokens=*" %%A in (gradle.properties) do (
         if "%%A"=="maxParallelForks=2" (
@@ -161,7 +250,18 @@ echo Configurando 50 runners en paralelo...
 ) > gradle.properties.tmp
 move /y gradle.properties.tmp gradle.properties > nul
 echo.
+echo Ejecutando 50 runners en paralelo...
+echo Esto puede tomar 15-30 minutos...
+echo.
 call .\gradlew.bat test
+if %errorlevel% equ 0 (
+    echo.
+    echo ✓ Tests completados exitosamente
+    echo Los resultados están en: target/site/serenity/index.html
+) else (
+    echo.
+    echo ✗ Algunos tests fallaron
+)
 pause
 goto menu
 
@@ -169,6 +269,11 @@ goto menu
 cls
 echo.
 set /p runner="Numero del runner (01-50): "
+if "%runner%"=="" (
+    echo Error: Debes ingresar un numero
+    pause
+    goto menu
+)
 echo.
 echo Ejecutando CasesRunner%runner% (sin paralelismo)...
 (
@@ -183,21 +288,40 @@ echo Ejecutando CasesRunner%runner% (sin paralelismo)...
 move /y gradle.properties.tmp gradle.properties > nul
 echo.
 call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner%"
+if %errorlevel% equ 0 (
+    echo.
+    echo ✓ Test completado exitosamente
+    echo Los resultados están en: target/site/serenity/index.html
+) else (
+    echo.
+    echo ✗ Test falló
+)
 pause
 goto menu
+
+:report
 cls
 echo.
 if exist "target\site\serenity\index.html" (
-    echo Abriendo reporte...
+    echo Abriendo reporte Serenity...
+    echo.
     start target\site\serenity\index.html
+    echo Espera a que se abra el navegador...
+    timeout /t 3 /nobreak
 ) else (
-    echo No se encontro reporte. Ejecuta primero algunas pruebas.
+    echo No se encontro reporte.
+    echo Ejecuta primero algunos tests (opciones 2-7)
+    echo.
     pause
 )
 goto menu
 
 :exit
 echo.
-echo Hasta luego!
+echo ========================================================
+echo Hasta luego! Recuerda que tus credenciales están seguros
+echo en: src/test/resources/credentials.properties
+echo ========================================================
 echo.
+timeout /t 2 /nobreak
 exit /b 0
