@@ -38,16 +38,7 @@ if exist "gradle\wrapper\gradle-wrapper.properties" (
 )
 
 echo.
-echo [2] Verificando Java...
-java -version
-if %errorlevel% equ 0 (
-    echo     [✓] Java funciona
-) else (
-    echo     [✗] Java NO funciona
-)
-
-echo.
-echo [3] Verificando Gradle...
+echo [2] Verificando Gradle (descargará JDK automático si es necesario)...
 call .\gradlew.bat --version
 if %errorlevel% equ 0 (
     echo     [✓] Gradle funciona
@@ -56,7 +47,7 @@ if %errorlevel% equ 0 (
 )
 
 echo.
-echo [4] Intentando compilar (con salida completa)...
+echo [3] Intentando compilar (con salida completa)...
 echo.
 call .\gradlew.bat compileTestJava --stacktrace
 if %errorlevel% equ 0 (

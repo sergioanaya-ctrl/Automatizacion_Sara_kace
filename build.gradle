@@ -20,6 +20,16 @@ apply plugin: 'idea'
 apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
 apply plugin: 'application'
 
+// ========================================================
+// CONFIGURACION DE JAVA TOOLCHAIN
+// ========================================================
+// Gradle descargará automáticamente JDK 1.8 si no existe
+// Garantiza compatibilidad en todas las máquinas
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'

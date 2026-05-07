@@ -63,8 +63,7 @@ Menú interactivo:
 - **Windows 7+** (10/11 recomendado)
 - **8 GB RAM** (16 GB si vas a usar 50 runners)
 - **Conexión a internet** (solo primera ejecución)
-- **Java 8+** (Gradle 8.10 funciona con Java 1.8)
-- **Nada más.** ✓ Sin necesidad de preinstalaciones
+- **Nada más.** ✓ Sin necesidad de preinstalaciones (Java incluido)
 
 ---
 
