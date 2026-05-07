@@ -56,15 +56,18 @@ public class UserPoolManager {
         }
         
         System.out.println("[UserPoolManager] =====================================");
-        System.out.println("[UserPoolManager] Cargados " + availableUsers.size() + " usuarios disponibles");
-        System.out.println("[UserPoolManager] Usuarios: pruebas1 - pruebas" + availableUsers.size());
-        System.out.println("[UserPoolManager] Disponibles para asignación paralela");
+        System.out.println("[UserPoolManager] ✓ INICIALIZACION: Cargados " + availableUsers.size() + " usuarios");
+        System.out.println("[UserPoolManager] Pool: pruebas1 → pruebas" + availableUsers.size());
+        System.out.println("[UserPoolManager] Estrategia: CasesRunnerNN → pruebasN (1:1)");
+        System.out.println("[UserPoolManager] Parallelism: Cada runner obtiene usuario DIFERENTE");
         System.out.println("[UserPoolManager] =====================================");
     }
 
     /**
      * Obtiene un usuario específico basado en su número
-     * Útil para asignar determinísticamente usuarios a runners específicos
+     * IMPORTANTE: NO cachea el usuario, siempre retorna basado en el número
+     * Esto asegura que CasesRunner01 siempre obtiene pruebas1, CasesRunner02 obtiene pruebas2, etc.
+     * Incluso cuando múltiples runners corren en el MISMO worker paralelo
      */
     public static UserCredentials getUserByNumber(int userNumber) {
         if (userNumber < 1 || userNumber > availableUsers.size()) {
@@ -72,12 +75,11 @@ public class UserPoolManager {
             return getCredentialsForCurrentThread();
         }
         
-        long threadId = Thread.currentThread().getId();
-        String threadName = Thread.currentThread().getName();
         UserCredentials user = availableUsers.get(userNumber - 1); // userNumber es 1-indexed
         
-        threadUsers.put(threadId, user);
-        System.out.println("[UserPoolManager] Thread ID=" + threadId + " (Name=" + threadName + ") asignado a usuario específico: " + user.getUsuario() + " [Número: " + userNumber + "]");
+        long threadId = Thread.currentThread().getId();
+        String threadName = Thread.currentThread().getName();
+        System.out.println("[UserPoolManager] ✓ Runner #" + userNumber + " → " + user.getUsuario() + " (Thread: " + threadName + ")");
         
         return user;
     }
