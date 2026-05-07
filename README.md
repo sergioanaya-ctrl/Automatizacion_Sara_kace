@@ -48,6 +48,7 @@ Menú interactivo:
 | Feature | Details |
 |---------|---------|
 | **Framework** | Serenity BDD 3.4.1 + Cucumber 7.x |
+| **Build Tool** | Gradle 8.10.2 (compatible con Java 8+) |
 | **Runners** | 50 clases independientes (CasesRunner01-50) |
 | **Paralelismo** | Configurable: 1-50 runners simultáneos |
 | **Usuarios** | 50 credenciales (pruebas1-pruebas50) |
@@ -62,6 +63,7 @@ Menú interactivo:
 - **Windows 7+** (10/11 recomendado)
 - **8 GB RAM** (16 GB si vas a usar 50 runners)
 - **Conexión a internet** (solo primera ejecución)
+- **Java 8+** (Gradle 8.10 funciona con Java 1.8)
 - **Nada más.** ✓ Sin necesidad de preinstalaciones
 
 ---

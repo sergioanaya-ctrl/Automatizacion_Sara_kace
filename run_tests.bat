@@ -34,7 +34,8 @@ echo ========================================================
 echo.
 
 REM Intentar compilar - esto descargará todas las dependencias si no existen
-echo Descargando Gradle y compilando proyecto...
+echo Descargando Gradle 8.10 (compatible con Java 8)...
+echo Compilando proyecto...
 echo (Esto puede tomar 2-5 minutos la primera vez)
 echo.
 
