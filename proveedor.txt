@@ -1,10 +1,157 @@
+<div id="render-container"><div id="render-formio"><div ref="component" class="formio-component formio-component-form  formio-component-label-hidden" id="exrya44">
+  
+  
+
+
+
+<div novalidate="" ref="webform" class="formio-form"><div ref="component" class="form-group has-feedback formio-component formio-component-styleComponent formio-component-styleComponent  formio-component-label-hidden" id="evcf20f">
+  
+  <style ref="evcf20f">.my-editgrid-closed table { <br>  table-layout: fixed !important; <br>  width: 100% !important; <br>  border-collapse: collapse !important; <br>}<br><br>/* Estilos para las columnas de una sola línea */<br>.fixed-col-nowrap-closed {<br>  overflow: hidden !important;<br>  text-overflow: ellipsis !important;<br>  white-space: nowrap !important;<br>  padding: 8px !important;<br>  vertical-align: top !important; <br>}<br><br>/* Estilos para la columna de OBSERVACIÓN (multilínea completa) */<br>.fixed-col-wrap-closed {<br>  width: 70% !important; <br>  white-space: normal !important; <br>  overflow-wrap: break-word !important; <br>  word-break: break-all !important; <br>  padding: 8px !important;<br>  vertical-align: top !important; <br>}<br><br>.custom-panel-padding .card-body {<br>    padding: 1rem 4rem !important;<br>}<br><br>@media (max-width: 768px) {<br>    .custom-panel-padding .card-body {<br>        padding: 1rem !important;<br>    }<br>}<br><br>/* 1. Le damos una altura mínima fija a la tarjeta de ambos componentes */<br>.panel-ajustado .card {<br>    min-height: 20rem !important; /* <-- Cambia este número para igualarlos a tu gusto */<br>    height: auto !important; /* Permite que crezca si el contenido se excede */<br>}<br><br>/* 2. Seguimos anulando el alto forzado de 500px que trae Estados por defecto */<br>.panel-ajustado .overflow-auto {<br>    height: auto !important;<br>    max-height: none !important;<br>}<br><br>/* 3. Ajustamos el espacio interno abajo para que no quede hueco */<br>.panel-ajustado .card-body {<br>    padding-bottom: 1.5rem !important;<br>    flex: none !important;<br>}<br><br>/* 4. Quitamos el margen del último elemento para evitar empujes invisibles */<br>.panel-ajustado .form-group:last-child,<br>.panel-ajustado .text-center:last-child {<br>    margin-bottom: 0 !important;<br>}</style>
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+<div ref="component" class="form-group has-feedback formio-component formio-component-hidden formio-component-captureToken  formio-component-label-hidden" id="eybcx89">
+  
+  
+
+
+
+<div ref="element">
+          
+  
+  
+    <input aria-required="false" aria-labelledby="l-eybcx89-captureToken" id="eybcx89-captureToken" value="" lang="en" class="form-control" type="hidden" name="data[captureToken]" ref="input" aria-invalid="false">
+    
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+<div ref="component" class="form-group has-feedback formio-component formio-component-auth formio-component-auth  formio-component-label-hidden" id="eea7w21">
+  
+  
+
+
+
+<div id="auth-eea7w21"></div>
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+<div ref="component" class="form-group has-feedback formio-component formio-component-kace-c55d385e9ce64ffdb57bdc0a8f6f8ae6 formio-component-kaceC55D385E9Ce64Ffdb57Bdc0A8F6F8Ae6  formio-component-label-hidden" id="e2w3msi">
+  
+  
+
+
+
+<div id="kace-c55d385e9ce64ffdb57bdc0a8f6f8ae6-e2w3msi"><div class=""><button type="button" class="kace-drawer-toggle-button kace-drawer-toggle-button--hidden" title="Estados" aria-label="Estados">Estados</button><nav class="kace-drawer-overlay  kace-drawer-overlay--hidden"><div class="kace-drawer-header-actions"><button type="button" class="kace-drawer-close-button">×</button></div><div class="kace-drawer-body"><div class="kace-drawer-title-states"><p class="kace-drawer-inside-title">Estados</p><button type="button" class="kace-btn-open-modal">+</button></div><div class="kace-drawer-table-container"><div class="kace-table-wrapper"><table class="table table-striped table-hover "><thead><tr><th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Grupo</th><th scope="col">Actualizado Por</th><th scope="col">Gestión</th><th scope="col">Responsable</th></tr></thead><tbody><tr><td colspan="6" class="text-center text-muted">Sin datos para mostrar</td></tr></tbody></table></div></div></div></nav></div></div>
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+<div ref="component" class="form-group has-feedback formio-component formio-component-kace-8605364010b345b5b6dffda3f79533aa formio-component-kace8605364010B345B5B6Dffda3F79533Aa  formio-component-label-hidden" id="e4whpwp">
+  
+  
+
+
+
+<div id="kace-8605364010b345b5b6dffda3f79533aa-e4whpwp"><div class=""><button type="button" class="kace-timer-toggle-button" title="Abrir Timer" aria-label="Timer"><span class="kace-timer-toggle-text">Timer</span></button></div></div>
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+<div ref="component" class="row formio-component formio-component-columns formio-component-columns  formio-component-label-hidden" id="ecznaay">
+  
+  
+
+
+
+
+<div ref="column-ecznaay" class="col-md-6
+    col-md-offset-0
+    col-md-push-0
+    col-md-pull-0">
+  <div ref="component" class="form-group has-feedback formio-component formio-component-classification_id formio-component-classificationId panel-ajustado formio-component-label-hidden" id="e6c7olh">
+  
+  
+
+
+
+<div id="classification_id-e6c7olh"><div class="card shadow-sm "><div class="card-body p-4"><h1 class="h3 font-weight-bold mb-2">Clasificaciones</h1><p class="text-muted mb-4">Seleccione un nivel de clasificación para ver los estados disponibles.</p><div class="overflow-auto classifications-levels" style="min-height: 3rem;"><div><div class="form-group classifications-dropdown-wrap"><label class="font-weight-medium">Nivel 1</label><div class="form-control classifications-dropdown-control classifications-dropdown-control--disabled">Asistencia</div></div></div></div></div></div></div>
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+
+
+</div>
+
+<div ref="column-ecznaay" class="col-md-6
+    col-md-offset-0
+    col-md-push-0
+    col-md-pull-0">
+  <div ref="component" class="form-group has-feedback formio-component formio-component-kace_states formio-component-kaceStates panel-ajustado" id="eahbzzn">
+  
+  
+  <label id="l-eahbzzn-kaceStates" for="eahbzzn-kaceStates" class="col-form-label" ref="label" style="display: none;">
+  States
+  
+  
+</label>
+
+
+
+
+
+<div id="kace_states-eahbzzn"><div class="card shadow-sm "><div class="card-body p-4"><h1 class="h3 font-weight-bold mb-2">Estados</h1><p class="text-muted mb-4">Seleccione un nivel de clasificación para ver los estados disponibles</p><div class="overflow-auto states__content"><div class="text-center mb-4"><h2 class="h5 font-weight-bold mb-3">Estado actual</h2><button type="button" class="btn btn-success" disabled="">Abierto</button></div><div class="text-center"><h2 class="h5 font-weight-bold mb-3">Estados disponibles</h2><div class="d-flex flex-wrap justify-content-center"><button type="button" class="btn mr-2 mb-2 btn-outline-secondary">Incompleto</button><button type="button" class="btn mr-2 mb-2 btn-outline-secondary">Cancelado</button><button type="button" class="btn mr-2 mb-2 btn-outline-secondary">Programado</button><button type="button" class="btn mr-2 mb-2 btn-outline-secondary">Rechazado</button></div></div></div></div></div></div>
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+
+
+</div>
+
+
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
 <div ref="component" class="form-group has-feedback formio-component formio-component-kace_aux_cases_schema formio-component-kaceAuxCasesSchema  formio-component-label-hidden formio-modified" id="epfkw59">
   
   
 
 
 
-<div id="kace_aux_cases_schema-epfkw59"><div class=""><div class="card shadow-sm "><div class="card-body p-4"><h1 class="h3 font-weight-bold mb-2">Creación/Edición de Casos</h1><div class="overflow-auto schema-card"><div><div ref="component" class="formio-component formio-component-form  formio-component-label-hidden" id="e206yl">
+<div id="kace_aux_cases_schema-epfkw59"><div class=""><div class="card shadow-sm "><div class="card-body p-4"><h1 class="h3 font-weight-bold mb-2">Creación/Edición de Casos</h1><div class="overflow-auto schema-card"><div><div ref="component" class="formio-component formio-component-form  formio-component-label-hidden" id="edsb6p">
   
   
 
@@ -343,7 +490,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="true" aria-labelledby="l-e0v3kex7-numero_expediente" id="e0v3kex7-numero_expediente" value="202605057100797" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[numero_expediente]" ref="input" aria-invalid="false" data-paste-logic-applied="true">
+    <input aria-required="true" aria-labelledby="l-e0v3kex7-numero_expediente" id="e0v3kex7-numero_expediente" value="202605070380242" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[numero_expediente]" ref="input" aria-invalid="false" data-paste-logic-applied="true">
     
 
 
@@ -377,7 +524,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="true" aria-labelledby="l-e9zveg-nombre_solicitante" id="e9zveg-nombre_solicitante" value="Solicitante RSUXZO" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[nombre_solicitante]" ref="input" aria-invalid="false">
+    <input aria-required="true" aria-labelledby="l-e9zveg-nombre_solicitante" id="e9zveg-nombre_solicitante" value="Solicitante SVVFFT" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[nombre_solicitante]" ref="input" aria-invalid="false">
     
 
 
@@ -411,7 +558,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="false" aria-labelledby="l-el2f1eo-telefono_2" id="el2f1eo-telefono_2" value="3194198120" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[telefono_2]" ref="input" aria-invalid="false">
+    <input aria-required="false" aria-labelledby="l-el2f1eo-telefono_2" id="el2f1eo-telefono_2" value="3587767124" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[telefono_2]" ref="input" aria-invalid="false">
     
 
 
@@ -500,7 +647,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="false" aria-labelledby="l-e1524g6-direccion_del_destino" id="e1524g6-direccion_del_destino" value="Carrera 23 #83-34" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[direccion_del_destino]" ref="input" aria-invalid="false">
+    <input aria-required="false" aria-labelledby="l-e1524g6-direccion_del_destino" id="e1524g6-direccion_del_destino" value="Carrera 23 #96-38" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[direccion_del_destino]" ref="input" aria-invalid="false">
     
 
 
@@ -534,7 +681,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="false" aria-labelledby="l-efay16-codigo_de_seguridad" id="efay16-codigo_de_seguridad" value="7100797" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[codigo_de_seguridad]" ref="input">
+    <input aria-required="false" aria-labelledby="l-efay16-codigo_de_seguridad" id="efay16-codigo_de_seguridad" value="0380242" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[codigo_de_seguridad]" ref="input">
     
 
 
@@ -692,7 +839,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="true" aria-labelledby="l-eab6oqh-cedula_del_solicitante" id="eab6oqh-cedula_del_solicitante" value="9928991039" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[cedula_del_solicitante]" ref="input" aria-invalid="false">
+    <input aria-required="true" aria-labelledby="l-eab6oqh-cedula_del_solicitante" id="eab6oqh-cedula_del_solicitante" value="3410281654" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[cedula_del_solicitante]" ref="input" aria-invalid="false">
     
 
 
@@ -726,7 +873,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="true" aria-labelledby="l-exl9hr7-placa" id="exl9hr7-placa" value="TDQ351" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[placa]" ref="input" aria-invalid="false">
+    <input aria-required="true" aria-labelledby="l-exl9hr7-placa" id="exl9hr7-placa" value="IGN119" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[placa]" ref="input" aria-invalid="false">
     
 
 
@@ -816,7 +963,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="false" aria-labelledby="l-ewv1fg6-detalle_direccion_destino" id="ewv1fg6-detalle_direccion_destino" value="Referencia XQGRR 505" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[detalle_direccion_destino]" ref="input" aria-invalid="false">
+    <input aria-required="false" aria-labelledby="l-ewv1fg6-detalle_direccion_destino" id="ewv1fg6-detalle_direccion_destino" value="Referencia CHITV 031" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[detalle_direccion_destino]" ref="input" aria-invalid="false">
     
 
 
@@ -850,7 +997,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="false" aria-labelledby="l-e96xv4b-marca_vehiculo" id="e96xv4b-marca_vehiculo" value="Marca ZFMX" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[marca_vehiculo]" ref="input" aria-invalid="false">
+    <input aria-required="false" aria-labelledby="l-e96xv4b-marca_vehiculo" id="e96xv4b-marca_vehiculo" value="Marca DHGV" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[marca_vehiculo]" ref="input" aria-invalid="false">
     
 
 
@@ -970,7 +1117,7 @@ Habilitar Formulario
   
   
   
-    <input aria-required="true" aria-labelledby="l-effhg3-fecha_y_hora_de_solicitud" id="effhg3-fecha_y_hora_de_solicitud" value="2026-05-05T13:29:47" lang="en" class="form-control flatpickr-input" type="hidden" name="data[fecha_y_hora_de_solicitud]" ref="input" aria-invalid="false"><input class="form-control form-control input" placeholder="" tabindex="0" type="text">
+    <input aria-required="true" aria-labelledby="l-effhg3-fecha_y_hora_de_solicitud" id="effhg3-fecha_y_hora_de_solicitud" value="2026-05-07T11:37:32" lang="en" class="form-control flatpickr-input" type="hidden" name="data[fecha_y_hora_de_solicitud]" ref="input" aria-invalid="false"><input class="form-control form-control input" placeholder="" tabindex="0" type="text">
     
 
 
@@ -1017,7 +1164,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="true" aria-labelledby="l-ex2bcs-telefono_1" id="ex2bcs-telefono_1" value="3548146612" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[telefono_1]" ref="input" aria-invalid="false">
+    <input aria-required="true" aria-labelledby="l-ex2bcs-telefono_1" id="ex2bcs-telefono_1" value="3342508340" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[telefono_1]" ref="input" aria-invalid="false">
     
 
 
@@ -1040,7 +1187,7 @@ Habilitar Formulario
   <div ref="nested-fechaCreacionCaso">
     <div ref="component" class="formio-component formio-component-content formio-component-content" id="e10uvwo">
   
-  <div ref="html" class="formio-component-htmlelement"><p><strong>Fecha y hora de creación: </strong>2026-05-05 01:30 pm</p></div>
+  <div ref="html" class="formio-component-htmlelement"><p><strong>Fecha y hora de creación: </strong>2026-05-07 11:38 am</p></div>
 
   <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
   
@@ -1070,7 +1217,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="true" aria-labelledby="l-eq9o1i9-direccion_servicio" id="eq9o1i9-direccion_servicio" value="Calle 20 #18-19" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[direccion_servicio]" ref="input" aria-invalid="false">
+    <input aria-required="true" aria-labelledby="l-eq9o1i9-direccion_servicio" id="eq9o1i9-direccion_servicio" value="Calle 13 #96-48" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[direccion_servicio]" ref="input" aria-invalid="false">
     
 
 
@@ -1104,7 +1251,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="true" aria-labelledby="l-ec9kpuuv-detalle_direccion_servicio" id="ec9kpuuv-detalle_direccion_servicio" value="Apto 14, Torre D" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[detalle_direccion_servicio]" ref="input" aria-invalid="false">
+    <input aria-required="true" aria-labelledby="l-ec9kpuuv-detalle_direccion_servicio" id="ec9kpuuv-detalle_direccion_servicio" value="Apto 24, Torre B" spellcheck="true" disabled="disabled" lang="en" class="form-control" type="text" name="data[detalle_direccion_servicio]" ref="input" aria-invalid="false">
     
 
 
@@ -1523,7 +1670,7 @@ Habilitar Formulario
           
   
   
-    <input aria-required="false" aria-labelledby="l-el6y4q-familia_de_servicio" id="el6y4q-familia_de_servicio" value="Carro-Taller" spellcheck="false" disabled="disabled" lang="en" class="form-control" type="text" name="data[asignacion_asistencia_movilidad][familia_de_servicio]" ref="input">
+    <input aria-required="false" aria-labelledby="l-el6y4q-familia_de_servicio" id="el6y4q-familia_de_servicio" value="" spellcheck="false" disabled="disabled" lang="en" class="form-control" type="text" name="data[asignacion_asistencia_movilidad][familia_de_servicio]" ref="input">
     
 
 
@@ -1581,7 +1728,7 @@ Habilitar Formulario
   <label class="field-required control-label--hidden"></label>
 
 
-<div id="kace-d7726f06de2e45c3908377d10d9613df-eud4ptq"><div class="form-group kace-component--disabled"><div class="d-flex align-items-center gap-2 mb-2"><button type="button" class="mic-button mr-2 " aria-pressed="false" title="Iniciar grabación" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic" aria-hidden="true"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg></button><small class="text-muted ms-2"></small></div><textarea class="form-control" rows="6" placeholder="" maxlength="1024" disabled="">hola</textarea><small class="text-muted d-block mt-1">4 / 1024</small></div></div>
+<div id="kace-d7726f06de2e45c3908377d10d9613df-eud4ptq"><div class="form-group kace-component--disabled"><div class="d-flex align-items-center gap-2 mb-2"><button type="button" class="mic-button mr-2 " aria-pressed="false" title="Iniciar grabación" disabled=""><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic" aria-hidden="true"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg></button><small class="text-muted ms-2"></small></div><textarea class="form-control" rows="6" placeholder="" maxlength="1024" disabled="">OBS-202605070380242</textarea><small class="text-muted d-block mt-1">19 / 1024</small></div></div>
 
 
 
@@ -2766,3 +2913,54 @@ Crear
   <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
   
 </div>
+<div ref="component" class="form-group has-feedback formio-component formio-component-kace_description formio-component-kaceDescription  formio-component-label-hidden formio-hidden" id="eg74vbv">
+  
+</div>
+<div ref="component" class="form-group has-feedback formio-component formio-component-kace_attachment formio-component-kaceAttachment  formio-component-label-hidden" id="emh50ta">
+  
+  
+
+
+
+<div id="kace_attachment-emh50ta"></div>
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+<div ref="component" class="form-group has-feedback formio-component formio-component-kace_custom_submit formio-component-kaceCustomSubmit1  form-group" id="e3bhm6i">
+  
+  
+
+
+
+<button lang="en" class="btn btn-info btn-md kace-floating-submit" type="submit" name="data[kaceCustomSubmit1]" ref="button">
+
+Guardar
+
+
+</button>
+<div ref="buttonMessageContainer">
+  <span ref="buttonMessage" class="help-block"></span>
+</div>
+
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+
+</div>
+
+
+
+
+
+  <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+  
+</div>
+</div></div>

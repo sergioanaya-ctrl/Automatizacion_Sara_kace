@@ -53,8 +53,31 @@ dependencies {
 }
 test {
     testLogging.showStandardStreams = true
-    maxParallelForks = 3
+    
+    // CONFIGURACION PARA EJECUCION PARALELA
+    // maxParallelForks: numero de JVM paralelas (tests que se ejecutan simultaneamente)
+    // Cada fork = 1 navegador Chrome ejecutandose en paralelo
+    maxParallelForks = 12  // Puedes ajustar: 4-20 segun tu CPU/RAM
+    
+    // Memoria por fork (cada navegador Chrome necesita ~1GB)
+    maxHeapSize = '2048m'
+    minHeapSize = '512m'
+    
+    // Reutilizar fork para todos los tests (mas eficiente)
+    forkEvery = 0
+    
     systemProperties System.getProperties()
+    
+    // Log de configuracion paralela
+    doFirst {
+        println "========================================="
+        println "CONFIGURACION EJECUCION PARALELA"
+        println "========================================="
+        println "Max Parallel Forks (navegadores): ${maxParallelForks}"
+        println "Available Processors: ${Runtime.runtime.availableProcessors()}"
+        println "Heap Size por Fork: ${maxHeapSize}"
+        println "========================================="
+    }
 }
 serenity {
     reports = ["single-page-html"]

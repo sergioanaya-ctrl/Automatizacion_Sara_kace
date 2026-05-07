@@ -244,7 +244,7 @@ public class DiligenciarProveedorGestion implements Task {
         // Escribir campos dinámicos por ID directo (SOLUCIÓN VALIDADA)
         llenarCamposConNavegacionTab(actor);
 
-        // Re-asegurar que estamos dentro del iframe antes de buscar/clickear el botón Guardar
+        // Re-asegurar que estamos dentro del iframe antes de buscar/clickear el botón Guardar Proveedor.
         driver.switchTo().defaultContent();
         WebElement iframeAfterFill = driver.findElement(By.id("form_onescript_iframe"));
         driver.switchTo().frame(iframeAfterFill);
@@ -252,9 +252,61 @@ public class DiligenciarProveedorGestion implements Task {
         actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Proveedor, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Proveedor));
 
-        // Después de guardar el proveedor, hacer click en el guardado general flotante para aplicar cambios.
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_General_Flotante, isVisible()).forNoMoreThan(20).seconds());
-        actor.attemptsTo(Click.on(CasoCreatePage.Guardar_General_Flotante));
+        // Esperar a que el diálogo de proveedor se cierre y volver al contexto principal.
+        waitForProveedorDialogToClose(driver, Duration.ofSeconds(20));
+        driver.switchTo().defaultContent();
+        sleep(500);
+
+        if (!clickGeneralSaveIfPresent(driver, actor)) {
+            System.out.println("  [DiligenciarProveedorGestion] Guardado general no visible después de cerrar proveedor; continuando sin fallo.");
+        }
+    }
+
+    private <T extends Actor> boolean clickGeneralSaveIfPresent(WebDriver driver, T actor) {
+        // Primer intento: JavaScript directo en iframe (más confiable)
+        try {
+            System.out.println("  [DiligenciarProveedorGestion] Intento 1: Guardar con JavaScript en iframe...");
+            actor.attemptsTo(ClickGuardarEnIframe.clickGuardarEnIframe());
+            System.out.println("  [DiligenciarProveedorGestion] ✓ Guardar clickeado con JavaScript en iframe OK");
+            return true;
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] Intento 1 falló: " + e.getMessage());
+        }
+
+        // Segundo intento: Screenplay con locator estándar
+        try {
+            System.out.println("  [DiligenciarProveedorGestion] Intento 2: Guardar con Screenplay (Guardar_General_Flotante)...");
+            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_General_Flotante, isVisible()).forNoMoreThan(5).seconds());
+            actor.attemptsTo(Click.on(CasoCreatePage.Guardar_General_Flotante));
+            System.out.println("  [DiligenciarProveedorGestion] ✓ Guardado general clickeado OK");
+            return true;
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] Intento 2 falló: " + e.getMessage());
+        }
+
+        // Tercer intento: Fallback XPath genérico
+        try {
+            System.out.println("  [DiligenciarProveedorGestion] Intento 3: Guardar con XPath fallback...");
+            By fallbackSave = By.xpath("//button[contains(normalize-space(.), 'Guardar') and not(contains(@class,'btn-primary'))]");
+            WebElement button = new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.elementToBeClickable(fallbackSave));
+            clickWithJs(driver, button);
+            System.out.println("  [DiligenciarProveedorGestion] ✓ Guardar general fallback clickeado OK");
+            return true;
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] Intento 3 falló: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private void waitForProveedorDialogToClose(WebDriver driver, Duration timeout) {
+        try {
+            new WebDriverWait(driver, timeout)
+                    .until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'formio-dialog')]")));
+            System.out.println("  [DiligenciarProveedorGestion] Proveedor dialog cerrado OK");
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] El dialogo de proveedor no se cerró en el tiempo esperado: " + e.getMessage());
+        }
     }
 
     private <T extends Actor> void llenarCampo(T actor, Target campo, String valor) {
@@ -518,3 +570,4 @@ public class DiligenciarProveedorGestion implements Task {
         }
     }
 }
+

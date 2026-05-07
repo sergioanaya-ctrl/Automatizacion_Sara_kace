@@ -127,7 +127,7 @@ public class CasoCreatePage {
             .located(By.xpath("//button[@name='data[kaceCustomSubmit]' or contains(@class, 'btn-info') and contains(normalize-space(.), 'Guardar')]") );
 
     public static final Target Guardar_General_Flotante = Target.the("Guardar General (Flotante)")
-            .located(By.xpath("//button[@class='kaceCustomSubmit1' or contains(@class, 'btn-success') and contains(normalize-space(.), 'Guardar')]"));
+            .located(By.xpath("//button[@id='kaceCustomSubmit' and @name='data[kaceCustomSubmit1]' and contains(normalize-space(.),'Guardar')]") );
 
     // Provider Management Tab
     public static final Target Tab_Gestion_Proveedores = Target.the("Tab Gestión de Proveedores")
