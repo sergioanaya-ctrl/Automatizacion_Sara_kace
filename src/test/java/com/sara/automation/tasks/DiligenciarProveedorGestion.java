@@ -260,6 +260,16 @@ public class DiligenciarProveedorGestion implements Task {
         if (!clickGeneralSaveIfPresent(driver, actor)) {
             System.out.println("  [DiligenciarProveedorGestion] Guardado general no visible después de cerrar proveedor; continuando sin fallo.");
         }
+        
+        // ESPERA CRÍTICA: La página se recarga completamente después de guardar
+        // Los estados pueden no estar disponibles inmediatamente
+        System.out.println("  [DiligenciarProveedorGestion] Esperando 15 segundos para que la página se recargue completamente...");
+        try {
+            Thread.sleep(15000); // 15 segundos
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        System.out.println("  [DiligenciarProveedorGestion] ✓ Página recargada, interfaz lista para transición de estados");
     }
 
     private <T extends Actor> boolean clickGeneralSaveIfPresent(WebDriver driver, T actor) {
@@ -307,8 +317,8 @@ public class DiligenciarProveedorGestion implements Task {
         } catch (Exception e) {
             System.out.println("  [DiligenciarProveedorGestion] El dialogo de proveedor no se cerró en el tiempo esperado: " + e.getMessage());
         }
-    }
-
+    }    
+    
     private <T extends Actor> void llenarCampo(T actor, Target campo, String valor) {
         actor.attemptsTo(Scroll.to(campo));
         actor.attemptsTo(WaitUntil.the(campo, isVisible()).forNoMoreThan(20).seconds());
