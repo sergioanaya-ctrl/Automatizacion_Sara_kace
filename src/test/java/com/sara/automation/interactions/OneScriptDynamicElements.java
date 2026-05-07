@@ -16,7 +16,7 @@ public final class OneScriptDynamicElements {
     public static void waitForProveedorSection(WebDriver driver, Duration timeout) {
         new WebDriverWait(driver, timeout).until(d -> {
             Object found = ((JavascriptExecutor) d).executeScript(
-                    "const normalize = text => text.replace(/\s+/g, ' ').trim().toLowerCase();"
+                    "const normalize = text => text.replace(/\\s+/g, ' ').trim().toLowerCase();"
                             + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
                             + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
                             + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => b.offsetParent !== null && normalize(b.textContent).includes('guardar'));"
