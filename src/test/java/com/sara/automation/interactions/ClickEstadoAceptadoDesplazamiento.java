@@ -44,31 +44,42 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
             
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
             
-            // PASO 2: Buscar botón Aceptado
+            // PASO 2: Buscar botón Aceptado (puede ser completo o simple)
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] Paso 2: Buscando botón 'Aceptado'...");
             
-            WebElement estado = wait.until(
-                ExpectedConditions.presenceOfElementLocated(
-                    By.xpath("//button[contains(text(), 'Aceptado')]")
-                )
-            );
+            // Intento 1: Buscar "Aceptado y en desplazamiento" exactamente
+            WebElement estadoAceptado = null;
+            try {
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento]   Sub-intento 1: Buscando 'Aceptado y en desplazamiento'...");
+                estadoAceptado = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//button[contains(text(), 'Aceptado') and contains(text(), 'desplazamiento')]")
+                    )
+                );
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento]   ✓ 'Aceptado y en desplazamiento' encontrado");
+            } catch (TimeoutException e1) {
+                // Intento 2: Buscar solo "Aceptado"
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento]   Sub-intento 1 falló, buscando 'Aceptado' simple...");
+                estadoAceptado = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//button[text()='Aceptado' or normalize-space(text())='Aceptado']")
+                    )
+                );
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento]   ✓ 'Aceptado' simple encontrado");
+            }
             
             // Scroll y visibilidad
-            js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", estado);
+            js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", estadoAceptado);
             Thread.sleep(500);
             
-            // Esperar clickeable
-            estado = wait.until(
-                ExpectedConditions.elementToBeClickable(
-                    By.xpath("//button[contains(text(), 'Aceptado')]")
-                )
-            );
+            // Esperar clickeable - reutilizar el elemento ya encontrado
+            wait.until(ExpectedConditions.elementToBeClickable(estadoAceptado));
             
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓ Botón 'Aceptado' encontrado");
             
             // PASO 3: Clickear
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] Paso 3: Clickeando 'Aceptado'...");
-            ejecutarClickConReintentos(js, estado, "Aceptado");
+            ejecutarClickConReintentos(js, estadoAceptado, "Aceptado");
             
             Thread.sleep(1500);
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓ 'Aceptado' seleccionado");
