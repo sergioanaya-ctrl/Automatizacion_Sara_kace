@@ -37,7 +37,6 @@ public class FillCasoExpressFormInOrder implements Interaction {
 
     private static final Random RANDOM = new Random();
     private static final String UBICACION_SERVICIO_DEFAULT = "produccion";
-    private static final String OBSERVACION_FINAL_DEFAULT = "hola";
 
     private final String departamento;
     private final String municipio;
@@ -45,6 +44,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
     private final String gestor;
     private final String linea;
     private final String servicio;
+    private String observacionFinal;
 
     public FillCasoExpressFormInOrder(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
         this.departamento = departamento;
@@ -53,6 +53,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
         this.gestor = gestor;
         this.linea = linea;
         this.servicio = servicio;
+        this.observacionFinal = null;
     }
 
     public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
@@ -140,6 +141,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
         expedienteField.sendKeys(Keys.chord(Keys.CONTROL, "v"));
         Thread.sleep(300);
         System.out.println("  Numero expediente: " + numeroExpediente);
+        this.observacionFinal = "OBS-" + numeroExpediente;
         
         // 2) Nombre solicitante
         WebElement nombreField = driver.findElement(By.cssSelector("input[name='data[nombre_solicitante]']"));
@@ -435,7 +437,12 @@ public class FillCasoExpressFormInOrder implements Interaction {
     private <T extends Actor> void llenarObservacionFinal(T actor) {
         // Último campo editable del formulario antes de accionar Guardar.
         actor.attemptsTo(Scroll.to(CasoCreatePage.Observacion_Final));
-        llenarCampo(actor, CasoCreatePage.Observacion_Final, OBSERVACION_FINAL_DEFAULT);
+        String observacion = this.observacionFinal != null ? this.observacionFinal : generarObservacionAleatoria();
+        llenarCampo(actor, CasoCreatePage.Observacion_Final, observacion);
+    }
+
+    private String generarObservacionAleatoria() {
+        return "OBS-" + randomLetras(4) + randomDigitos(6);
     }
 
     private <T extends Actor> void guardarFormulario(T actor) {

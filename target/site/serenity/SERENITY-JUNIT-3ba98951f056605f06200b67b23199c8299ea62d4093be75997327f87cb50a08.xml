@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="0" failures="1" name="Apertura de la pagina de casos" skipped="0" tests="1" time="226.65" timestamp="2026-05-07 09:50:55"><testcase name="Abrir la URL, loguearse y navegar a agent"><failure message="&#13;&#10;Expected: an element that is visible&#13;&#10;     but: no matching element found by [Guardar Proveedor located with: xpath: //button[contains(@class, 'editgrid-action-save') or @type='button' and contains(normalize-space(.), 'Guardar')]]" type="java.lang.AssertionError">&#13;
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="0" failures="1" name="Apertura de la pagina de casos" skipped="0" tests="1" time="228.71" timestamp="2026-05-07 10:29:14"><testcase name="Abrir la URL, loguearse y navegar a agent"><failure message="&#13;&#10;Expected: an element that is visible&#13;&#10;     but: no matching element found by [Guardar General (Flotante) located with: xpath: //button[@class='kaceCustomSubmit1' or contains(@class, 'btn-success') and contains(normalize-space(.), 'Guardar')]]" type="java.lang.AssertionError">&#13;
 Expected: an element that is visible&#13;
-     but: no matching element found by [Guardar Proveedor located with: xpath: //button[contains(@class, 'editgrid-action-save') or @type='button' and contains(normalize-space(.), 'Guardar')]]</failure><system-err>&#13;
+     but: no matching element found by [Guardar General (Flotante) located with: xpath: //button[@class='kaceCustomSubmit1' or contains(@class, 'btn-success') and contains(normalize-space(.), 'Guardar')]]</failure><system-err>&#13;
 Expected: an element that is visible&#13;
-     but: no matching element found by [Guardar Proveedor located with: xpath: //button[contains(@class, 'editgrid-action-save') or @type='button' and contains(normalize-space(.), 'Guardar')]]&#13;
-com.sara.automation.tasks.DiligenciarProveedorGestion.performAs(DiligenciarProveedorGestion.java:247)&#13;
+     but: no matching element found by [Guardar General (Flotante) located with: xpath: //button[@class='kaceCustomSubmit1' or contains(@class, 'btn-success') and contains(normalize-space(.), 'Guardar')]]&#13;
+com.sara.automation.tasks.DiligenciarProveedorGestion.performAs(DiligenciarProveedorGestion.java:256)&#13;
 com.sara.automation.stepdefinitions.CasesStepDefinitions.diligenciamosElProveedor(CasesStepDefinitions.java:117)&#13;
 io.cucumber.java.Invoker.doInvoke(Invoker.java:66)&#13;
 io.cucumber.java.Invoker.invoke(Invoker.java:24)&#13;

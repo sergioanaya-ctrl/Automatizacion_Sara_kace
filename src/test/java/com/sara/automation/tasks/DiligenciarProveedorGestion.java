@@ -244,6 +244,11 @@ public class DiligenciarProveedorGestion implements Task {
         // Escribir campos dinámicos por ID directo (SOLUCIÓN VALIDADA)
         llenarCamposConNavegacionTab(actor);
 
+        // Re-asegurar que estamos dentro del iframe antes de buscar/clickear el botón Guardar
+        driver.switchTo().defaultContent();
+        WebElement iframeAfterFill = driver.findElement(By.id("form_onescript_iframe"));
+        driver.switchTo().frame(iframeAfterFill);
+
         actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Proveedor, isVisible()).forNoMoreThan(20).seconds());
         actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Proveedor));
 
@@ -260,7 +265,7 @@ public class DiligenciarProveedorGestion implements Task {
 
     /**
      * Escribir directamente en campos por ID (evitando TABs complejos)
-     * IDs identificados: celular_tecnico, e9g8h7-tiempo_monitoreo_destino_minutos
+     * IDs identificados: tiempo_monitoreo_destino_minutos, celular_tecnico
      */
     private <T extends Actor> boolean llenarCamposConNavegacionTab(T actor) {
         WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
@@ -271,7 +276,20 @@ public class DiligenciarProveedorGestion implements Task {
             System.out.println("  [CAMPOS POR ID] ✓ Switched to iframe");
             sleep(100);
             
-            // Buscar y escribir en celular_tecnico por ID
+            // Buscar y escribir en tiempo_monitoreo_destino_minutos primero
+            System.out.println("  [CAMPOS POR ID] Buscando tiempo_monitoreo_destino_minutos...");
+            List<WebElement> tiempoInputs = driver.findElements(By.xpath("//input[contains(@id, 'tiempo_monitoreo_destino')]") );
+            if (!tiempoInputs.isEmpty()) {
+                WebElement tiempoInput = tiempoInputs.get(0);
+                String tiempoId = tiempoInput.getAttribute("id");
+                System.out.println("  [CAMPOS POR ID] ✓ Tiempo encontrado con id=" + tiempoId + ", escribiendo: " + TIEMPO_MONITOREO_DESTINO_DEFAULT);
+                setInputValueAndDispatchEvents(driver, tiempoInput, TIEMPO_MONITOREO_DESTINO_DEFAULT);
+                sleep(150);
+            } else {
+                System.out.println("  [CAMPOS POR ID] ✗ Tiempo NO encontrado");
+            }
+            
+            // Buscar y escribir en celular_tecnico por ID después
             System.out.println("  [CAMPOS POR ID] Buscando celular_tecnico...");
             List<WebElement> celularInputs = driver.findElements(By.id("celular_tecnico"));
             if (!celularInputs.isEmpty()) {
@@ -281,19 +299,6 @@ public class DiligenciarProveedorGestion implements Task {
                 sleep(150);
             } else {
                 System.out.println("  [CAMPOS POR ID] ✗ Celular NO encontrado por ID");
-            }
-            
-            // Buscar y escribir en tiempo_monitoreo_destino_minutos
-            System.out.println("  [CAMPOS POR ID] Buscando tiempo_monitoreo_destino_minutos...");
-            List<WebElement> tiempoInputs = driver.findElements(By.xpath("//input[contains(@id, 'tiempo_monitoreo_destino')]"));
-            if (!tiempoInputs.isEmpty()) {
-                WebElement tiempoInput = tiempoInputs.get(0);
-                String tiempoId = tiempoInput.getAttribute("id");
-                System.out.println("  [CAMPOS POR ID] ✓ Tiempo encontrado con id=" + tiempoId + ", escribiendo: " + TIEMPO_MONITOREO_DESTINO_DEFAULT);
-                setInputValueAndDispatchEvents(driver, tiempoInput, TIEMPO_MONITOREO_DESTINO_DEFAULT);
-                sleep(150);
-            } else {
-                System.out.println("  [CAMPOS POR ID] ✗ Tiempo NO encontrado");
             }
             
             // Salir del iframe
@@ -396,22 +401,7 @@ public class DiligenciarProveedorGestion implements Task {
         actor.attemptsTo(Click.on(CasoCreatePage.CustomDropdownListItem.of(valor)));
     }
 
-    private void waitForProviderDialog(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-        wait.until(d -> {
-            Object dialog = ((JavascriptExecutor) d).executeScript(
-                    "const byComponent = document.querySelector('div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
-                            + "if (byComponent) return byComponent;"
-                            + "const byRespuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
-                            + "if (byRespuesta) return byRespuesta;"
-                            + "const byLabel = Array.from(document.querySelectorAll('label')).find(l => l.textContent.trim().toLowerCase() === 'nombre');"
-                            + "if (!byLabel) return null;"
-                            + "const container = byLabel.closest('.formio-component') || byLabel.parentElement;"
-                            + "return container ? container.querySelector('.custom-dropdown-control') : null;"
-            );
-            return dialog != null;
-        });
-    }
+    
 
     private void seleccionarDesdeCustomDropdownJS(WebDriver driver, String labelTexto, String valor) {
         WebElement control = getDropdownControl(driver, labelTexto);

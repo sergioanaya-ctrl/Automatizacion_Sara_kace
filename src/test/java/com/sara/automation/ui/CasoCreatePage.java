@@ -169,7 +169,7 @@ public class CasoCreatePage {
             .located(By.cssSelector("input[name*='celular_tecnico']"));
 
     public static final Target Guardar_Proveedor = Target.the("Guardar Proveedor")
-            .located(By.xpath("//button[contains(@class, 'editgrid-action-save') or @type='button' and contains(normalize-space(.), 'Guardar')]"));
+            .located(By.xpath("//div[@role='dialog']//button[contains(@class, 'btn-primary') and contains(normalize-space(text()), 'Guard')]"));
 
     // State transition buttons
     public static final Target Boton_Estado_Programado = Target.the("Botón Estado Programado")
