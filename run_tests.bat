@@ -9,6 +9,39 @@ REM - Luego permite elegir cuántos tests ejecutar
 
 setlocal enabledelayedexpansion
 
+echo.
+echo ========================================================
+echo         VERIFICANDO PROYECTO
+echo ========================================================
+echo.
+
+REM Verificar que estamos en la carpeta correcta
+if not exist "gradlew.bat" (
+    echo ERROR: No se encontró gradlew.bat
+    echo Este script debe estar en la raíz del proyecto Sara3
+    echo.
+    echo Carpeta actual: %cd%
+    echo.
+    echo Por favor:
+    echo 1. Extrae el ZIP completamente
+    echo 2. Abre una terminal en la carpeta Sara3
+    echo 3. Ejecuta nuevamente run_tests.bat
+    echo.
+    pause
+    exit /b 1
+)
+
+if not exist "src\test" (
+    echo ERROR: No se encontró carpeta src\test
+    echo Este script debe estar en la raíz del proyecto Sara3
+    echo.
+    pause
+    exit /b 1
+)
+
+echo [OK] Proyecto Sara3 detectado correctamente
+echo.
+
 REM ========================================================
 REM FASE 0: Detectar y configurar Java (si está instalado)
 REM ========================================================
@@ -94,18 +127,37 @@ echo Compilando proyecto...
 echo (Esto puede tomar 2-5 minutos la primera vez)
 echo.
 
-call .\gradlew.bat compileTestJava -q
+REM Nota: Usamos sin -q para ver errores si los hay
+call .\gradlew.bat compileTestJava
 if %errorlevel% neq 0 (
     echo.
+    echo ========================================================
     echo ERROR: No se pudo descargar dependencias o compilar
-    echo Verifica tu conexion a internet
+    echo ========================================================
+    echo.
+    echo Posibles causas:
+    echo - Sin conexion a internet
+    echo - Puerto bloqueado por firewall/antivirus
+    echo - Disco lleno
+    echo - Carpeta con caracteres especiales en la ruta
+    echo.
+    echo Cartpeta actual: %cd%
+    echo.
+    echo SOLUCIONES:
+    echo 1. Verifica tu conexion a internet
+    echo 2. Reinicia la maquina
+    echo 3. Copia el proyecto a una ruta sin espacios (C:\Sara3)
+    echo 4. Desactiva temporalmente el antivirus
+    echo.
     pause
     exit /b 1
 )
 
 echo.
+echo ========================================================
 echo ✓ Dependencias descargadas correctamente
 echo ✓ Proyecto compilado
+echo ========================================================
 echo.
 
 REM ========================================================
