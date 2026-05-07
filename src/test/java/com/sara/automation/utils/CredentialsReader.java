@@ -18,15 +18,30 @@ public class CredentialsReader {
 
     /**
      * Detecta el número del runner actual desde múltiples fuentes:
-     * 1. RunnerContext (ThreadLocal establecido por cada CasesRunnerNN) - FUENTE CONFIABLE
-     * 2. Nombre del thread de Gradle (Worker-N)
-     * 3. Stack trace (CasesRunnerNN)
+     * 1. System.setProperty("runnerNumber", N) establecido por CasesRunnerNN
+     * 2. RunnerContext (ThreadLocal establecido por cada CasesRunnerNN) - FUENTE CONFIABLE
+     * 3. Nombre del thread de Gradle (Worker-N)
+     * 4. Stack trace (CasesRunnerNN)
      */
     private static int detectRunnerNumber() {
-        // INTENTO 1 (FUENTE DE VERDAD): Leer RunnerContext (ThreadLocal)
+        // INTENTO 1 (MEJOR): Leer System Property establecido en static block de CasesRunnerNN
+        String sysProperty = System.getProperty("runnerNumber");
+        if (sysProperty != null && !sysProperty.isEmpty()) {
+            try {
+                int number = Integer.parseInt(sysProperty);
+                if (number > 0) {
+                    System.out.println("[CredentialsReader] ✓✓✓ DETECTADO SYSTEM PROPERTY: runnerNumber=" + number);
+                    return number;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("[CredentialsReader] ⚠ System property runnerNumber inválido: " + sysProperty);
+            }
+        }
+        
+        // INTENTO 2: Leer RunnerContext (ThreadLocal)
         int contextNumber = RunnerContext.getRunnerNumber();
         if (contextNumber > 0) {
-            System.out.println("[CredentialsReader] ✓✓✓ DETECTADO RUNNERCONTEXT: #" + contextNumber);
+            System.out.println("[CredentialsReader] ✓✓ DETECTADO RUNNERCONTEXT: #" + contextNumber);
             return contextNumber;
         }
         
@@ -34,7 +49,7 @@ public class CredentialsReader {
         System.out.println("[CredentialsReader] === DEBUG: Buscando runner number ===");
         System.out.println("[CredentialsReader] Thread Name: " + threadName);
         
-        // INTENTO 2: Buscar en stack trace (CasesRunner01, CasesRunner02, etc.)
+        // INTENTO 3: Buscar en stack trace (CasesRunner01, CasesRunner02, etc.)
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         System.out.println("[CredentialsReader] Stack trace (" + stackTrace.length + " elementos):");
         
@@ -54,7 +69,7 @@ public class CredentialsReader {
         
         System.out.println("[CredentialsReader] ⚠ CasesRunner NO encontrado en stack trace");
         
-        // INTENTO 3: Fallback a Worker-N de Gradle solo si no hay CasesRunner en stack
+        // INTENTO 4: Fallback a Worker-N de Gradle solo si no hay CasesRunner en stack
         Matcher workerMatcher = GRADLE_WORKER_PATTERN.matcher(threadName);
         if (workerMatcher.find()) {
             String workerNum = workerMatcher.group(1);

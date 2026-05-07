@@ -16,7 +16,7 @@ public class CasesRunner26 {
     // Establecer el numero del runner cuando se carga la clase
     static {
         System.out.println("====== CARGANDO CASESRUNNER26 ======");
-        RunnerContext.setRunnerNumber(26);
-        System.out.println("====== RUNNERCONTEXT ESTABLECIDO: #26 ======");
+        System.setProperty("runnerNumber", "26");
+        System.out.println("====== SYSTEM PROPERTY ESTABLECIDO: runnerNumber=26 ======");
     }
 }

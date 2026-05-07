@@ -1,6 +1,5 @@
 package com.sara.automation.runners;
 
-import com.sara.automation.utils.RunnerContext;
 import io.cucumber.junit.CucumberOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import org.junit.runner.RunWith;
@@ -16,7 +15,7 @@ public class CasesRunner03 {
     // Establecer el numero del runner cuando se carga la clase
     static {
         System.out.println("====== CARGANDO CASESRUNNER03 ======");
-        RunnerContext.setRunnerNumber(3);
-        System.out.println("====== RUNNERCONTEXT ESTABLECIDO: #3 ======");
+        System.setProperty("runnerNumber", "3");
+        System.out.println("====== SYSTEM PROPERTY ESTABLECIDO: runnerNumber=3 ======");
     }
 }
