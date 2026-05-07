@@ -18,27 +18,43 @@ public class CredentialsReader {
 
     /**
      * Detecta el número del runner actual desde múltiples fuentes:
-     * 1. Nombre del thread de Gradle (Worker-N) - mapea a índice del runner
-     * 2. Stack trace (CasesRunnerNN) - FUENTE CONFIABLE - retorna directo
-     * El stack trace de CasesRunnerNN es la fuente de verdad para el número del runner
+     * 1. RunnerContext (ThreadLocal establecido por cada CasesRunnerNN) - FUENTE CONFIABLE
+     * 2. Nombre del thread de Gradle (Worker-N)
+     * 3. Stack trace (CasesRunnerNN)
      */
     private static int detectRunnerNumber() {
-        // INTENTO 1: Buscar en stack trace (CasesRunner01, CasesRunner02, etc.)
-        // ESTO ES LA FUENTE DE VERDAD - cada CasesRunnerNN retorna su número directamente
+        // INTENTO 1 (FUENTE DE VERDAD): Leer RunnerContext (ThreadLocal)
+        int contextNumber = RunnerContext.getRunnerNumber();
+        if (contextNumber > 0) {
+            System.out.println("[CredentialsReader] ✓✓✓ DETECTADO RUNNERCONTEXT: #" + contextNumber);
+            return contextNumber;
+        }
+        
+        String threadName = Thread.currentThread().getName();
+        System.out.println("[CredentialsReader] === DEBUG: Buscando runner number ===");
+        System.out.println("[CredentialsReader] Thread Name: " + threadName);
+        
+        // INTENTO 2: Buscar en stack trace (CasesRunner01, CasesRunner02, etc.)
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        for (StackTraceElement element : stackTrace) {
-            String className = element.getClassName();
+        System.out.println("[CredentialsReader] Stack trace (" + stackTrace.length + " elementos):");
+        
+        for (int i = 0; i < stackTrace.length && i < 15; i++) {
+            String className = stackTrace[i].getClassName();
+            System.out.println("[CredentialsReader]   " + i + ": " + className + "." + stackTrace[i].getMethodName() + "()");
+            
+            // Buscar CasesRunner en cualquier posición
             Matcher matcher = RUNNER_PATTERN.matcher(className);
             if (matcher.find()) {
                 String runnerNum = matcher.group(1);
                 int number = Integer.parseInt(runnerNum);
-                System.out.println("[CredentialsReader] ✓✓✓ DETECTADO CASESRUNNER: " + className + " → USUARIO #" + number);
+                System.out.println("[CredentialsReader] ✓ ENCONTRADO: " + className + " → USUARIO #" + number);
                 return number;
             }
         }
         
-        // INTENTO 2: Fallback a Worker-N de Gradle solo si no hay CasesRunner en stack
-        String threadName = Thread.currentThread().getName();
+        System.out.println("[CredentialsReader] ⚠ CasesRunner NO encontrado en stack trace");
+        
+        // INTENTO 3: Fallback a Worker-N de Gradle solo si no hay CasesRunner en stack
         Matcher workerMatcher = GRADLE_WORKER_PATTERN.matcher(threadName);
         if (workerMatcher.find()) {
             String workerNum = workerMatcher.group(1);
