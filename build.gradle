@@ -57,7 +57,8 @@ test {
     // CONFIGURACION PARA EJECUCION PARALELA
     // maxParallelForks: numero de JVM paralelas (tests que se ejecutan simultaneamente)
     // Cada fork = 1 navegador Chrome ejecutandose en paralelo
-    maxParallelForks = 12  // Puedes ajustar: 4-20 segun tu CPU/RAM
+    // NOTA: Este valor se lee desde gradle.properties (edita gradle.properties para cambiar)
+    maxParallelForks = (project.hasProperty('maxParallelForks') ? project.maxParallelForks.toInteger() : 2)
     
     // Memoria por fork (cada navegador Chrome necesita ~1GB)
     maxHeapSize = '2048m'
@@ -76,6 +77,7 @@ test {
         println "Max Parallel Forks (navegadores): ${maxParallelForks}"
         println "Available Processors: ${Runtime.runtime.availableProcessors()}"
         println "Heap Size por Fork: ${maxHeapSize}"
+        println "Para cambiar: edita gradle.properties"
         println "========================================="
     }
 }
