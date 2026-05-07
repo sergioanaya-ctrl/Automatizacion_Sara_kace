@@ -13,10 +13,6 @@ import org.junit.runner.RunWith;
         snippets = CucumberOptions.SnippetType.UNDERSCORE
 )
 public class CasesRunner45 {
-    // Establecer el numero del runner cuando se carga la clase
-    static {
-        System.out.println("====== CARGANDO CASESRUNNER45 ======");
-        System.setProperty("runnerNumber", "45");
-        System.out.println("====== SYSTEM PROPERTY ESTABLECIDO: runnerNumber=45 ======");
-    }
+    // Los usuarios se asignan ALEATORIAMENTE desde UserPoolManager
+    // No es necesario establecer propiedades del sistema
 }

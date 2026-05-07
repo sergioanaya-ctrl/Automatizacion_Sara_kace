@@ -7,14 +7,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Gestor thread-safe para asignar usuarios de forma concurrente
  * Mantiene un pool de usuarios disponibles y los asigna a cada thread de ejecución
+ * 
+ * ESTRATEGIA: Cada test obtiene un usuario ALEATORIO del pool
+ * Esto funciona con cualquier número de runners (2, 4, 8, 50, etc)
  */
 public class UserPoolManager {
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("credentials");
     private static final Map<Long, UserCredentials> threadUsers = new ConcurrentHashMap<>();
-    private static final AtomicInteger currentUserIndex = new AtomicInteger(0);
+    private static final Random random = new Random();
     private static List<UserCredentials> availableUsers;
-    private static final Object lock = new Object();
 
     static {
         loadUsers();
@@ -58,49 +60,48 @@ public class UserPoolManager {
         System.out.println("[UserPoolManager] =====================================");
         System.out.println("[UserPoolManager] ✓ INICIALIZACION: Cargados " + availableUsers.size() + " usuarios");
         System.out.println("[UserPoolManager] Pool: pruebas1 → pruebas" + availableUsers.size());
-        System.out.println("[UserPoolManager] Estrategia: CasesRunnerNN → pruebasN (1:1)");
-        System.out.println("[UserPoolManager] Parallelism: Cada runner obtiene usuario DIFERENTE");
+        System.out.println("[UserPoolManager] Estrategia: SELECCION ALEATORIA");
+        System.out.println("[UserPoolManager] Parallelism: Cada test recibe usuario ALEATORIO");
         System.out.println("[UserPoolManager] =====================================");
     }
 
     /**
-     * Obtiene un usuario específico basado en su número
-     * IMPORTANTE: NO cachea el usuario, siempre retorna basado en el número
-     * Esto asegura que CasesRunner01 siempre obtiene pruebas1, CasesRunner02 obtiene pruebas2, etc.
-     * Incluso cuando múltiples runners corren en el MISMO worker paralelo
+     * Obtiene un usuario ALEATORIO del pool
+     * MEJOR OPCION para pruebas paralelas porque:
+     * - Distribuye carga uniforme entre usuarios
+     * - No depende del número de runners
+     * - Funciona con 2, 4, 8, 50 runners de la misma forma
      */
-    public static UserCredentials getUserByNumber(int userNumber) {
-        if (userNumber < 1 || userNumber > availableUsers.size()) {
-            // Si el número está fuera de rango, usar round-robin estándar
-            return getCredentialsForCurrentThread();
-        }
-        
-        UserCredentials user = availableUsers.get(userNumber - 1); // userNumber es 1-indexed
+    public static UserCredentials getRandomUser() {
+        int randomIndex = random.nextInt(availableUsers.size());
+        UserCredentials user = availableUsers.get(randomIndex);
         
         long threadId = Thread.currentThread().getId();
         String threadName = Thread.currentThread().getName();
-        System.out.println("[UserPoolManager] ✓ Runner #" + userNumber + " → " + user.getUsuario() + " (Thread: " + threadName + ")");
+        System.out.println("[UserPoolManager] ✓ ALEATORIO: Thread " + threadName + " → usuario: " + user.getUsuario() + " [Índice: " + randomIndex + " de " + availableUsers.size() + "]");
         
         return user;
     }
 
     /**
-     * Obtiene las credenciales asignadas al thread actual
-     * Si el thread no tiene usuario asignado, le asigna uno del pool
+     * Obtiene las credenciales asignadas al thread actual (CACHEADO por thread)
+     * Si el thread ya tiene usuario asignado, devuelve el mismo (no cambia durante el test)
      */
     public static UserCredentials getCredentialsForCurrentThread() {
         long threadId = Thread.currentThread().getId();
         String threadName = Thread.currentThread().getName();
         
-        return threadUsers.computeIfAbsent(threadId, id -> {
-            synchronized (lock) {
-                // Asignar el siguiente usuario disponible (round-robin)
-                int index = currentUserIndex.getAndIncrement() % availableUsers.size();
-                UserCredentials user = availableUsers.get(index);
-                System.out.println("[UserPoolManager] Thread ID=" + threadId + " (Name=" + threadName + ") asignado a usuario: " + user.getUsuario() + " [Índice: " + index + " de " + availableUsers.size() + "]");
-                return user;
-            }
-        });
+        // Si este thread ya tiene usuario asignado, devolverlo (mantiene consistencia dentro del test)
+        if (threadUsers.containsKey(threadId)) {
+            UserCredentials cached = threadUsers.get(threadId);
+            System.out.println("[UserPoolManager] ✓ CACHED: Thread " + threadName + " → usuario: " + cached.getUsuario() + " (ya asignado)");
+            return cached;
+        }
+        
+        // Primera vez que este thread solicita usuario: asignar uno aleatorio
+        UserCredentials randomUser = getRandomUser();
+        threadUsers.put(threadId, randomUser);
+        return randomUser;
     }
 
     /**
@@ -112,6 +113,13 @@ public class UserPoolManager {
         if (released != null) {
             System.out.println("[UserPoolManager] Thread " + threadId + " liberó usuario: " + released.getUsuario());
         }
+    }
+
+    /**
+     * Obtiene el número total de usuarios disponibles
+     */
+    public static int getTotalUsers() {
+        return availableUsers.size();
     }
 
     /**
@@ -144,20 +152,5 @@ public class UserPoolManager {
         public String toString() {
             return "Usuario: " + usuario + " (#" + userNumber + ")";
         }
-    }
-
-    /**
-     * Obtiene el número total de usuarios disponibles
-     */
-    public static int getTotalUsers() {
-        return availableUsers.size();
-    }
-
-    /**
-     * Resetea el pool (útil para testing)
-     */
-    public static void reset() {
-        threadUsers.clear();
-        currentUserIndex.set(0);
     }
 }
