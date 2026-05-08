@@ -1,6 +1,32 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: ============================================================
+:: VALIDAR Y CORREGIR JAVA_HOME ANTES DE LLAMAR A GRADLEW
+:: ============================================================
+:: Si JAVA_HOME apunta a una ruta invalida, Gradle no puede arrancar.
+:: Intentamos detectar un JDK valido automaticamente.
+if defined JAVA_HOME (
+    if not exist "%JAVA_HOME%\bin\java.exe" (
+        echo ADVERTENCIA: JAVA_HOME invalido: %JAVA_HOME%
+        set "JAVA_HOME="
+    )
+)
+if not defined JAVA_HOME (
+    if exist "C:\Program Files\Microsoft\jdk-21.0.8.9-hotspot\bin\java.exe" (
+        set "JAVA_HOME=C:\Program Files\Microsoft\jdk-21.0.8.9-hotspot"
+    ) else if exist "C:\Program Files\Eclipse Adoptium\jdk-21.0.8.9-hotspot\bin\java.exe" (
+        set "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-21.0.8.9-hotspot"
+    ) else (
+        where java >nul 2>&1
+        if %errorlevel% neq 0 (
+            echo ERROR: No se encontro una instalacion de Java valida.
+            echo Instala JDK 21 o configura JAVA_HOME correctamente.
+            pause
+            exit /b 1
+        )
+    )
+)
 echo.
 echo ========================================================
 echo         SARA3 - Descargando dependencias...

@@ -81,7 +81,14 @@ test {
     // Reutilizar fork para todos los tests (mas eficiente)
     forkEvery = 0
     
-    systemProperties System.getProperties()
+    // Pasar propiedades del sistema EXCEPTO java.home y classpath del daemon
+    // (pasar java.home causaria que los workers busquen currency.data en el JDK del daemon)
+    def excludedSysProps = ['java.home', 'java.class.path', 'sun.boot.class.path', 'java.ext.dirs'] as Set
+    System.getProperties().each { k, v ->
+        if (!(k as String in excludedSysProps)) {
+            systemProperty k as String, v as String
+        }
+    }
     
     // Log de configuracion paralela
     doFirst {
