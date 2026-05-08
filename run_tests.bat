@@ -97,11 +97,14 @@ echo ========================================================
 echo ✓ LISTO - Compilacion exitosa
 echo ========================================================
 echo.
-timeout /t 2 /nobreak
+echo Presiona cualquier tecla para continuar...
+pause > nul
 
 REM ========================================================
 REM FASE 2: Mostrar menú de selección
 REM ========================================================
+
+goto menu
 
 :menu
 cls
