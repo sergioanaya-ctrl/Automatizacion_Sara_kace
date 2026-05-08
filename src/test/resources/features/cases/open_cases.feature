@@ -311,7 +311,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CASANARE              | YOPAL              | NO                   | NO                  | AUTOS | DIAGNOSTICO VEHICULO |
+      | GUAJIRA               | RIOHACHA           | NO                   | NO                  | AUTOS | PARQUEADERO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |

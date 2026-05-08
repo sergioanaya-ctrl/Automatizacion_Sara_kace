@@ -510,8 +510,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private String generarNumeroExpediente15() {
-        String fecha = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-        return fecha + randomDigitos(7);
+        return randomDigitos(15);
     }
 
     private String randomDigitos(int longitud) {
