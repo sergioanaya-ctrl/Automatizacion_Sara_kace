@@ -14,7 +14,7 @@ Feature: Prueba de carga con multiples usuarios
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea   | servicio   |
-      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | <linea> | <servicio> |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | <linea> | <servicio> |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -23,53 +23,78 @@ Feature: Prueba de carga con multiples usuarios
 
     Examples:
       | id  | linea             | servicio           |
-      | 01  | AUTOS             | PASO DE GASOLINA   |
-      | 02  | AUTOS             | PASO DE GASOLINA   |
-      | 03  | AUTOS             | PASO DE GASOLINA   |
-      | 04  | AUTOS             | PASO DE GASOLINA   |
-      | 05  | AUTOS             | PASO DE GASOLINA   |
-      | 06  | AUTOS             | PASO DE GASOLINA   |
-      | 07  | AUTOS             | PASO DE GASOLINA   |
-      | 08  | AUTOS             | PASO DE GASOLINA   |
-      | 09  | AUTOS             | PASO DE GASOLINA   |
-      | 10  | AUTOS             | PASO DE GASOLINA   |
-      | 11  | AUTOS             | PASO DE GASOLINA   |
-      | 12  | AUTOS             | PASO DE GASOLINA   |
-      | 13  | AUTOS             | PASO DE GASOLINA   |
-      | 14  | AUTOS             | PASO DE GASOLINA   |
-      | 15  | AUTOS             | PASO DE GASOLINA   |
-      | 16  | AUTOS             | PASO DE GASOLINA   |
-      | 17  | AUTOS             | PASO DE GASOLINA   |
-      | 18  | AUTOS             | PASO DE GASOLINA   |
-      | 19  | AUTOS             | PASO DE GASOLINA   |
-      | 20  | AUTOS             | PASO DE GASOLINA   |
-      | 21  | AUTOS             | PASO DE GASOLINA   |
-      | 22  | AUTOS             | PASO DE GASOLINA   |
-      | 23  | AUTOS             | PASO DE GASOLINA   |
-      | 24  | AUTOS             | PASO DE GASOLINA   |
-      | 25  | AUTOS             | PASO DE GASOLINA   |
-      | 26  | AUTOS             | PASO DE GASOLINA   |
-      | 27  | AUTOS             | PASO DE GASOLINA   |
-      | 28  | AUTOS             | PASO DE GASOLINA   |
-      | 29  | AUTOS             | PASO DE GASOLINA   |
-      | 30  | AUTOS             | PASO DE GASOLINA   |
-      | 31  | AUTOS             | PASO DE GASOLINA   |
-      | 32  | AUTOS             | PASO DE GASOLINA   |
-      | 33  | AUTOS             | PASO DE GASOLINA   |
-      | 34  | AUTOS             | PASO DE GASOLINA   |
-      | 35  | AUTOS             | PASO DE GASOLINA   |
-      | 36  | AUTOS             | PASO DE GASOLINA   |
-      | 37  | AUTOS             | PASO DE GASOLINA   |
-      | 38  | AUTOS             | PASO DE GASOLINA   |
-      | 39  | AUTOS             | PASO DE GASOLINA   |
-      | 40  | AUTOS             | PASO DE GASOLINA   |
-      | 41  | AUTOS             | PASO DE GASOLINA   |
-      | 42  | AUTOS             | PASO DE GASOLINA   |
-      | 43  | AUTOS             | PASO DE GASOLINA   |
-      | 44  | AUTOS             | PASO DE GASOLINA   |
-      | 45  | AUTOS             | PASO DE GASOLINA   |
-      | 46  | AUTOS             | PASO DE GASOLINA   |
-      | 47  | AUTOS             | PASO DE GASOLINA   |
-      | 48  | AUTOS             | PASO DE GASOLINA   |
-      | 49  | AUTOS             | PASO DE GASOLINA   |
-      | 50  | AUTOS             | PASO DE GASOLINA   |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 02  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 03  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 04  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 05  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 06  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 07  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 08  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 09  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 10  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 11  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 12  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 13  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 14  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 15  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 16  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 17  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 18  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 19  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 20  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 21  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 22  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 23  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 24  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 25  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 26  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 27  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 28  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 29  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 30  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 31  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 32  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 33  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 34  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 35  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 36  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 37  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 38  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 39  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 40  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 41  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 42  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 43  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 44  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 45  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 46  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 47  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 48  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 49  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 50  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |

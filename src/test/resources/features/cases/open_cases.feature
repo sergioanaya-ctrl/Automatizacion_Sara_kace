@@ -11,7 +11,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS | PASO DE GASOLINA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -26,7 +26,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | BOGOTA D.C.                | BOGOTA D.C.             | NO                   | NO                  | AUTOS | ABOGADO EN SITIO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -41,7 +41,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | VALLE DEL CAUCA       | CALI               | NO                   | NO                  | AUTOS | MECANICA BASICA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -56,7 +56,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | ATLANTICO             | BARRANQUILLA       | NO                   | NO                  | AUTOS | FRENOS |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -71,7 +71,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CUNDINAMARCA          | SOACHA             | NO                   | NO                  | AUTOS | AMBULANCIA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -86,7 +86,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | SANTANDER             | BUCARAMANGA        | NO                   | NO                  | AUTOS | GRUA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -101,7 +101,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | NORTE DE SANTANDER    | CUCUTA             | NO                   | NO                  | AUTOS | CAMBIO LLANTAS |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -116,7 +116,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | MAGDALENA             | SANTA MARTA        | NO                   | NO                  | AUTOS | CERRAJERO AUTOS COMPLEJIDAD BAJA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -131,7 +131,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | BOLIVAR               | CARTAGENA          | NO                   | NO                  | AUTOS | DESPLAZAMIENTO POR HORAS |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -146,7 +146,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | NARIÑO                | PASTO              | NO                   | NO                  | AUTOS | FACILITADOR VIRTUAL |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -161,7 +161,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CAUCA                 | POPAYAN            | NO                   | NO                  | AUTOS | ABOGADO VIRTUAL |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -176,7 +176,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | QUINDIO               | ARMENIA            | NO                   | NO                  | AUTOS | ORIENTACION JURIDICA TELEFONICA AUTOS |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -191,7 +191,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | RISARALDA             | PEREIRA            | NO                   | NO                  | AUTOS | CONDUCTOR PROFESIONAL |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -206,7 +206,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | TOLIMA                | IBAGUE             | NO                   | NO                  | AUTOS | CONDUCTOR FAMILIAR |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -221,7 +221,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | META                  | VILLAVICENCIO      | NO                   | NO                  | AUTOS | ESTANCIA CONDUCTOR POR HURTO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -236,7 +236,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | SUCRE                 | SINCELEJO          | NO                   | NO                  | AUTOS | DESPLAZAMIENTO VIAJERO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -251,7 +251,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CORDOBA               | MONTERIA           | NO                   | NO                  | AUTOS | HOSPEDAJE VIAJERO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -266,7 +266,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CESAR                 | VALLEDUPAR         | NO                   | NO                  | AUTOS | TRASLADO VEHICULO DE REEMPLAZO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -281,7 +281,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | GUAJIRA               | RIOHACHA           | NO                   | NO                  | AUTOS | RESCATE PARQUEADERO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -296,7 +296,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | ARAUCA                | ARAUCA             | NO                   | NO                  | AUTOS | PARQUEADERO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -311,7 +311,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | GUAJIRA               | RIOHACHA           | NO                   | NO                  | AUTOS | PARQUEADERO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -326,7 +326,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE BATERIA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -341,7 +341,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CORDOBA               | CERETE            | NO                   | NO                  | AUTOS | CAMBIO DE DISPOSITIVO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -356,7 +356,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | VAUPÉS                | MITÚ               | NO                   | NO                  | AUTOS | INSTALACION |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -371,7 +371,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | LETICIA            | NO                   | NO                  | AUTOS | MANTENIMIENTO PREVENTIVO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -386,7 +386,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | ATENCION VIRTUAL HOGAR |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -401,7 +401,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | ABOGADO EN SITIO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -416,7 +416,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | BOGOTA                | SOACHA             | NO                   | NO                  | HOGARES | ELECTRICISTA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -431,7 +431,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | VALLE DEL CAUCA       | PALMIRA            | NO                   | NO                  | HOGARES | PLOMERO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -446,7 +446,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | ATLANTICO             | SOLEDAD            | NO                   | NO                  | HOGARES | CERRAJERO HO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -461,7 +461,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | VIDRIERO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -476,7 +476,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | SANTANDER             | FLORIDABLANCA      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -491,7 +491,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | DESAGUE POR INUNDACION |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -506,7 +506,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | MAGDALENA             | CIÉNAGA            | NO                   | NO                  | HOGARES | ASESORIA JURIDICA PRESENCIAL |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -521,7 +521,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION DIGITAL |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -536,7 +536,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | FACILITADOR VIRTUAL |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -551,7 +551,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CAUCA                 | SANTANDER DE QUILICHAO | NO                   | NO                  | HOGARES | VIGILANTE |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -566,7 +566,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | QUINDIO               | CALARCA            | NO                   | NO                  | HOGARES | VIGILANTE SP |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -581,7 +581,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | RISARALDA             | DOSQUEBRADAS       | NO                   | NO                  | HOGARES | HOSPEDAJE VIAJERO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -596,7 +596,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | TOLIMA                | MELGAR             | NO                   | NO                  | HOGARES | TRASLADO DE BIENES |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -611,7 +611,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | META                  | ACACIAS            | NO                   | NO                  | HOGARES | SECADO DE ALFOMBRAS |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -626,7 +626,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | SUCRE                 | COLOSÓ             | NO                   | NO                  | HOGARES | SERVICIOS EXEQUIAL |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -641,7 +641,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CORDOBA               | LORICA             | NO                   | NO                  | HOGARES | GASTOS DE MUDANZA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -656,7 +656,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CESAR                 | CODAZZI            | NO                   | NO                  | HOGARES | SEGUIMIENTO A LA REPARACION |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -671,7 +671,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | GUAJIRA               | MAICAO             | NO                   | NO                  | HOGARES | REVISION Y REDACCION DE CONTRATOS |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -686,7 +686,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CORDOBA                | LORICA             | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -701,7 +701,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CASANARE              | AGUAZUL            | NO                   | NO                  | HOGARES | CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -716,7 +716,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | VICHADA               | LA PRIMAVERA       | NO                   | NO                  | HOGARES | ORIENTACION JURIDICA TELEFONICA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -731,7 +731,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | GUAINIA               | SAN FERNANDO DE ATABAPO | NO                   | NO                  | HOGARES | ORIENTACION MEDICA TELEFONICA |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -746,7 +746,7 @@ Feature: Apertura de la pagina de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | VAUPÉS                | CARURU             | NO                   | NO                  | HOGARES | PLAN DE ACCION |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
