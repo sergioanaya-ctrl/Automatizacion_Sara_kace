@@ -330,8 +330,9 @@ public class FillCasoExpressFormInOrder implements Interaction {
 
     private void esperarServicioHabilitado(WebDriver driver) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
-        By servicioDropdown = By.cssSelector("#custom-select-et5p1mg .custom-dropdown");
-        By servicioControl = By.cssSelector("#custom-select-et5p1mg .custom-dropdown-control");
+        // Usar selectores basados en clases CSS, NO en IDs dinámicos
+        By servicioDropdown = By.cssSelector(".formio-component-servicio .custom-dropdown");
+        By servicioControl = By.cssSelector(".formio-component-servicio .custom-dropdown-control");
 
         wait.until(d -> {
             WebElement dropdown = d.findElement(servicioDropdown);
@@ -426,12 +427,13 @@ public class FillCasoExpressFormInOrder implements Interaction {
             Thread.currentThread().interrupt();
         }
         
-        // Línea y Servicio usan custom dropdowns con la lógica de municipio
-        seleccionarComboLineaWebDriver(driver, "//div[@id='custom-select-ef1mmig']//div[contains(@class,'custom-dropdown-control')]", linea);
+        // Línea y Servicio usan custom dropdowns - usar selectores basados en clases, NO en IDs dinámicos
+        seleccionarComboLineaWebDriver(driver, "//div[contains(@class,'formio-component-linea')]//div[contains(@class,'custom-dropdown-control')]", linea);
         // Asegurarse de que el dropdown de Línea se cerró antes de abrir Servicio
         ((JavascriptExecutor) driver).executeScript("document.activeElement.blur();");
         esperarServicioHabilitado(driver);
-        seleccionarComboServicioWebDriver(driver, "//div[@id='custom-select-et5p1mg']//div[contains(@class,'custom-dropdown-control')]", servicio);
+        // Usar selector específico que busca por el label "Servicio" (no "Servicio Especial")
+        seleccionarComboServicioWebDriver(driver, "//div[contains(@class,'formio-component-servicio') and .//label[normalize-space()='Servicio' and not(contains(., 'Especial'))]]//div[contains(@class,'custom-dropdown-control')]", servicio);
     }
 
     private <T extends Actor> void llenarObservacionFinal(T actor) {
