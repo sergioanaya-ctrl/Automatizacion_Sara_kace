@@ -62,17 +62,8 @@ REM ========================================================
 
 echo.
 echo ========================================================
-echo         DESCARGANDO DEPENDENCIAS (primera vez)
+echo         DESCARGANDO DEPENDENCIAS
 echo ========================================================
-echo.
-
-REM Intentar compilar - esto descargará todas las dependencias si no existen
-echo Descargando Gradle 8.10 (compatible con Java 8)...
-echo Compilando proyecto...
-echo (Esto puede tomar 2-5 minutos la primera vez)
-echo.
-
-REM Nota: Usamos sin -q para ver errores si los hay
 echo.
 echo Descargando Gradle 8.10, JDK 1.8, y compilando...
 echo (Primera vez: 3-5 minutos. Siguientes: 30 segundos)
@@ -81,21 +72,20 @@ call .\gradlew.bat compileTestJava
 if %errorlevel% neq 0 (
     echo.
     echo ========================================================
-    echo ERROR: No se pudo descargar dependencias o compilar
+    echo ERROR: No se pudo compilar
     echo ========================================================
     echo.
     echo Posibles causas:
     echo - Sin conexion a internet
     echo - Puerto bloqueado por firewall/antivirus
     echo - Disco lleno
-    echo - Carpeta con caracteres especiales en la ruta
     echo.
-    echo Cartpeta actual: %cd%
+    echo Carpeta actual: %cd%
     echo.
     echo SOLUCIONES:
     echo 1. Verifica tu conexion a internet
     echo 2. Reinicia la maquina
-    echo 3. Copia el proyecto a una ruta sin espacios (C:\Sara3)
+    echo 3. Copia el proyecto a C:\Sara3 (sin espacios)
     echo 4. Desactiva temporalmente el antivirus
     echo.
     pause
@@ -104,10 +94,10 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ========================================================
-echo ✓ Dependencias descargadas correctamente
-echo ✓ Proyecto compilado
+echo ✓ LISTO - Compilacion exitosa
 echo ========================================================
 echo.
+timeout /t 2 /nobreak
 
 REM ========================================================
 REM FASE 2: Mostrar menú de selección
