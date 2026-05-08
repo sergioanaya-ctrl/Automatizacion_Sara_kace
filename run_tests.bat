@@ -2,10 +2,6 @@
 REM ========================================================
 REM Ejecutor de Pruebas - PORTABLE (descarga deps automático)
 REM ========================================================
-REM Este script es PORTABLE: funciona en cualquier máquina
-REM - Descarga dependencias automáticamente
-REM - Compila el proyecto
-REM - Luego permite elegir cuántos tests ejecutar
 
 setlocal enabledelayedexpansion
 
@@ -22,12 +18,9 @@ if not exist "gradlew.bat" (
     echo.
     echo Carpeta actual: %cd%
     echo.
-    echo Por favor:
-    echo 1. Extrae el ZIP completamente
-    echo 2. Abre una terminal en la carpeta Sara3
-    echo 3. Ejecuta nuevamente run_tests.bat
-    echo.
     pause
+    exit /b 1
+)
     exit /b 1
 )
 
@@ -97,14 +90,11 @@ echo ========================================================
 echo ✓ LISTO - Compilacion exitosa
 echo ========================================================
 echo.
-echo Presiona cualquier tecla para continuar...
-pause > nul
+pause
 
 REM ========================================================
 REM FASE 2: Mostrar menú de selección
 REM ========================================================
-
-goto menu
 
 :menu
 cls
