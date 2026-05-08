@@ -21,15 +21,10 @@ apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
 apply plugin: 'application'
 
 // ========================================================
-// CONFIGURACION DE JAVA TOOLCHAIN
+// CONFIGURACION DE JAVA
 // ========================================================
-// Gradle descargará automáticamente JDK 1.8 si no existe
-// Garantiza compatibilidad en todas las máquinas
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-}
+// El proyecto funciona con JDK 8, 11, 17, 21+
+// Usa la versión de Java disponible en tu sistema
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -62,10 +57,6 @@ dependencies {
     testImplementation 'org.slf4j:slf4j-simple:2.0.5'
 }
 test {
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-    
     testLogging.showStandardStreams = true
     
     // CONFIGURACION PARA EJECUCION PARALELA
