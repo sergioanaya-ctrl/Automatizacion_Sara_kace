@@ -10,7 +10,7 @@ Feature: Apertura de la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea             | servicio          |
       | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
