@@ -1,4 +1,4 @@
-Feature: Apertura de la pagina de casos
+Feature: Apertura de la pagina de caso
   Como equipo de automatizacion
   Quiero abrir la pagina de casos con multiples departamentos y municipios
   Para validar que funciona en toda Colombia
