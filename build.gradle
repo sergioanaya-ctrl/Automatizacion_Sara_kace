@@ -90,7 +90,6 @@ test {
         showStandardStreams = true
         events "started", "passed", "failed", "skipped"
         exceptionFormat "full"
-        logLevel = org.gradle.api.logging.LogLevel.INFO
     }
     
     // Log de inicio y fin de ejecucion

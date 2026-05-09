@@ -45,26 +45,6 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: ============================================================
-:: FUNCION PARA LIMPIAR REPORTES DE SERENITY
-:: ============================================================
-:clean_reports
-echo.
-echo Limpiando reportes anteriores...
-if exist "target\site\serenity" (
-    rmdir /s /q "target\site\serenity" >nul 2>&1
-    echo [OK] Reportes de Serenity eliminados
-)
-if exist "target\test-results" (
-    rmdir /s /q "target\test-results" >nul 2>&1
-    echo [OK] Resultados de tests eliminados
-)
-if exist "build\reports" (
-    rmdir /s /q "build\reports" >nul 2>&1
-    echo [OK] Reportes de build eliminados
-)
-exit /b 0
-
 :menu
 cls
 echo.
@@ -81,7 +61,7 @@ echo  6. Ejecutar 50 runners en paralelo
 echo  7. Ejecutar  1 runner individual
 echo  8. Ver reporte de resultados
 echo  9. Generar reporte de tiempos (EXCEL)
-echo 10. Limpiar reportes
+echo 10. Limpiar reportes (en otro archivo)
 echo 11. Salir
 echo.
 set /p choice="Selecciona opcion (1-11): "
@@ -95,87 +75,68 @@ if "%choice%"=="6" goto run_50
 if "%choice%"=="7" goto run_one
 if "%choice%"=="8" goto report
 if "%choice%"=="9" goto timing_report
-if "%choice%"=="10" goto clean_menu
+if "%choice%"=="10" goto clean_help
 if "%choice%"=="11" goto end
 goto menu
 
 :custom_runners
 set /p FORKS="Numero de runners (1-50): "
-call :clean_reports
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=%FORKS%' | Set-Content gradle.properties"
-timeout /t 5
 call .\gradlew.bat test --parallel
-if %errorlevel% neq 0 (
-    echo.
-    echo [ERROR] Los tests fallaron o se ejecutaron incorrectamente
-)
+echo.
+echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 pause
 goto menu
 
 :run_2
-call :clean_reports
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=2' | Set-Content gradle.properties"
-timeout /t 5
 call .\gradlew.bat test --parallel
+echo.
+echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 pause
 goto menu
 
 :run_4
-call :clean_reports
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=4' | Set-Content gradle.properties"
-timeout /t 5
 call .\gradlew.bat test --parallel
+echo.
+echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 pause
 goto menu
 
 :run_8
-call :clean_reports
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=8' | Set-Content gradle.properties"
-timeout /t 5
 call .\gradlew.bat test --parallel
+echo.
+echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 pause
 goto menu
 
 :run_12
-call :clean_reports
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=12' | Set-Content gradle.properties"
-timeout /t 5
 call .\gradlew.bat test --parallel
+echo.
+echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 pause
 goto menu
 
 :run_50
-call :clean_reports
+powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=50' | Set-Content gradle.properties"
 echo.
 echo ADVERTENCIA: Ejecutar 50 tests en paralelo requiere recursos significativos
-echo Se aplicara timeout de 1 hora para evitar bloqueos infinitos
 echo.
-timeout /t 5
-powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=50' | Set-Content gradle.properties"
-timeout /t 60 /nobreak
-call .\gradlew.bat test --parallel --max-workers=50
-if %errorlevel% equ 124 (
-    echo.
-    echo [TIMEOUT] La ejecucion tardo demasiado. Matando procesos...
-    taskkill /F /IM java.exe /T >nul 2>&1
-)
+call .\gradlew.bat test --parallel
+echo.
+echo [INFO] Ejecucion completada. Los 50 tests se ejecutaron (fallen o no).
 pause
 goto menu
 
 :run_one
 set /p runner="Numero del runner (01-50): "
-call :clean_reports
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=1' | Set-Content gradle.properties"
-timeout /t 5
 call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner%"
-echo.
-echo ========================================================
-echo Test completado. Reporte disponible en:
-echo ========================================================
-echo target\site\serenity\index.html
-echo.
 pause
-exit /b 0
+goto menu
 
 :report
 if exist "target\site\serenity\index.html" (
@@ -206,10 +167,11 @@ if exist "build\test-results\test" (
 pause
 goto menu
 
-:clean_menu
-call :clean_reports
+:clean_help
 echo.
-echo [OK] Reportes limpiados exitosamente
+echo Para limpiar reportes, ejecuta:
+echo   clean_reports.bat
+echo.
 pause
 goto menu
 
