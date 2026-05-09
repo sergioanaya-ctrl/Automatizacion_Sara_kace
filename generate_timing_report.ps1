@@ -10,8 +10,14 @@ param(
 
 # Ruta de los resultados
 $testResultsPath = "build\test-results\test"
-$csvOutput = "test_timings_report.csv"
-$xlsxOutput = "test_timings_report.xlsx"
+$reportFolder = "target\reports"
+$csvOutput = "$reportFolder\test_timings_report.csv"
+$xlsxOutput = "$reportFolder\test_timings_report.xlsx"
+
+# Crear carpeta de reportes
+if (-not (Test-Path $reportFolder)) {
+    New-Item -ItemType Directory -Path $reportFolder | Out-Null
+}
 
 # Verificar que existe la carpeta
 if (-not (Test-Path $testResultsPath)) {
@@ -207,7 +213,8 @@ try {
     $sheet2.UsedRange.Columns.AutoFit() | Out-Null
     
     # Guardar
-    $workbook.SaveAs((Get-Location).Path + "\$xlsxOutput")
+    $fullPath = (Get-Location).Path + "\" + $xlsxOutput
+    $workbook.SaveAs($fullPath)
     $workbook.Close()
     $excel.Quit()
     
