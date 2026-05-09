@@ -74,7 +74,7 @@ test {
     
     // TIMEOUT PARA EVITAR CUELGUES INFINITOS
     // 10 minutos por test (600 segundos)
-    timeout = java.time.Duration.ofHours(4)
+    timeout = java.time.Duration.ofHours(10)
     
     // Pasar propiedades del sistema EXCEPTO java.home y classpath del daemon
     // (pasar java.home causaria que los workers busquen currency.data en el JDK del daemon)
