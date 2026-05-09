@@ -79,10 +79,10 @@ $totalTime = ($testData | Measure-Object -Property "Duration (min)" -Sum).Sum
 $avgTime = ($testData | Measure-Object -Property "Duration (min)" -Average).Average
 $maxTime = ($testData | Measure-Object -Property "Duration (min)" -Maximum).Maximum
 $minTime = ($testData | Measure-Object -Property "Duration (min)" -Minimum).Minimum
-$totalTests = $testData.Count
-$passedTests = ($testData | Where-Object { $_.Status -eq "PASSED" }).Count
-$failedTests = ($testData | Where-Object { $_.Status -eq "FAILED" }).Count
-$skippedTests = ($testData | Where-Object { $_.Status -eq "SKIPPED" }).Count
+$totalTests = @($testData).Count
+$passedTests = @($testData | Where-Object { $_.Status -eq "PASSED" }).Count
+$failedTests = @($testData | Where-Object { $_.Status -eq "FAILED" }).Count
+$skippedTests = @($testData | Where-Object { $_.Status -eq "SKIPPED" }).Count
 
 # Mostrar estadisticas
 Write-Host "ESTADISTICAS DE EJECUCION:" -ForegroundColor Green
@@ -187,7 +187,16 @@ try {
     $sheet2 = $workbook.Sheets.Add()
     $sheet2.Name = "Summary"
     
-    $row = 1
+    # Headers
+    $sheet2.Cells.Item(1, 1) = "Metrica"
+    $sheet2.Cells.Item(1, 2) = "Valor"
+    $sheet2.Cells.Item(1, 1).Font.Bold = $true
+    $sheet2.Cells.Item(1, 2).Font.Bold = $true
+    $sheet2.Cells.Item(1, 1).Interior.ColorIndex = 15
+    $sheet2.Cells.Item(1, 2).Interior.ColorIndex = 15
+    
+    # Datos
+    $row = 2
     $statsSummary | ForEach-Object {
         $sheet2.Cells.Item($row, 1) = $_.Metrica
         $sheet2.Cells.Item($row, 2) = $_.Valor
@@ -212,7 +221,7 @@ Write-Host ""
 Write-Host "TOP 10 TESTS MAS LENTOS:" -ForegroundColor Yellow
 Write-Host "========================================================" -ForegroundColor Yellow
 $testData | Select-Object -First 10 | ForEach-Object {
-    Write-Host "$($_.`"Test Name`") - $($_.`"Duration (s)`")s - $($_.Status)" -ForegroundColor Cyan
+    Write-Host "$($_.`"Test Name`") - $($_.`"Duration (min)`") min - $($_.Status)" -ForegroundColor Cyan
 }
 
 Write-Host ""

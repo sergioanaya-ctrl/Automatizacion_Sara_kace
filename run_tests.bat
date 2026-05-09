@@ -58,13 +58,14 @@ echo  3. Ejecutar  4 runners en paralelo
 echo  4. Ejecutar  8 runners en paralelo
 echo  5. Ejecutar 12 runners en paralelo
 echo  6. Ejecutar 50 runners en paralelo
-echo  7. Ejecutar  1 runner individual
+echo  7. Ejecutar  1 runner individual (con numero 1-50)
 echo  8. Ver reporte de resultados
 echo  9. Generar reporte de tiempos (EXCEL)
 echo 10. Limpiar reportes (en otro archivo)
-echo 11. Salir
+echo 11. Ejecutar 1 SCENARIO sin paralelo
+echo 12. Salir
 echo.
-set /p choice="Selecciona opcion (1-11): "
+set /p choice="Selecciona opcion (1-12): "
 
 if "%choice%"=="1" goto custom_runners
 if "%choice%"=="2" goto run_2
@@ -76,7 +77,8 @@ if "%choice%"=="7" goto run_one
 if "%choice%"=="8" goto report
 if "%choice%"=="9" goto timing_report
 if "%choice%"=="10" goto clean_help
-if "%choice%"=="11" goto end
+if "%choice%"=="11" goto run_one_no_parallel
+if "%choice%"=="12" goto end
 goto menu
 
 :custom_runners
@@ -172,6 +174,39 @@ echo.
 echo Para limpiar reportes, ejecuta:
 echo   clean_reports.bat
 echo.
+pause
+goto menu
+
+:run_one_no_parallel
+echo.
+echo ========================================================
+echo    EJECUTAR 1 SCENARIO SIN PARALELO
+echo ========================================================
+echo.
+set /p batch_num="Numero del scenario (1-50): "
+
+if "%batch_num%"=="" (
+    echo ERROR: Debes ingresar un numero
+    pause
+    goto menu
+)
+
+:: Validar que sea un numero entre 1 y 50
+for /l %%i in (1,1,50) do (
+    if "%batch_num%"=="%%i" (
+        powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=1' | Set-Content gradle.properties"
+        echo.
+        echo [INFO] Ejecutando SCENARIO %batch_num% SIN PARALELO...
+        echo.
+        call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%batch_num%" -x
+        echo.
+        echo [INFO] Ejecucion completada del scenario %batch_num%
+        pause
+        goto menu
+    )
+)
+
+echo ERROR: Numero invalido. Ingresa un numero entre 1 y 50
 pause
 goto menu
 
