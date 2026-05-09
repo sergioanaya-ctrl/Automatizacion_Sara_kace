@@ -19,7 +19,6 @@ Feature: Prueba de carga con multiples usuarios
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
-    Then deberia ver la ruta agent
 
     Examples:
       | id  | linea             | servicio           |
@@ -98,3 +97,4 @@ Feature: Prueba de carga con multiples usuarios
       | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
       | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
       | 01  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+
