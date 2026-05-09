@@ -196,9 +196,17 @@ pause
 goto menu
 
 :run_one
-set /p runner="Numero del runner (01-50): "
+set /p runner="Numero del runner (1-50): "
+
+:: Agregar cero a la izquierda si es menor a 10
+if %runner% LSS 10 (
+    set "runner_formatted=0%runner%"
+) else (
+    set "runner_formatted=%runner%"
+)
+
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=1' | Set-Content gradle.properties"
-call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner%"
+call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner_formatted%"
 pause
 goto menu
 
@@ -280,14 +288,22 @@ if "%batch_num%"=="" (
     goto menu
 )
 
+:: Agregar cero a la izquierda si es menor a 10
+if %batch_num% LSS 10 (
+    set "batch_num_formatted=0%batch_num%"
+) else (
+    set "batch_num_formatted=%batch_num%"
+)
+
 :: Validar que sea un numero entre 1 y 50
 for /l %%i in (1,1,50) do (
     if "%batch_num%"=="%%i" (
         powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=1' | Set-Content gradle.properties"
         echo.
         echo [INFO] Ejecutando SCENARIO %batch_num% SIN PARALELO...
+        echo [INFO] Usando tag: @batch%batch_num_formatted%
         echo.
-        call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%batch_num%" -x
+        call .\gradlew.bat test -Dcucumber.filter.tags="@batch%batch_num_formatted%"
         echo.
         echo [INFO] Ejecucion completada del scenario %batch_num%
         pause
