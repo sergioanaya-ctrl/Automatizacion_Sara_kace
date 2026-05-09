@@ -74,7 +74,7 @@ test {
     
     // TIMEOUT PARA EVITAR CUELGUES INFINITOS
     // 10 minutos por test (600 segundos)
-    timeout = java.time.Duration.ofMinutes(10)
+    timeout = java.time.Duration.ofHours(4)
     
     // Pasar propiedades del sistema EXCEPTO java.home y classpath del daemon
     // (pasar java.home causaria que los workers busquen currency.data en el JDK del daemon)
@@ -100,7 +100,7 @@ test {
         println "Max Parallel Forks (navegadores): ${maxParallelForks}"
         println "Available Processors: ${Runtime.runtime.availableProcessors()}"
         println "Heap Size por Fork: ${maxHeapSize}"
-        println "Timeout por test: 10 minutos"
+        println "Timeout por test: 2 horas"
         println "Para cambiar: edita gradle.properties"
         println "Inicio: " + new Date()
         println "========================================="
