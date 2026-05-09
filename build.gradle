@@ -72,6 +72,10 @@ test {
     // Reutilizar fork para todos los tests (mas eficiente)
     forkEvery = 0
     
+    // TIMEOUT PARA EVITAR CUELGUES INFINITOS
+    // 10 minutos por test (600 segundos)
+    timeout = java.time.Duration.ofMinutes(10)
+    
     // Pasar propiedades del sistema EXCEPTO java.home y classpath del daemon
     // (pasar java.home causaria que los workers busquen currency.data en el JDK del daemon)
     def excludedSysProps = ['java.home', 'java.class.path', 'sun.boot.class.path', 'java.ext.dirs'] as Set
@@ -81,7 +85,15 @@ test {
         }
     }
     
-    // Log de configuracion paralela
+    // Listener para monitorear tests que se cuelgan
+    testLogging {
+        showStandardStreams = true
+        events "started", "passed", "failed", "skipped"
+        exceptionFormat "full"
+        logLevel = org.gradle.api.logging.LogLevel.INFO
+    }
+    
+    // Log de inicio y fin de ejecucion
     doFirst {
         println "========================================="
         println "CONFIGURACION EJECUCION PARALELA"
@@ -89,7 +101,16 @@ test {
         println "Max Parallel Forks (navegadores): ${maxParallelForks}"
         println "Available Processors: ${Runtime.runtime.availableProcessors()}"
         println "Heap Size por Fork: ${maxHeapSize}"
+        println "Timeout por test: 10 minutos"
         println "Para cambiar: edita gradle.properties"
+        println "Inicio: " + new Date()
+        println "========================================="
+    }
+    
+    doLast {
+        println "========================================="
+        println "EJECUCION COMPLETADA"
+        println "Fin: " + new Date()
         println "========================================="
     }
 }
