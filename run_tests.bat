@@ -206,7 +206,7 @@ if %runner% LSS 10 (
 )
 
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=1' | Set-Content gradle.properties"
-call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner_formatted%"
+call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner_formatted%" -Dcucumber.filter.tags="@batch%runner_formatted%"
 pause
 goto menu
 
@@ -303,7 +303,7 @@ for /l %%i in (1,1,50) do (
         echo [INFO] Ejecutando SCENARIO %batch_num% SIN PARALELO...
         echo [INFO] Usando tag: @batch%batch_num_formatted%
         echo.
-        call .\gradlew.bat test -Dcucumber.filter.tags="@batch%batch_num_formatted%"
+        call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%batch_num_formatted%" -Dcucumber.filter.tags="@batch%batch_num_formatted%"
         echo.
         echo [INFO] Ejecucion completada del scenario %batch_num%
         pause
