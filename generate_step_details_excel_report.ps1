@@ -21,8 +21,103 @@ if (-not (Test-Path $reportPath)) {
 }
 
 # ============================================
-# FUNCIÓN DE CLASIFICACIÓN DE ERRORES
+# FUNCIÓN PARA GENERAR EXCEL CON COM
+# Funciona sin ImportExcel, usa API nativa
 # ============================================
+function Create-ExcelFile {
+    param(
+        [string]$filePath,
+        [array]$sheetData,
+        [array]$sheetNames
+    )
+    
+    try {
+        # Crear instancia de Excel o LibreOffice Calc
+        $excel = New-Object -ComObject Excel.Application
+        if ($null -eq $excel) {
+            # Intentar con LibreOffice
+            $excel = New-Object -ComObject com.sun.star.ServiceManager
+            if ($null -eq $excel) {
+                return $false
+            }
+        }
+        
+        $excel.Visible = $false
+        $excel.DisplayAlerts = $false
+        
+        $workbook = $excel.Workbooks.Add()
+        
+        # Primera hoja siempre existe
+        $worksheet = $workbook.Worksheets(1)
+        $worksheet.Name = $sheetNames[0]
+        
+        # Llenar primera hoja
+        $row = 1
+        foreach ($item in $sheetData[0]) {
+            $col = 1
+            foreach ($property in $item.PSObject.Properties) {
+                if ($row -eq 1) {
+                    $worksheet.Cells($row, $col) = $property.Name
+                    $worksheet.Cells($row, $col).Font.Bold = $true
+                }
+                $col++
+            }
+            $row++
+            
+            $col = 1
+            foreach ($property in $item.PSObject.Properties) {
+                $worksheet.Cells($row, $col) = $property.Value
+                $col++
+            }
+        }
+        
+        # AutoFit columns
+        $worksheet.UsedRange.EntireColumn.AutoFit() | Out-Null
+        
+        # Agregar más hojas
+        for ($i = 1; $i -lt $sheetData.Count; $i++) {
+            $worksheet = $workbook.Worksheets.Add()
+            $worksheet.Name = $sheetNames[$i]
+            
+            $row = 1
+            foreach ($item in $sheetData[$i]) {
+                $col = 1
+                foreach ($property in $item.PSObject.Properties) {
+                    if ($row -eq 1) {
+                        $worksheet.Cells($row, $col) = $property.Name
+                        $worksheet.Cells($row, $col).Font.Bold = $true
+                    }
+                    $col++
+                }
+                $row++
+                
+                $col = 1
+                foreach ($property in $item.PSObject.Properties) {
+                    $worksheet.Cells($row, $col) = $property.Value
+                    $col++
+                }
+            }
+            
+            $worksheet.UsedRange.EntireColumn.AutoFit() | Out-Null
+        }
+        
+        # Guardar archivo
+        $workbook.SaveAs($filePath)
+        $workbook.Close()
+        $excel.Quit()
+        
+        return $true
+    }
+    catch {
+        Write-Host "Error creando Excel con COM: $_" -ForegroundColor Yellow
+        try {
+            $workbook.Close()
+            $excel.Quit()
+        }
+        catch { }
+        return $false
+    }
+}
 function Get-ErrorType {
     param([string]$message)
     if ([string]::IsNullOrWhiteSpace($message)) { return "Sin Error" }
@@ -293,33 +388,42 @@ foreach ($stat in $testStats) {
 # ============================================
 
 try {
-    $importExcelAvailable = Get-Module -ListAvailable -Name ImportExcel
+    $excelPath = "$reportPath\step_details_$timestamp.xlsx"
     
-    if ($importExcelAvailable) {
-        Import-Module ImportExcel -ErrorAction SilentlyContinue
-        
-        $excelPath = "$reportPath\step_details_$timestamp.xlsx"
-        
-        # Crear Excel con múltiples hojas
-        
-        # Hoja 1: Resumen
-        $failedTests = ($testStats | Where-Object { $_.Estado -eq "FAILED" }).Count
-        $passedTests = ($testStats | Where-Object { $_.Estado -eq "PASSED" }).Count
-        
-        $summary = @()
-        $summary += [PSCustomObject]@{ Metrica = "Fecha y Hora"; Valor = (Get-Date -Format "dd/MM/yyyy HH:mm:ss") }
-        $summary += [PSCustomObject]@{ Metrica = "Máquina"; Valor = $machineName }
-        $summary += [PSCustomObject]@{ Metrica = "Usuario"; Valor = $userName }
-        $summary += [PSCustomObject]@{ Metrica = "Total Tests"; Valor = $testStats.Count }
-        $summary += [PSCustomObject]@{ Metrica = "Tests Exitosos"; Valor = $passedTests }
-        $summary += [PSCustomObject]@{ Metrica = "Tests Fallidos"; Valor = $failedTests }
-        $summary += [PSCustomObject]@{ Metrica = "Total Pasos"; Valor = $allSteps.Count }
-        $summary += [PSCustomObject]@{ Metrica = "Pasos Lentos (>5s)"; Valor = ($allSteps | Where-Object { $_.Tiempo_ms -gt 5000 }).Count }
-        
-        $summary | Export-Excel -Path $excelPath -WorksheetName "Resumen" -AutoSize -TableStyle "Light1"
-        
-        # Hoja 2: Todos los Pasos (CON ERROR TYPE/MESSAGE + BATCH + MAQUINA)
-        $stepsForExcel = $allSteps | Select-Object @{N="Test"; E={$_.Test}},
+    # Preparar datos para las hojas
+    $failedTests = ($testStats | Where-Object { $_.Estado -eq "FAILED" }).Count
+    $passedTests = ($testStats | Where-Object { $_.Estado -eq "PASSED" }).Count
+    
+    $summary = @()
+    $summary += [PSCustomObject]@{ Metrica = "Fecha y Hora"; Valor = (Get-Date -Format "dd/MM/yyyy HH:mm:ss") }
+    $summary += [PSCustomObject]@{ Metrica = "Máquina"; Valor = $machineName }
+    $summary += [PSCustomObject]@{ Metrica = "Usuario"; Valor = $userName }
+    $summary += [PSCustomObject]@{ Metrica = "Total Tests"; Valor = $testStats.Count }
+    $summary += [PSCustomObject]@{ Metrica = "Tests Exitosos"; Valor = $passedTests }
+    $summary += [PSCustomObject]@{ Metrica = "Tests Fallidos"; Valor = $failedTests }
+    $summary += [PSCustomObject]@{ Metrica = "Total Pasos"; Valor = $allSteps.Count }
+    $summary += [PSCustomObject]@{ Metrica = "Pasos Lentos (>5s)"; Valor = ($allSteps | Where-Object { $_.Tiempo_ms -gt 5000 }).Count }
+    
+    # Hoja 2: Todos los Pasos
+    $stepsForExcel = $allSteps | Select-Object @{N="Test"; E={$_.Test}},
+                               @{N="Batch"; E={$_.Batch}},
+                               @{N="Máquina"; E={$machineName}},
+                               @{N="Usuario"; E={$userName}},
+                               @{N="Descripción Completa"; E={$_.Descripcion}},
+                               @{N="Acción"; E={$_.Accion}},
+                               @{N="Elemento/Campo"; E={if([string]::IsNullOrEmpty($_.Elemento)) { "N/A" } else { $_.Elemento }}},
+                               @{N="Valor Ingresado"; E={if([string]::IsNullOrEmpty($_.Valor)) { "N/A" } else { $_.Valor }}},
+                               @{N="Nivel"; E={$_.Nivel}},
+                               @{N="Tiempo (ms)"; E={$_.Tiempo_ms}},
+                               @{N="Tiempo (s)"; E={$_.Tiempo_s}},
+                               @{N="Estado Paso"; E={$_.Estado}},
+                               @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}},
+                               @{N="Error Message"; E={if($_.Estado -eq "ERROR") { $_.ErrorMessage } else { "" }}}
+    
+    # Hoja 3: Pasos Lentos
+    $slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Object Tiempo_ms -Descending
+    $slowStepsForExcel = if ($slowSteps.Count -gt 0) {
+        $slowSteps | Select-Object @{N="Test"; E={$_.Test}},
                                    @{N="Batch"; E={$_.Batch}},
                                    @{N="Máquina"; E={$machineName}},
                                    @{N="Usuario"; E={$userName}},
@@ -333,91 +437,115 @@ try {
                                    @{N="Estado Paso"; E={$_.Estado}},
                                    @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}},
                                    @{N="Error Message"; E={if($_.Estado -eq "ERROR") { $_.ErrorMessage } else { "" }}}
-        
-        $stepsForExcel | Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos" -AutoSize -TableStyle "Light1" -Append
-        
-        # Hoja 3: Pasos Lentos (CON ERROR TYPE/MESSAGE + BATCH + MAQUINA)
-        $slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Object Tiempo_ms -Descending
-        if ($slowSteps.Count -gt 0) {
-            $slowSteps | Select-Object @{N="Test"; E={$_.Test}},
-                                       @{N="Batch"; E={$_.Batch}},
-                                       @{N="Máquina"; E={$machineName}},
-                                       @{N="Usuario"; E={$userName}},
-                                       @{N="Descripción Completa"; E={$_.Descripcion}},
-                                       @{N="Acción"; E={$_.Accion}},
-                                       @{N="Elemento/Campo"; E={if([string]::IsNullOrEmpty($_.Elemento)) { "N/A" } else { $_.Elemento }}},
-                                       @{N="Valor Ingresado"; E={if([string]::IsNullOrEmpty($_.Valor)) { "N/A" } else { $_.Valor }}},
-                                       @{N="Nivel"; E={$_.Nivel}},
-                                       @{N="Tiempo (ms)"; E={$_.Tiempo_ms}},
-                                       @{N="Tiempo (s)"; E={$_.Tiempo_s}},
-                                       @{N="Estado Paso"; E={$_.Estado}},
-                                       @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}},
-                                       @{N="Error Message"; E={if($_.Estado -eq "ERROR") { $_.ErrorMessage } else { "" }}} | 
-                Export-Excel -Path $excelPath -WorksheetName "Pasos Lentos (>5s)" -AutoSize -TableStyle "Light1" -Append
-        }
-        
-        # Hoja 4: Estadísticas por Test (CON ERRORES + BATCH + MAQUINA)
-        if ($testStats.Count -gt 0) {
-            $testStats | Select-Object @{N="Test"; E={$_.Test}},
-                                       @{N="Batch"; E={$_.Batch}},
-                                       @{N="Máquina"; E={$machineName}},
-                                       @{N="Usuario"; E={$userName}},
-                                       @{N="Total Pasos"; E={$_.TotalPasos}},
-                                       @{N="Pasos Lentos"; E={$_.PasosLentos}},
-                                       @{N="Tiempo Total (min)"; E={$_.TiempoTotal_min}},
-                                       @{N="Estado"; E={$_.Estado}},
-                                       @{N="Error Type"; E={$_.ErrorType}},
-                                       @{N="Error Message"; E={$_.ErrorMessage}} | 
-                Export-Excel -Path $excelPath -WorksheetName "Estadísticas por Test" -AutoSize -TableStyle "Light1" -Append
-        }
-        
-        # Hoja 5: Resumen de Errores
-        $errorSummary = $testStats | Where-Object { $_.Estado -eq "FAILED" } | 
-                        Group-Object ErrorType | 
-                        Select-Object @{N="Error Type"; E={$_.Name}},
-                                      @{N="Cantidad"; E={$_.Count}},
-                                      @{N="Porcentaje"; E={Format-WithComma -Value (($_.Count / $failedTests) * 100) -Decimals 1}} | 
-                        Sort-Object Cantidad -Descending
-        
-        if ($errorSummary.Count -gt 0) {
+    } else {
+        @([PSCustomObject]@{ Mensaje = "Sin pasos lentos" })
+    }
+    
+    # Hoja 4: Estadísticas por Test
+    $statsForExcel = $testStats | Select-Object @{N="Test"; E={$_.Test}},
+                                                  @{N="Batch"; E={$_.Batch}},
+                                                  @{N="Máquina"; E={$machineName}},
+                                                  @{N="Usuario"; E={$userName}},
+                                                  @{N="Total Pasos"; E={$_.TotalPasos}},
+                                                  @{N="Pasos Lentos"; E={$_.PasosLentos}},
+                                                  @{N="Tiempo Total (min)"; E={$_.TiempoTotal_min}},
+                                                  @{N="Estado"; E={$_.Estado}},
+                                                  @{N="Error Type"; E={$_.ErrorType}},
+                                                  @{N="Error Message"; E={$_.ErrorMessage}}
+    
+    # Hoja 5: Resumen de Errores
+    $errorSummary = $testStats | Where-Object { $_.Estado -eq "FAILED" } | 
+                    Group-Object ErrorType | 
+                    Select-Object @{N="Error Type"; E={$_.Name}},
+                                  @{N="Cantidad"; E={$_.Count}},
+                                  @{N="Porcentaje"; E={Format-WithComma -Value (($_.Count / $failedTests) * 100) -Decimals 1}} | 
+                    Sort-Object Cantidad -Descending
+    if ($errorSummary.Count -eq 0) {
+        $errorSummary = @([PSCustomObject]@{ "Error Type" = "Sin Errores"; Cantidad = 0; Porcentaje = 0 })
+    }
+    
+    # Hoja 6: Resumen por Batch
+    $batchSummary = $testStats | Where-Object { $_.Batch } | Group-Object Batch | 
+                    Select-Object @{N="Batch"; E={$_.Name}},
+                                  @{N="Total Tests"; E={$_.Count}},
+                                  @{N="Exitosos"; E={($_.Group | Where-Object { $_.Estado -eq "PASSED" }).Count}},
+                                  @{N="Fallidos"; E={($_.Group | Where-Object { $_.Estado -eq "FAILED" }).Count}},
+                                  @{N="Tasa Error %"; E={if($_.Count -gt 0) { Format-WithComma -Value ((($_.Group | Where-Object { $_.Estado -eq "FAILED" }).Count / $_.Count) * 100) -Decimals 1 } else { "0,00" }}} | 
+                    Sort-Object 'Batch'
+    if ($batchSummary.Count -eq 0) {
+        $batchSummary = @([PSCustomObject]@{ Batch = "N/A"; "Total Tests" = 0; Exitosos = 0; Fallidos = 0; "Tasa Error %" = 0 })
+    }
+    
+    # Hoja 7: Tests Fallidos
+    $failedTestsDetails = $testStats | Where-Object { $_.Estado -eq "FAILED" } | 
+                          Select-Object @{N="Test"; E={$_.Test}},
+                                        @{N="Batch"; E={$_.Batch}},
+                                        @{N="Máquina"; E={$machineName}},
+                                        @{N="Usuario"; E={$userName}},
+                                        @{N="Tiempo Total (min)"; E={$_.TiempoTotal_min}},
+                                        @{N="Total Pasos"; E={$_.TotalPasos}},
+                                        @{N="Pasos Lentos"; E={$_.PasosLentos}},
+                                        @{N="Error Type"; E={$_.ErrorType}},
+                                        @{N="Error Message"; E={$_.ErrorMessage}}
+    if ($failedTestsDetails.Count -eq 0) {
+        $failedTestsDetails = @([PSCustomObject]@{ Test = "N/A"; Batch = "N/A"; Máquina = $machineName; Usuario = $userName; "Tiempo Total (min)" = 0; "Total Pasos" = 0; "Pasos Lentos" = 0; "Error Type" = "N/A"; "Error Message" = "N/A" })
+    }
+    
+    # Intentar con ImportExcel primero (si está disponible)
+    $importExcelAvailable = Get-Module -ListAvailable -Name ImportExcel
+    $excelGenerated = $false
+    
+    if ($importExcelAvailable) {
+        Write-Host "  Intentando generar Excel con ImportExcel..." -ForegroundColor Cyan
+        try {
+            Import-Module ImportExcel -ErrorAction SilentlyContinue
+            
+            $summary | Export-Excel -Path $excelPath -WorksheetName "Resumen" -AutoSize -TableStyle "Light1"
+            $stepsForExcel | Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos" -AutoSize -TableStyle "Light1" -Append
+            
+            if ($slowSteps.Count -gt 0) {
+                $slowStepsForExcel | Export-Excel -Path $excelPath -WorksheetName "Pasos Lentos (>5s)" -AutoSize -TableStyle "Light1" -Append
+            }
+            
+            $statsForExcel | Export-Excel -Path $excelPath -WorksheetName "Estadísticas por Test" -AutoSize -TableStyle "Light1" -Append
             $errorSummary | Export-Excel -Path $excelPath -WorksheetName "Resumen de Errores" -AutoSize -TableStyle "Light1" -Append
-        }
-        
-        # Hoja 7: Resumen por Batch
-        $batchSummary = $testStats | Where-Object { $_.Batch } | Group-Object Batch | 
-                        Select-Object @{N="Batch"; E={$_.Name}},
-                                      @{N="Total Tests"; E={$_.Count}},
-                                      @{N="Exitosos"; E={($_.Group | Where-Object { $_.Estado -eq "PASSED" }).Count}},
-                                      @{N="Fallidos"; E={($_.Group | Where-Object { $_.Estado -eq "FAILED" }).Count}},
-                                      @{N="Tasa Error %"; E={if($_.Count -gt 0) { Format-WithComma -Value ((($_.Group | Where-Object { $_.Estado -eq "FAILED" }).Count / $_.Count) * 100) -Decimals 1 } else { "0,00" }}} | 
-                        Sort-Object 'Batch'
-        
-        if ($batchSummary.Count -gt 0) {
             $batchSummary | Export-Excel -Path $excelPath -WorksheetName "Resumen por Batch" -AutoSize -TableStyle "Light1" -Append
-        }
-        
-        # Hoja 6: Tests Fallidos Detallados
-        $failedTestsDetails = $testStats | Where-Object { $_.Estado -eq "FAILED" } | 
-                              Select-Object @{N="Test"; E={$_.Test}},
-                                            @{N="Batch"; E={$_.Batch}},
-                                            @{N="Máquina"; E={$machineName}},
-                                            @{N="Usuario"; E={$userName}},
-                                            @{N="Tiempo Total (min)"; E={$_.TiempoTotal_min}},
-                                            @{N="Total Pasos"; E={$_.TotalPasos}},
-                                            @{N="Pasos Lentos"; E={$_.PasosLentos}},
-                                            @{N="Error Type"; E={$_.ErrorType}},
-                                            @{N="Error Message"; E={$_.ErrorMessage}}
-        
-        if ($failedTestsDetails.Count -gt 0) {
             $failedTestsDetails | Export-Excel -Path $excelPath -WorksheetName "Tests Fallidos" -AutoSize -TableStyle "Light1" -Append
+            
+            $excelGenerated = $true
+            Write-Host "  ✓ Excel generado con ImportExcel" -ForegroundColor Green
         }
+        catch {
+            Write-Host "  × ImportExcel falló: $_" -ForegroundColor Yellow
+            Write-Host "  Intentando con COM API..." -ForegroundColor Yellow
+        }
+    }
+    
+    # Si ImportExcel no funcionó, intentar con COM (Excel/LibreOffice)
+    if (-not $excelGenerated) {
+        Write-Host "  Intentando generar Excel con COM (nativo)..." -ForegroundColor Cyan
         
+        $excelSuccess = Create-ExcelFile -filePath $excelPath `
+                                         -sheetData @($summary, $stepsForExcel, $slowStepsForExcel, $statsForExcel, $errorSummary, $batchSummary, $failedTestsDetails) `
+                                         -sheetNames @("Resumen", "Todos los Pasos", "Pasos Lentos (>5s)", "Estadísticas por Test", "Resumen de Errores", "Resumen por Batch", "Tests Fallidos")
+        
+        if ($excelSuccess) {
+            $excelGenerated = $true
+            Write-Host "  ✓ Excel generado con COM API (Excel/LibreOffice nativo)" -ForegroundColor Green
+        } else {
+            Write-Host "  × No se pudo generar Excel con COM" -ForegroundColor Yellow
+        }
+    }
+    
+    if ($excelGenerated) {
         Write-Host ""
         Write-Host "====================================" -ForegroundColor Green
-        Write-Host "OK: Excel unificado generado" -ForegroundColor Green
+        Write-Host "✓ Excel generado exitosamente" -ForegroundColor Green
         Write-Host "====================================" -ForegroundColor Green
         Write-Host "Archivo: $excelPath" -ForegroundColor Cyan
         Write-Host ""
+    }
+
         Write-Host "HOJAS GENERADAS:"
         Write-Host ("  - Hoja 1: Resumen (Tests: " + $testStats.Count + ", Fallidos: " + $failedTests + ")")
         Write-Host ("  - Hoja 2: Todos los Pasos (" + $allSteps.Count + " filas + Batch + Error Type/Message)")
@@ -442,13 +570,21 @@ try {
         }
         Write-Host ""
         
-        # ============================================
-        # GENERAR CSV Y HTML COMO ALTERNATIVAS
-        # ============================================
-        
-        # Generar CSV (con Batch + Error Type/Message + Máquina/Usuario)
-        $csvPath = "$reportPath\step_details_$timestamp.csv"
-        $csvLines = @('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Estado","Error Type","Error Message"')
+}
+catch {
+    Write-Host "ERROR en generación de Excel: $_" -ForegroundColor Yellow
+}
+
+# ============================================
+# GENERAR CSV Y HTML COMO ALTERNATIVAS
+# SIEMPRE se generan, independientemente de Excel
+# ============================================
+try {
+    $csvPath = "$reportPath\step_details_$timestamp.csv"
+    $htmlPath = "$reportPath\step_details_$timestamp.html"
+    
+    # Generar CSV (con Batch + Error Type/Message + Máquina/Usuario)
+    $csvLines = @('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Estado","Error Type","Error Message"')
         
         foreach ($step in $allSteps) {
             $desc = $step.Descripcion -replace '"', '""'
@@ -463,8 +599,6 @@ try {
         Write-Host "  - CSV generado: step_details_$timestamp.csv"
         
         # Generar HTML (con Batch + Error Type/Message)
-        $htmlPath = "$reportPath\step_details_$timestamp.html"
-        
         # Calcular estadísticas
         $slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 }
         $slowCount = $slowSteps.Count
