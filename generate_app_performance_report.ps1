@@ -1,8 +1,8 @@
-# Script para analizar RENDIMIENTO DE LA APLICACION Sara3 bajo carga paralela
-# Genera: CSV (5 archivos) + EXCEL (5 hojas formateadas) + HTML (dashboard elegante)
+# Script para CONSOLIDAR RENDIMIENTO DE LA APLICACION SARA3
+# Consolida 1 o MULTIPLES tests en UN ÚNICO informe final
 # 
-# CAPTURA DATOS REALES: Lee metrics del Java ApplicationPerformanceMonitor
-# Si no encuentra datos reales, usa datos de demostración como fallback
+# GENERA: Informe consolidado único (CSV + HTML)
+# ANALIZA: Degradación de performance basada en concurrencia (1 test vs N tests paralelos)
 
 param(
     [string]$appPerfLogsPath = "target/app_performance_logs",
@@ -18,89 +18,179 @@ $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 $dateFormatted = Get-Date -Format 'dd/MM/yyyy HH:mm:ss'
 
 # ============================================================================
-# FUNCIÓN: Cargar datos REALES desde CSVs del ApplicationPerformanceMonitor
+# FUNCIÓN: Consolidar TODOS los CSVs en UN ÚNICO informe
 # ============================================================================
 
-function Load-RealPerformanceData {
+function Load-And-Consolidate-AllPerformanceData {
     param([string]$logsPath)
     
     $dataLoaded = $false
-    $metrics = @()
-    $endpoints = @()
+    $allMetrics = @()
+    $allEndpoints = @()
+    $testCount = 0
     
-    # Buscar archivos CSV más recientes
     if (Test-Path $logsPath) {
+        Write-Host ""
         Write-Host "Buscando datos REALES en: $logsPath" -ForegroundColor Cyan
         
         $csvFiles = Get-ChildItem -Path $logsPath -Filter "*.csv" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
         
         if ($csvFiles.Count -gt 0) {
-            Write-Host "Encontrados $($csvFiles.Count) archivos de performance" -ForegroundColor Green
-            $latestFile = $csvFiles[0]
-            Write-Host "Leyendo: $($latestFile.Name)" -ForegroundColor Gray
+            Write-Host "Encontrados $($csvFiles.Count) archivos CSV de tests" -ForegroundColor Green
+            $testCount = $csvFiles.Count
             
-            try {
-                $csvData = Import-Csv -Path $latestFile.FullName -Encoding UTF8 -ErrorAction Stop
+            # CONSOLIDAR TODOS LOS CSVs
+            foreach ($csvFile in $csvFiles) {
+                Write-Host "  Procesando: $($csvFile.Name)" -ForegroundColor Gray
                 
-                foreach ($row in $csvData) {
-                    if ($row.Tipo -eq "NETWORK" -or $row.Tipo -eq "API") {
-                        $endpoints += @{
-                            Name = $row."Endpoint/Acción"
-                            Avg = [int]$row.Tiempo_ms
-                            Min = [int]([math]::Round([int]$row.Tiempo_ms * 0.7))
-                            Max = [int]([math]::Round([int]$row.Tiempo_ms * 1.3))
-                            Load = [int]([math]::Round([int]$row.Tiempo_ms * 1.5))
-                            Degradation = [int]([math]::Round(([int]$row.Tiempo_ms / 1000) * 10))
-                        }
-                    }
+                try {
+                    $csvData = Import-Csv -Path $csvFile.FullName -Encoding UTF8 -ErrorAction Stop
                     
-                    if ($row.Tipo -eq "RENDER") {
-                        $metrics += @{
-                            Nombre = $row."Endpoint/Acción"
-                            Target = "< 3s"
-                            Actual = "$([int]$row.Tiempo_ms)ms"
-                            Status = if ([int]$row.Tiempo_ms -lt 2000) { "OK" } else { "LENTO" }
-                            Degradation = [int]([math]::Round(([int]$row.Tiempo_ms / 2000) * 20))
+                    foreach ($row in $csvData) {
+                        if ($row.Tipo -eq "NETWORK" -or $row.Tipo -eq "API") {
+                            $time_ms = [int]$row.Tiempo_ms
+                            $allEndpoints += @{
+                                Name = $row."Endpoint/Acción"
+                                Time = $time_ms
+                                TestFile = $csvFile.Name
+                            }
+                        }
+                        
+                        if ($row.Tipo -eq "RENDER") {
+                            $time_ms = [int]$row.Tiempo_ms
+                            $allMetrics += @{
+                                Nombre = $row."Endpoint/Acción"
+                                Time = $time_ms
+                                TestFile = $csvFile.Name
+                            }
                         }
                     }
+                } catch {
+                    Write-Host "    ⚠ Error leyendo: $($_.Exception.Message)" -ForegroundColor Yellow
                 }
-                
-                if ($endpoints.Count -gt 0 -or $metrics.Count -gt 0) {
-                    $dataLoaded = $true
-                    Write-Host "EXITO: Datos REALES cargados ($($endpoints.Count) endpoints, $($metrics.Count) metricas)" -ForegroundColor Green
-                }
-            } catch {
-                Write-Host "Advertencia: No se pudo parsear CSV - $($_.Exception.Message)" -ForegroundColor Yellow
+            }
+            
+            if ($allEndpoints.Count -gt 0 -or $allMetrics.Count -gt 0) {
+                $dataLoaded = $true
+                Write-Host ""
+                Write-Host "✓ ÉXITO: Consolidados datos de $testCount tests" -ForegroundColor Green
+                Write-Host "  - Endpoints capturados: $($allEndpoints.Count)" -ForegroundColor Gray
+                Write-Host "  - Métricas RENDER capturadas: $($allMetrics.Count)" -ForegroundColor Gray
             }
         }
     }
     
     return @{
         Success = $dataLoaded
-        Metrics = $metrics
-        Endpoints = $endpoints
+        AllMetrics = $allMetrics
+        AllEndpoints = $allEndpoints
+        TestCount = $testCount
     }
 }
 
 # ============================================================================
-# Cargar datos reales O usar datos de demostración
+# Cargar y consolidar TODOS los datos
 # ============================================================================
 
 Write-Host ""
-Write-Host "Cargando datos de performance..." -ForegroundColor Cyan
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+Write-Host "  CONSOLIDACIÓN DE PERFORMANCE - INFORME ÚNICO FINAL" -ForegroundColor Cyan
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Cyan
 
-$realData = Load-RealPerformanceData -logsPath $appPerfLogsPath
+$consolidatedData = Load-And-Consolidate-AllPerformanceData -logsPath $appPerfLogsPath
 
-if ($realData.Success) {
-    Write-Host "Usando DATOS REALES del ApplicationPerformanceMonitor" -ForegroundColor Green
-    $metrics = $realData.Metrics
-    $endpoints = $realData.Endpoints
+if ($consolidatedData.Success) {
+    Write-Host ""
+    Write-Host "Analizando datos consolidados..." -ForegroundColor Cyan
+    
+    # CALCULAR ESTADÍSTICAS POR ENDPOINT
+    $endpointStats = @{}
+    foreach ($ep in $consolidatedData.AllEndpoints) {
+        if (-not $endpointStats.ContainsKey($ep.Name)) {
+            $endpointStats[$ep.Name] = @{
+                Name = $ep.Name
+                Times = @()
+            }
+        }
+        $endpointStats[$ep.Name].Times += $ep.Time
+    }
+    
+    # CALCULAR PROMEDIOS, MIN, MAX
+    $endpoints = @()
+    foreach ($epName in $endpointStats.Keys) {
+        $times = $endpointStats[$epName].Times
+        $avg = [int]($times | Measure-Object -Average).Average
+        $min = [int]($times | Measure-Object -Minimum).Minimum
+        $max = [int]($times | Measure-Object -Maximum).Maximum
+        
+        # DEGRADACIÓN: basada en cantidad de tests ejecutados en paralelo
+        $degradation = if ($consolidatedData.TestCount -gt 1) {
+            [int]([math]::Round(($max / $min - 1) * 100))
+        } else {
+            0
+        }
+        
+        $endpoints += @{
+            Name = $epName
+            Avg = $avg
+            Min = $min
+            Max = $max
+            Load = [int]([math]::Round($max * 1.2))
+            Degradation = $degradation
+            TestsCount = $consolidatedData.TestCount
+        }
+    }
+    
+    # CALCULAR ESTADÍSTICAS POR MÉTRICA RENDER
+    $metricStats = @{}
+    foreach ($m in $consolidatedData.AllMetrics) {
+        if (-not $metricStats.ContainsKey($m.Nombre)) {
+            $metricStats[$m.Nombre] = @{
+                Nombre = $m.Nombre
+                Times = @()
+            }
+        }
+        $metricStats[$m.Nombre].Times += $m.Time
+    }
+    
+    # CALCULAR PROMEDIOS DE MÉTRICAS
+    $metrics = @()
+    foreach ($mName in $metricStats.Keys) {
+        $times = $metricStats[$mName].Times
+        $avg = [int]($times | Measure-Object -Average).Average
+        $min = [int]($times | Measure-Object -Minimum).Minimum
+        $max = [int]($times | Measure-Object -Maximum).Maximum
+        
+        $degradation = if ($consolidatedData.TestCount -gt 1) {
+            [int]([math]::Round(($max / $min - 1) * 100))
+        } else {
+            0
+        }
+        
+        $actual = "$avg ms"
+        $status = if ($avg -lt 2000) { "OK" } else { "LENTO" }
+        
+        $metrics += @{
+            Nombre = $mName
+            Target = "< 3s"
+            Actual = $actual
+            Status = $status
+            Degradation = $degradation
+        }
+    }
+    
+    # IDENTIFICAR CUELLOS DE BOTELLA
+    $bottlenecks = $endpoints | Sort-Object Degradation -Descending | Select-Object -First 5
+    
 } else {
-    Write-Host "Usando DATOS DE DEMOSTRACION (no se encontraron datos reales)" -ForegroundColor Yellow
-    Write-Host "Sugerencia: Ejecuta los tests con ApplicationPerformanceMonitor activo" -ForegroundColor Gray
+    Write-Host ""
+    Write-Host "⚠ No se encontraron datos reales de performance" -ForegroundColor Yellow
+    Write-Host "Sugerencia: Ejecuta tests con ApplicationPerformanceMonitor activo" -ForegroundColor Gray
     Write-Host ""
     
-    # DATOS DE DEMOSTRACION (para pruebas sin ejecutar tests)
+    # DATOS DE DEMOSTRACIÓN
+    $consolidatedData = @{ TestCount = 1 }
+    
     $metrics = @(
         @{ Nombre = "Primera Pintura (FCP)"; Target = "< 2s"; Actual = "1.8s"; Status = "OK"; Degradation = 10 },
         @{ Nombre = "Pintura Mas Grande (LCP)"; Target = "< 2.5s"; Actual = "2.3s"; Status = "OK"; Degradation = 8 },
@@ -148,314 +238,398 @@ if ($realData.Success) {
 }
 
 Write-Host ""
-Write-Host "Generando reportes de rendimiento de la aplicacion..." -ForegroundColor Cyan
+Write-Host "Generando informe consolidado único..." -ForegroundColor Cyan
 Write-Host ""
 
 # ============================================================================
-# GENERAR CSV FILES
+# GENERAR CSV CONSOLIDADO ÚNICO
 # ============================================================================
 
-Write-Host "Generando archivos CSV..." -ForegroundColor Gray
+Write-Host "Generando archivo CSV consolidado..." -ForegroundColor Gray
 
-# CSV 1: Performance Summary
-$csvSummaryPath = "$outputPath\app_performance_summary_$timestamp.csv"
+$csvReportPath = "$outputPath\app_performance_consolidated_$timestamp.csv"
 $csvContent = @()
-$csvContent += '"SARA3 - RENDIMIENTO DE LA APLICACION"'
-$csvContent += '"Tipo","N maquinas x M escenarios (flexible)"'
-$csvContent += '"Fecha Reporte","' + $dateFormatted + '"'
+$csvContent += '"SARA3 - INFORME CONSOLIDADO DE RENDIMIENTO"'
+$csvContent += '"Fecha Generacion","' + $dateFormatted + '"'
+$csvContent += '"Tests Ejecutados",' + $consolidatedData.TestCount
 $csvContent += '""'
+$csvContent += '"RESUMEN DE MÉTRICAS"'
 $csvContent += '"Metrica","Objetivo","Actual","Degradacion %","Estado"'
 foreach ($metric in $metrics) {
     $csvContent += '"' + $metric.Nombre + '","' + $metric.Target + '","' + $metric.Actual + '","' + $metric.Degradation + '%","' + $metric.Status + '"'
 }
-$csvContent | Out-File -FilePath $csvSummaryPath -Encoding UTF8 -Force
-Write-Host "  OK Performance Summary CSV" -ForegroundColor Green
 
-# CSV 2: Network Timing
-$csvNetworkPath = "$outputPath\app_network_timing_$timestamp.csv"
-$csvContent = @()
-$csvContent += '"Endpoint API","Promedio (ms)","Min (ms)","Max (ms)","Bajo Carga (ms)","Degradacion %"'
+$csvContent += '""'
+$csvContent += '"ENDPOINTS API - ANÁLISIS CONSOLIDADO"'
+$csvContent += '"Endpoint","Promedio (ms)","Min (ms)","Max (ms)","Tests Procesados","Degradacion %"'
 foreach ($ep in $endpoints) {
-    $csvContent += '"' + $ep.Name + '","' + $ep.Avg + '","' + $ep.Min + '","' + $ep.Max + '","' + $ep.Load + '","' + $ep.Degradation + '%"'
+    $csvContent += '"' + $ep.Name + '","' + $ep.Avg + '","' + $ep.Min + '","' + $ep.Max + '","' + $ep.TestsCount + '","' + $ep.Degradation + '%"'
 }
-$csvContent | Out-File -FilePath $csvNetworkPath -Encoding UTF8 -Force
-Write-Host "  OK Network Timing CSV" -ForegroundColor Green
 
-# CSV 3: Web Vitals
-$csvVitalsPath = "$outputPath\app_web_vitals_$timestamp.csv"
-$csvContent = @()
-$csvContent += '"Web Vital","Linea Base (1 user)","Bajo Carga","Degradacion %","Estado"'
-foreach ($vital in $vitals) {
-    $degradation = [math]::Round(($vital.Load / $vital.Baseline - 1) * 100, 1)
-    $csvContent += '"' + $vital.Name + '","' + $vital.Baseline + 'ms","' + $vital.Load + 'ms","' + $degradation + '%","' + $vital.Status + '"'
-}
-$csvContent | Out-File -FilePath $csvVitalsPath -Encoding UTF8 -Force
-Write-Host "  OK Web Vitals CSV" -ForegroundColor Green
-
-# CSV 4: Bottleneck Analysis
-$csvBottleneckPath = "$outputPath\app_bottleneck_analysis_$timestamp.csv"
-$csvContent = @()
-$csvContent += '"Componente","Tiempo Respuesta","Severidad","Recomendacion"'
-foreach ($bottleneck in $bottlenecks) {
-    $csvContent += '"' + $bottleneck.Component + '","' + $bottleneck.Time + '","' + $bottleneck.Impact + '","' + $bottleneck.Rec + '"'
-}
-$csvContent | Out-File -FilePath $csvBottleneckPath -Encoding UTF8 -Force
-Write-Host "  OK Bottleneck Analysis CSV" -ForegroundColor Green
-
-# CSV 5: Load Degradation Curve
-$csvCurvePath = "$outputPath\app_load_degradation_curve_$timestamp.csv"
-$csvContent = @()
-$csvContent += '"Usuarios Concurrentes","Respuesta Promedio (ms)","Degradacion %","Indice Escalabilidad"'
-foreach ($load in $loadCurve) {
-    $degradation = [math]::Round(($load.Response / 1500 - 1) * 100, 1)
-    $csvContent += '"' + $load.Users + '","' + $load.Response + '","' + $degradation + '%","' + $load.Scalability + '"'
-}
-$csvContent | Out-File -FilePath $csvCurvePath -Encoding UTF8 -Force
-Write-Host "  OK Load Degradation Curve CSV" -ForegroundColor Green
+$csvContent | Out-File -FilePath $csvReportPath -Encoding UTF8 -Force
+Write-Host "✓ CSV consolidado generado" -ForegroundColor Green
 
 # ============================================================================
-# GENERAR EXCEL (si está disponible)
+# GENERAR HTML DASHBOARD ÚNICO Y ELEGANTE
 # ============================================================================
 
-$excelGenerated = $false
-try {
-    Add-Type -AssemblyName "Microsoft.Office.Interop.Excel" -ErrorAction Stop
-    
-    Write-Host ""
-    Write-Host "Generando archivo Excel (5 hojas)..." -ForegroundColor Gray
-    
-    $excelApp = New-Object -ComObject Excel.Application
-    $excelApp.Visible = $false
-    $workbook = $excelApp.Workbooks.Add()
-    $workbook.Worksheets.Clear()
+Write-Host "Generando dashboard HTML..." -ForegroundColor Gray
 
-    # ========== HOJA 1: Resumen General ==========
-    $sheet = $workbook.Worksheets.Add()
-    $sheet.Name = "Resumen General"
-    $row = 1
-    
-    $sheet.Cells.Item($row, 1) = "RENDIMIENTO APLICACION SARA3"
-    $sheet.Cells.Item($row, 1).Font.Bold = $true
-    $sheet.Cells.Item($row, 1).Font.Size = 14
-    $sheet.Cells.Item($row, 1).Font.Color = 0x0066CC
-    $row += 2
-    
-    $sheet.Cells.Item($row, 1) = "Fecha Reporte:"
-    $sheet.Cells.Item($row, 2) = $dateFormatted
-    $row += 2
-    
-    $sheet.Cells.Item($row, 1) = "Metrica"
-    $sheet.Cells.Item($row, 2) = "Objetivo"
-    $sheet.Cells.Item($row, 3) = "Actual"
-    $sheet.Cells.Item($row, 4) = "Degradacion"
-    $sheet.Range("A$row:D$row").Font.Bold = $true
-    $sheet.Range("A$row:D$row").Interior.ColorIndex = 17
-    $row++
-    
-    foreach ($metric in $metrics) {
-        $sheet.Cells.Item($row, 1) = $metric.Nombre
-        $sheet.Cells.Item($row, 2) = $metric.Target
-        $sheet.Cells.Item($row, 3) = $metric.Actual
-        $sheet.Cells.Item($row, 4) = [string]$metric.Degradation + "%"
-        
-        if ($metric.Degradation -le 15) {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xC6EFCE
-        } elseif ($metric.Degradation -le 25) {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xFFEB9C
-        } else {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xF8CBAD
+$htmlReportPath = "$outputPath\app_performance_report_$timestamp.html"
+
+$htmlContent = @"
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARA3 - Informe de Performance Consolidado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        $row++
-    }
-    
-    $sheet.Columns("A").ColumnWidth = 40
-    $sheet.Columns("B").ColumnWidth = 15
-    $sheet.Columns("C").ColumnWidth = 15
-    $sheet.Columns("D").ColumnWidth = 15
-
-    # ========== HOJA 2: Tiempo de Red ==========
-    $sheet = $workbook.Worksheets.Add()
-    $sheet.Name = "Tiempo de Red"
-    $row = 1
-    
-    $sheet.Cells.Item($row, 1) = "ENDPOINTS API - TIEMPO DE RESPUESTA"
-    $sheet.Cells.Item($row, 1).Font.Bold = $true
-    $sheet.Cells.Item($row, 1).Font.Size = 12
-    $row += 2
-    
-    $sheet.Cells.Item($row, 1) = "Endpoint"
-    $sheet.Cells.Item($row, 2) = "Promedio (ms)"
-    $sheet.Cells.Item($row, 3) = "Min (ms)"
-    $sheet.Cells.Item($row, 4) = "Max (ms)"
-    $sheet.Cells.Item($row, 5) = "Bajo Carga (ms)"
-    $sheet.Cells.Item($row, 6) = "Degradacion %"
-    $sheet.Range("A$row:F$row").Font.Bold = $true
-    $sheet.Range("A$row:F$row").Interior.ColorIndex = 17
-    $row++
-    
-    foreach ($ep in $endpoints) {
-        $sheet.Cells.Item($row, 1) = $ep.Name
-        $sheet.Cells.Item($row, 2) = $ep.Avg
-        $sheet.Cells.Item($row, 3) = $ep.Min
-        $sheet.Cells.Item($row, 4) = $ep.Max
-        $sheet.Cells.Item($row, 5) = $ep.Load
-        $sheet.Cells.Item($row, 6) = [string]$ep.Degradation + "%"
         
-        if ($ep.Degradation -le 30) {
-            $sheet.Range("A$row:F$row").Interior.Color = 0xC6EFCE
-        } elseif ($ep.Degradation -le 50) {
-            $sheet.Range("A$row:F$row").Interior.Color = 0xFFEB9C
-        } else {
-            $sheet.Range("A$row:F$row").Interior.Color = 0xF8CBAD
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
         }
-        $row++
-    }
-    
-    $sheet.Columns("A").ColumnWidth = 25
-    foreach ($i in 2..6) {
-        $sheet.Columns($i).ColumnWidth = 18
-    }
-
-    # ========== HOJA 3: Web Vitals ==========
-    $sheet = $workbook.Worksheets.Add()
-    $sheet.Name = "Web Vitals"
-    $row = 1
-    
-    $sheet.Cells.Item($row, 1) = "WEB VITALS - LINEA BASE VS CARGA"
-    $sheet.Cells.Item($row, 1).Font.Bold = $true
-    $sheet.Cells.Item($row, 1).Font.Size = 12
-    $row += 2
-    
-    $sheet.Cells.Item($row, 1) = "Metrica"
-    $sheet.Cells.Item($row, 2) = "Linea Base (1 user)"
-    $sheet.Cells.Item($row, 3) = "Bajo Carga"
-    $sheet.Cells.Item($row, 4) = "Degradacion %"
-    $sheet.Cells.Item($row, 5) = "Estado"
-    $sheet.Range("A$row:E$row").Font.Bold = $true
-    $sheet.Range("A$row:E$row").Interior.ColorIndex = 17
-    $row++
-    
-    foreach ($vital in $vitals) {
-        $degradation = [math]::Round(($vital.Load / $vital.Baseline - 1) * 100, 1)
-        $sheet.Cells.Item($row, 1) = $vital.Name
-        $sheet.Cells.Item($row, 2) = [string]$vital.Baseline + "ms"
-        $sheet.Cells.Item($row, 3) = [string]$vital.Load + "ms"
-        $sheet.Cells.Item($row, 4) = [string]$degradation + "%"
-        $sheet.Cells.Item($row, 5) = $vital.Status
         
-        if ($vital.Status -eq "EXCELENTE") {
-            $sheet.Range("A$row:E$row").Interior.Color = 0xC6EFCE
-        } else {
-            $sheet.Range("A$row:E$row").Interior.Color = 0xFFEB9C
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
         }
-        $row++
-    }
-    
-    $sheet.Columns("A").ColumnWidth = 25
-    foreach ($i in 2..5) {
-        $sheet.Columns($i).ColumnWidth = 18
-    }
-
-    # ========== HOJA 4: Cuellos de Botella ==========
-    $sheet = $workbook.Worksheets.Add()
-    $sheet.Name = "Cuellos Botella"
-    $row = 1
-    
-    $sheet.Cells.Item($row, 1) = "ANALISIS DE CUELLOS DE BOTELLA"
-    $sheet.Cells.Item($row, 1).Font.Bold = $true
-    $sheet.Cells.Item($row, 1).Font.Size = 12
-    $row += 2
-    
-    $sheet.Cells.Item($row, 1) = "Componente"
-    $sheet.Cells.Item($row, 2) = "Tiempo Respuesta"
-    $sheet.Cells.Item($row, 3) = "Severidad"
-    $sheet.Cells.Item($row, 4) = "Recomendacion"
-    $sheet.Range("A$row:D$row").Font.Bold = $true
-    $sheet.Range("A$row:D$row").Interior.ColorIndex = 17
-    $row++
-    
-    foreach ($bottleneck in $bottlenecks) {
-        $sheet.Cells.Item($row, 1) = $bottleneck.Component
-        $sheet.Cells.Item($row, 2) = $bottleneck.Time
-        $sheet.Cells.Item($row, 3) = $bottleneck.Impact
-        $sheet.Cells.Item($row, 4) = $bottleneck.Rec
         
-        if ($bottleneck.Impact -eq "CRITICO") {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xF8CBAD
-        } elseif ($bottleneck.Impact -eq "ALTO") {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xFFEB9C
-        } else {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xE7E6E6
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
         }
-        $row++
-    }
-    
-    $sheet.Columns("A").ColumnWidth = 25
-    $sheet.Columns("B").ColumnWidth = 18
-    $sheet.Columns("C").ColumnWidth = 15
-    $sheet.Columns("D").ColumnWidth = 30
-
-    # ========== HOJA 5: Curva de Degradacion ==========
-    $sheet = $workbook.Worksheets.Add()
-    $sheet.Name = "Curva Degradacion"
-    $row = 1
-    
-    $sheet.Cells.Item($row, 1) = "CURVA DE DEGRADACION - ESCALABILIDAD"
-    $sheet.Cells.Item($row, 1).Font.Bold = $true
-    $sheet.Cells.Item($row, 1).Font.Size = 12
-    $row += 2
-    
-    $sheet.Cells.Item($row, 1) = "Usuarios Concurrentes"
-    $sheet.Cells.Item($row, 2) = "Respuesta Promedio (ms)"
-    $sheet.Cells.Item($row, 3) = "Degradacion %"
-    $sheet.Cells.Item($row, 4) = "Indice Escalabilidad"
-    $sheet.Range("A$row:D$row").Font.Bold = $true
-    $sheet.Range("A$row:D$row").Interior.ColorIndex = 17
-    $row++
-    
-    foreach ($load in $loadCurve) {
-        $degradation = [math]::Round(($load.Response / 1500 - 1) * 100, 1)
-        $sheet.Cells.Item($row, 1) = $load.Users
-        $sheet.Cells.Item($row, 2) = $load.Response
-        $sheet.Cells.Item($row, 3) = [string]$degradation + "%"
-        $sheet.Cells.Item($row, 4) = $load.Scalability
         
-        $scalabilityValue = [int]($load.Scalability -replace '%')
-        if ($scalabilityValue -ge 75) {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xC6EFCE
-        } elseif ($scalabilityValue -ge 50) {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xFFEB9C
-        } else {
-            $sheet.Range("A$row:D$row").Interior.Color = 0xF8CBAD
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
-        $row++
-    }
-    
-    $sheet.Columns("A").ColumnWidth = 25
-    foreach ($i in 2..4) {
-        $sheet.Columns($i).ColumnWidth = 22
-    }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .meta-info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+        
+        .meta-info div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .meta-info label {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        .meta-info value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .status-excellent { color: #27ae60; font-weight: 600; }
+        .status-good { color: #f39c12; font-weight: 600; }
+        .status-warning { color: #e74c3c; font-weight: 600; }
+        .status-critical { color: #c0392b; font-weight: 600; }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .metric-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 SARA3 - Performance Consolidado</h1>
+            <p>Informe Único Final de Rendimiento de la Aplicación</p>
+            <div class="meta-info">
+                <div>
+                    <label>Fecha:</label>
+                    <value>$dateFormatted</value>
+                </div>
+                <div>
+                    <label>Tests Ejecutados:</label>
+                    <value>$($consolidatedData.TestCount)</value>
+                </div>
+                <div>
+                    <label>Endpoints Analizados:</label>
+                    <value>$($endpoints.Count)</value>
+                </div>
+                <div>
+                    <label>Métricas:</label>
+                    <value>$($metrics.Count)</value>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>📈 Resumen Ejecutivo</h2>
+"@
 
-    # Guardar Excel
-    $xlsxPath = "$outputPath\app_performance_report_$timestamp.xlsx"
-    $workbook.SaveAs($xlsxPath)
-    $workbook.Close()
-    $excelApp.Quit()
-    [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excelApp) | Out-Null
-    
-    Write-Host "  OK Excel generado (5 hojas formateadas)" -ForegroundColor Green
-    $excelGenerated = $true
-
-} catch {
-    Write-Host "  Advertencia: Excel no disponible" -ForegroundColor Yellow
+if ($consolidatedData.TestCount -gt 1) {
+    $htmlContent += @"
+                <div class="success">
+                    <strong>✓ Análisis de Concurrencia Completado</strong><br>
+                    Se ejecutaron $($consolidatedData.TestCount) tests en paralelo. El informe consolidado compara degradación de performance bajo carga concurrente.
+                </div>
+"@
+} else {
+    $htmlContent += @"
+                <div class="highlight">
+                    <strong>ℹ Ejecución Individual</strong><br>
+                    Se ejecutó 1 test. Este informe muestra las métricas base de rendimiento de la aplicación.
+                </div>
+"@
 }
 
-# ============================================================================
-# GENERAR HTML DASHBOARD
-# ============================================================================
+$htmlContent += @"
+                
+                <div class="metrics-grid">
+"@
+
+foreach ($metric in $metrics | Select-Object -First 4) {
+    $degradColor = if ($metric.Degradation -lt 15) { "status-excellent" } elseif ($metric.Degradation -lt 30) { "status-good" } else { "status-warning" }
+    $htmlContent += @"
+                    <div class="metric-card">
+                        <h3>$($metric.Nombre)</h3>
+                        <div class="metric-value">$($metric.Actual)</div>
+                        <div class="metric-label $degradColor">Degradación: $($metric.Degradation)%</div>
+                    </div>
+"@
+}
+
+$htmlContent += @"
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🔗 Endpoints API - Análisis Consolidado</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Promedio (ms)</th>
+                            <th>Rango (Min-Max)</th>
+                            <th>Degradación %</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+"@
+
+foreach ($ep in $endpoints) {
+    $status = if ($ep.Degradation -lt 20) { "OK" } elseif ($ep.Degradation -lt 40) { "ACEPTABLE" } else { "CRÍTICO" }
+    $statusClass = if ($ep.Degradation -lt 20) { "status-excellent" } elseif ($ep.Degradation -lt 40) { "status-good" } else { "status-critical" }
+    
+    $htmlContent += @"
+                        <tr>
+                            <td><strong>$($ep.Name)</strong></td>
+                            <td>$($ep.Avg) ms</td>
+                            <td>$($ep.Min) - $($ep.Max) ms</td>
+                            <td>$($ep.Degradation)%</td>
+                            <td class="$statusClass">$status</td>
+                        </tr>
+"@
+}
+
+$htmlContent += @"
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h2>⚡ Web Vitals - Métricas de Renderizado</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Métrica</th>
+                            <th>Objetivo</th>
+                            <th>Actual</th>
+                            <th>Degradación %</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+"@
+
+foreach ($metric in $metrics) {
+    $statusClass = if ($metric.Status -eq "OK") { "status-excellent" } else { "status-warning" }
+    $htmlContent += @"
+                        <tr>
+                            <td>$($metric.Nombre)</td>
+                            <td>$($metric.Target)</td>
+                            <td>$($metric.Actual)</td>
+                            <td>$($metric.Degradation)%</td>
+                            <td class="$statusClass">$($metric.Status)</td>
+                        </tr>
+"@
+}
+
+$htmlContent += @"
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Informe generado: $dateFormatted | Sara3 Performance Monitoring System</p>
+            <p>Ubicación: $htmlReportPath</p>
+        </div>
+    </div>
+</body>
+</html>
+"@
+
+
+$htmlContent | Out-File -FilePath $htmlReportPath -Encoding UTF8 -Force
+Write-Host "✓ Dashboard HTML generado" -ForegroundColor Green
 
 Write-Host ""
-Write-Host "Generando dashboard HTML..." -ForegroundColor Gray
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host "  ✓ INFORME CONSOLIDADO GENERADO CON ÉXITO" -ForegroundColor Green
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host ""
+Write-Host "📁 Archivos generados:" -ForegroundColor Cyan
+Write-Host "   CSV:  $csvReportPath" -ForegroundColor Gray
+Write-Host "   HTML: $htmlReportPath" -ForegroundColor Gray
+Write-Host ""
+Write-Host "📊 Resumen de Análisis:" -ForegroundColor Cyan
+Write-Host "   Tests ejecutados:      $($consolidatedData.TestCount)" -ForegroundColor Gray
+Write-Host "   Endpoints analizados:  $($endpoints.Count)" -ForegroundColor Gray
+Write-Host "   Métricas RENDER:       $($metrics.Count)" -ForegroundColor Gray
+Write-Host ""
+
+# Mostrar cuellos de botella si los hay
+if ($bottlenecks.Count -gt 0) {
+    Write-Host "⚠️  CUELLOS DE BOTELLA DETECTADOS:" -ForegroundColor Yellow
+    foreach ($bn in $bottlenecks | Select-Object -First 3) {
+        $severity = if ($bn.Degradation -gt 50) { "[CRÍTICO]" } elseif ($bn.Degradation -gt 30) { "[ALTO]" } else { "[MEDIO]" }
+        Write-Host "   $severity $($bn.Name) - Degradación: $($bn.Degradation)%" -ForegroundColor Yellow
+    }
+}
+
+Write-Host ""
+Write-Host "Abriendo dashboard HTML en navegador..." -ForegroundColor Cyan
+Start-Process $htmlReportPath
+
 
 $htmlPath = "$outputPath\app_performance_report_$timestamp.html"
 
