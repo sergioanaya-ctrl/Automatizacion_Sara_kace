@@ -22,7 +22,7 @@ if (-not (Test-Path $reportPath)) {
 
 # ============================================
 # FUNCIÓN PARA GENERAR EXCEL CON COM
-# Funciona sin ImportExcel, usa API nativa
+# Funciona con Excel y LibreOffice Calc
 # ============================================
 function Create-ExcelFile {
     param(
@@ -32,87 +32,94 @@ function Create-ExcelFile {
     )
     
     try {
-        # Crear instancia de Excel o LibreOffice Calc
-        $excel = New-Object -ComObject Excel.Application
-        if ($null -eq $excel) {
-            # Intentar con LibreOffice
-            $excel = New-Object -ComObject com.sun.star.ServiceManager
-            if ($null -eq $excel) {
-                return $false
-            }
+        # Intentar crear instancia de Excel COM
+        $excel = New-Object -ComObject Excel.Application -ErrorAction Stop
+        $useExcel = $true
+    }
+    catch {
+        try {
+            # Intentar LibreOffice como alternativa
+            $excel = New-Object -ComObject com.sun.star.ServiceManager -ErrorAction Stop
+            $useExcel = $false
         }
-        
+        catch {
+            Write-Host "    [WARN] Neither Excel nor LibreOffice COM available" -ForegroundColor Yellow
+            return $false
+        }
+    }
+    
+    try {
         $excel.Visible = $false
         $excel.DisplayAlerts = $false
         
         $workbook = $excel.Workbooks.Add()
+        $sheetIndex = 0
         
-        # Primera hoja siempre existe
-        $worksheet = $workbook.Worksheets(1)
-        $worksheet.Name = $sheetNames[0]
-        
-        # Llenar primera hoja
-        $row = 1
-        foreach ($item in $sheetData[0]) {
-            $col = 1
-            foreach ($property in $item.PSObject.Properties) {
-                if ($row -eq 1) {
-                    $worksheet.Cells($row, $col) = $property.Name
-                    $worksheet.Cells($row, $col).Font.Bold = $true
-                }
-                $col++
+        # Procesar cada hoja
+        foreach ($sheet in $sheetData) {
+            if ($sheet -is [array] -and $sheet.Count -eq 0) {
+                continue
             }
-            $row++
             
-            $col = 1
-            foreach ($property in $item.PSObject.Properties) {
-                $worksheet.Cells($row, $col) = $property.Value
-                $col++
-            }
-        }
-        
-        # AutoFit columns
-        $worksheet.UsedRange.EntireColumn.AutoFit() | Out-Null
-        
-        # Agregar más hojas
-        for ($i = 1; $i -lt $sheetData.Count; $i++) {
-            $worksheet = $workbook.Worksheets.Add()
-            $worksheet.Name = $sheetNames[$i]
+            $worksheet = if ($sheetIndex -eq 0) { $workbook.Worksheets(1) } else { $workbook.Worksheets.Add() }
+            $worksheet.Name = $sheetNames[$sheetIndex]
             
             $row = 1
-            foreach ($item in $sheetData[$i]) {
+            
+            # Headers
+            $item = $sheet | Select-Object -First 1
+            if ($item) {
                 $col = 1
                 foreach ($property in $item.PSObject.Properties) {
-                    if ($row -eq 1) {
-                        $worksheet.Cells($row, $col) = $property.Name
-                        $worksheet.Cells($row, $col).Font.Bold = $true
-                    }
+                    $worksheet.Cells($row, $col).Value = $property.Name
+                    $worksheet.Cells($row, $col).Font.Bold = $true
                     $col++
                 }
                 $row++
                 
-                $col = 1
-                foreach ($property in $item.PSObject.Properties) {
-                    $worksheet.Cells($row, $col) = $property.Value
-                    $col++
+                # Data rows
+                foreach ($item in $sheet) {
+                    $col = 1
+                    foreach ($property in $item.PSObject.Properties) {
+                        $worksheet.Cells($row, $col).Value = $property.Value
+                        $col++
+                    }
+                    $row++
                 }
             }
             
-            $worksheet.UsedRange.EntireColumn.AutoFit() | Out-Null
+            # AutoFit columns
+            try {
+                $worksheet.UsedRange.EntireColumn.AutoFit() | Out-Null
+            }
+            catch {
+                # LibreOffice puede no soportar AutoFit de la misma forma
+            }
+            
+            $sheetIndex++
         }
         
         # Guardar archivo
         $workbook.SaveAs($filePath)
-        $workbook.Close()
+        $workbook.Close($false)
         $excel.Quit()
+        
+        # Limpiar referencias COM
+        [void][System.Runtime.Interopservices.Marshal]::ReleaseComObject($worksheet)
+        [void][System.Runtime.Interopservices.Marshal]::ReleaseComObject($workbook)
+        [void][System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel)
+        [gc]::Collect()
         
         return $true
     }
     catch {
-        Write-Host "Error creando Excel con COM: $_" -ForegroundColor Yellow
+        Write-Host "    [ERROR] Fallo al generar Excel: $_" -ForegroundColor Red
         try {
-            $workbook.Close()
+            $workbook.Close($false)
             $excel.Quit()
+            [void][System.Runtime.Interopservices.Marshal]::ReleaseComObject($worksheet)
+            [void][System.Runtime.Interopservices.Marshal]::ReleaseComObject($workbook)
+            [void][System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel)
         }
         catch { }
         return $false
