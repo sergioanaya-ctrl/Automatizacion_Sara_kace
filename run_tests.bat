@@ -64,9 +64,10 @@ echo  9. Generar reporte SIMPLE (EXCEL/CSV con tiempos)
 echo 10. Generar reporte AVANZADO (EXCEL MULTIPLES HOJAS + HTML)
 echo 11. Limpiar reportes (en otro archivo)
 echo 12. Ejecutar 1 SCENARIO sin paralelo
-echo 13. Salir
+echo 13. Generar REPORTE DE RENDIMIENTO (solo performance)
+echo 14. Salir
 echo.
-set /p choice="Selecciona opcion (1-13): "
+set /p choice="Selecciona opcion (1-14): "
 
 if "%choice%"=="1" goto custom_runners
 if "%choice%"=="2" goto run_2
@@ -80,7 +81,8 @@ if "%choice%"=="9" goto timing_report
 if "%choice%"=="10" goto advanced_report
 if "%choice%"=="11" goto clean_help
 if "%choice%"=="12" goto run_one_no_parallel
-if "%choice%"=="13" goto end
+if "%choice%"=="13" goto performance_report
+if "%choice%"=="14" goto end
 goto menu
 
 :custom_runners
@@ -90,9 +92,10 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte automaticamente...
+echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -108,9 +111,10 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte automaticamente...
+echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -126,9 +130,10 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte automaticamente...
+echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -144,9 +149,10 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte automaticamente...
+echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -162,9 +168,10 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte automaticamente...
+echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -183,9 +190,10 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los 50 tests se ejecutaron (fallen o no).
 echo.
-echo [INFO] Generando reporte automaticamente...
+echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -206,7 +214,7 @@ if %runner% LSS 10 (
 )
 
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=1' | Set-Content gradle.properties"
-call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner_formatted%" -Dcucumber.filter.tags="@batch%runner_formatted%"
+call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner_formatted%"
 pause
 goto menu
 
@@ -244,6 +252,7 @@ echo.
 echo Generando REPORTE AVANZADO...
 if exist "build\test-results\test" (
     powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
+    powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
     echo.
     timeout /t 2
     if exist "target\reports\test_timings_report.xlsx" (
@@ -303,7 +312,7 @@ for /l %%i in (1,1,50) do (
         echo [INFO] Ejecutando SCENARIO %batch_num% SIN PARALELO...
         echo [INFO] Usando tag: @batch%batch_num_formatted%
         echo.
-        call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%batch_num_formatted%" -Dcucumber.filter.tags="@batch%batch_num_formatted%"
+        call .\gradlew.bat test -Dcucumber.filter.tags="@batch%batch_num_formatted%"
         echo.
         echo [INFO] Ejecucion completada del scenario %batch_num%
         pause
@@ -312,6 +321,27 @@ for /l %%i in (1,1,50) do (
 )
 
 echo ERROR: Numero invalido. Ingresa un numero entre 1 y 50
+pause
+goto menu
+
+:performance_report
+echo.
+echo ========================================================
+echo    GENERAR REPORTE DE RENDIMIENTO DE LA APLICACION
+echo ========================================================
+echo.
+powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+echo.
+echo [INFO] Reportes generados en target\reports\
+echo.
+echo Archivos creados:
+echo   - app_performance_summary_*.csv
+echo   - app_network_timing_*.csv
+echo   - app_web_vitals_*.csv
+echo   - app_bottleneck_analysis_*.csv
+echo   - app_load_degradation_curve_*.csv
+echo   - app_performance_report_*.xlsx (si Excel esta disponible)
+echo.
 pause
 goto menu
 
