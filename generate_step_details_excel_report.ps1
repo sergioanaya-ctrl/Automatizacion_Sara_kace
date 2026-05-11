@@ -414,158 +414,662 @@ try {
         
         # Generar HTML (con Batch + Error Type/Message)
         $htmlPath = "$reportPath\step_details_$timestamp.html"
+        
+        # Calcular estadísticas
+        $slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 }
+        $slowCount = $slowSteps.Count
+        $failedCount = $failedTests
+        $passedCount = $passedTests
+        $totalDuration = ($allSteps | Measure-Object -Property Tiempo_ms -Sum).Sum
+        $avgDuration = [math]::Round($totalDuration / $allSteps.Count, 2)
+        
         $htmlContent = @"
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles de Pasos - SARA3</title>
+    <title>SARA3 - Reporte de Detalles de Pasos</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
-        h1 {
-            color: #333;
-            border-bottom: 3px solid #0078d4;
-            padding-bottom: 10px;
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
-        .summary {
-            background-color: #e8f4f8;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        
+        header {
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .timestamp {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
             border-left: 4px solid #0078d4;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
         }
-        .summary-item {
-            display: inline-block;
-            margin-right: 30px;
+        
+        .summary-card.success {
+            border-left-color: #107c10;
+        }
+        
+        .summary-card.danger {
+            border-left-color: #d83b01;
+        }
+        
+        .summary-card.warning {
+            border-left-color: #ff8c00;
+        }
+        
+        .summary-card.info {
+            border-left-color: #005a9e;
+        }
+        
+        .summary-card .value {
+            font-size: 2em;
             font-weight: bold;
+            color: #0078d4;
+            margin: 10px 0;
         }
+        
+        .summary-card.success .value {
+            color: #107c10;
+        }
+        
+        .summary-card.danger .value {
+            color: #d83b01;
+        }
+        
+        .summary-card.warning .value {
+            color: #ff8c00;
+        }
+        
+        .summary-card.info .value {
+            color: #005a9e;
+        }
+        
+        .summary-card .label {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .tabs {
+            display: flex;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1em;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab:hover {
+            background-color: #e8e8e8;
+            color: #0078d4;
+        }
+        
+        .tab.active {
+            border-bottom-color: #0078d4;
+            color: #0078d4;
+            background-color: white;
+        }
+        
+        .content-section {
+            display: none;
+            padding: 30px;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95em;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-top: 20px;
         }
-        th {
+        
+        thead {
             background-color: #0078d4;
             color: white;
-            padding: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        th {
+            padding: 15px;
             text-align: left;
-            font-weight: bold;
-            border: 1px solid #0078d4;
+            font-weight: 600;
+            border-bottom: 2px solid #0078d4;
         }
+        
         td {
-            padding: 10px;
-            border: 1px solid #ddd;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+        
         tr:hover {
-            background-color: #f0f0f0;
+            background-color: #f5f5f5;
         }
+        
         .status-pass {
             color: #107c10;
             font-weight: bold;
+            background-color: #dff6dd;
+            padding: 4px 8px;
+            border-radius: 3px;
+            display: inline-block;
         }
+        
         .status-fail {
             color: #d83b01;
             font-weight: bold;
+            background-color: #fed9cc;
+            padding: 4px 8px;
+            border-radius: 3px;
+            display: inline-block;
         }
-        .error-type-selenium {
-            background-color: #fff4ce;
-        }
-        .error-type-ui {
-            background-color: #fdeaf1;
-        }
-        .error-type-datos {
-            background-color: #e7f3ff;
-        }
-        .error-type-validacion {
-            background-color: #f0f6e8;
-        }
+        
         .time-slow {
             color: #d83b01;
             font-weight: bold;
+            background-color: #fdedf0;
+            padding: 4px 8px;
+            border-radius: 3px;
         }
+        
+        .error-type {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: 500;
+            font-size: 0.85em;
+        }
+        
+        .error-selenium { background-color: #fff4ce; color: #cc7a00; }
+        .error-ui { background-color: #fdeaf1; color: #c50f1f; }
+        .error-datos { background-color: #e7f3ff; color: #004b50; }
+        .error-validacion { background-color: #f0f6e8; color: #107c10; }
+        .error-otros { background-color: #f0f0f0; color: #333; }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .chart-box h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        canvas {
+            max-width: 100%;
+        }
+        
         .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
+            padding: 20px 30px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
             color: #666;
             font-size: 0.9em;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .filter-badge {
+            display: inline-block;
+            background: #0078d4;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 10px 5px;
+                font-size: 0.85em;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>&#x1F4CA; Detalles de Pasos - SARA3</h1>
-    <div class="summary">
-        <div class="summary-item">Fecha: $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")</div>
-        <div class="summary-item">Total Tests: $($testStats.Count)</div>
-        <div class="summary-item">Tests Exitosos: $(($testStats | Where-Object { $_.Estado -eq "PASSED" }).Count)</div>
-        <div class="summary-item">Tests Fallidos: $failedTests</div>
-        <div class="summary-item">Total Pasos: $($allSteps.Count)</div>
-        <div class="summary-item">Pasos Lentos (>5s): $(($allSteps | Where-Object { $_.Tiempo_ms -gt 5000 }).Count)</div>
-    </div>
-    
-    <h2>Todos los Pasos</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Test</th>
-                <th>Batch</th>
-                <th>Descripción Completa</th>
-                <th>Acción</th>
-                <th>Elemento/Campo</th>
-                <th>Valor Ingresado</th>
-                <th>Nivel</th>
-                <th>Tiempo (ms)</th>
-                <th>Tiempo (s)</th>
-                <th>Estado Paso</th>
-                <th>Error Type</th>
-                <th>Error Message</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="container">
+        <header>
+            <h1>📊 SARA3 - Reporte de Detalles de Pasos</h1>
+            <div class="timestamp">Generado: $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")</div>
+        </header>
+        
+        <div class="summary-grid">
+            <div class="summary-card info">
+                <div class="label">Total Tests</div>
+                <div class="value">$($testStats.Count)</div>
+            </div>
+            <div class="summary-card success">
+                <div class="label">Tests Exitosos</div>
+                <div class="value">$passedCount</div>
+            </div>
+            <div class="summary-card danger">
+                <div class="label">Tests Fallidos</div>
+                <div class="value">$failedCount</div>
+            </div>
+            <div class="summary-card info">
+                <div class="label">Total Pasos</div>
+                <div class="value">$($allSteps.Count)</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="label">Pasos Lentos (>5s)</div>
+                <div class="value">$slowCount</div>
+            </div>
+            <div class="summary-card info">
+                <div class="label">Duración Promedio</div>
+                <div class="value">${avgDuration}ms</div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('all-steps', this)">📋 Todos los Pasos</button>
+            <button class="tab" onclick="switchTab('slow-steps', this)">🐢 Pasos Lentos</button>
+            <button class="tab" onclick="switchTab('failed-tests', this)">❌ Tests Fallidos</button>
+            <button class="tab" onclick="switchTab('statistics', this)">📈 Estadísticas</button>
+        </div>
+        
+        <!-- Todos los Pasos -->
+        <div id="all-steps" class="content-section active">
+            <div class="search-box">
+                <input type="text" placeholder="Buscar por test, descripción, error..." id="searchInput" onkeyup="filterTable('all-steps-table')">
+            </div>
+            <div class="table-wrapper">
+                <table id="all-steps-table">
+                    <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Batch</th>
+                            <th>Descripción</th>
+                            <th>Acción</th>
+                            <th>Elemento</th>
+                            <th>Tiempo (ms)</th>
+                            <th>Estado</th>
+                            <th>Error Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 "@
         
         foreach ($step in $allSteps) {
             $errorType = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorType } else { "Sin Error" }
-            $errorMsg = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorMessage } else { "" }
             $stateClass = if($step.Estado -eq "PASSED") { "status-pass" } else { "status-fail" }
             $timeClass = if($step.Tiempo_ms -gt 5000) { "time-slow" } else { "" }
+            $errorClass = "error-otros"
+            if ($errorType -match "Selenium") { $errorClass = "error-selenium" }
+            elseif ($errorType -match "UI") { $errorClass = "error-ui" }
+            elseif ($errorType -match "Datos") { $errorClass = "error-datos" }
+            elseif ($errorType -match "Validacion") { $errorClass = "error-validacion" }
             
             $htmlContent += @"
-            <tr>
-                <td>$($step.Test)</td>
-                <td>$($step.Batch)</td>
-                <td>$($step.Descripcion)</td>
-                <td>$($step.Accion)</td>
-                <td>$(if([string]::IsNullOrEmpty($step.Elemento)) { "N/A" } else { $step.Elemento })</td>
-                <td>$(if([string]::IsNullOrEmpty($step.Valor)) { "N/A" } else { $step.Valor })</td>
-                <td>$($step.Nivel)</td>
-                <td class="$timeClass">$($step.Tiempo_ms)</td>
-                <td class="$timeClass">$($step.Tiempo_s)</td>
-                <td class="$stateClass">$($step.Estado)</td>
-                <td>$errorType</td>
-                <td>$errorMsg</td>
-            </tr>
+                        <tr>
+                            <td><strong>$($step.Test)</strong></td>
+                            <td>$($step.Batch)</td>
+                            <td title="$($step.Descripcion)">$($step.Descripcion.Substring(0, [Math]::Min(50, $step.Descripcion.Length)))...</td>
+                            <td>$($step.Accion)</td>
+                            <td>$(if([string]::IsNullOrEmpty($step.Elemento)) { "-" } else { $step.Elemento })</td>
+                            <td class="$timeClass">$($step.Tiempo_ms)</td>
+                            <td><span class="$stateClass">$($step.Estado)</span></td>
+                            <td><span class="error-type $errorClass">$errorType</span></td>
+                        </tr>
 "@
         }
         
         $htmlContent += @"
-        </tbody>
-    </table>
-    
-    <div class="footer">
-        <p>Reporte generado automáticamente por SARA3 Test Automation Framework</p>
-        <p>Timestamp: $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")</p>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Pasos Lentos -->
+        <div id="slow-steps" class="content-section">
+            <div class="table-wrapper">
+"@
+        
+        if ($slowSteps.Count -gt 0) {
+            $htmlContent += @"
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Batch</th>
+                            <th>Descripción</th>
+                            <th>Acción</th>
+                            <th>Elemento</th>
+                            <th>Tiempo (ms)</th>
+                            <th>Tiempo (s)</th>
+                            <th>Error Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+"@
+            foreach ($step in ($slowSteps | Sort-Object Tiempo_ms -Descending)) {
+                $errorType = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorType } else { "Sin Error" }
+                $errorClass = "error-otros"
+                if ($errorType -match "Selenium") { $errorClass = "error-selenium" }
+                elseif ($errorType -match "UI") { $errorClass = "error-ui" }
+                elseif ($errorType -match "Datos") { $errorClass = "error-datos" }
+                elseif ($errorType -match "Validacion") { $errorClass = "error-validacion" }
+                
+                $htmlContent += @"
+                        <tr>
+                            <td><strong>$($step.Test)</strong></td>
+                            <td>$($step.Batch)</td>
+                            <td title="$($step.Descripcion)">$($step.Descripcion.Substring(0, [Math]::Min(50, $step.Descripcion.Length)))...</td>
+                            <td>$($step.Accion)</td>
+                            <td>$(if([string]::IsNullOrEmpty($step.Elemento)) { "-" } else { $step.Elemento })</td>
+                            <td class="time-slow">$($step.Tiempo_ms)</td>
+                            <td class="time-slow">$($step.Tiempo_s)</td>
+                            <td><span class="error-type $errorClass">$errorType</span></td>
+                        </tr>
+"@
+            }
+            $htmlContent += @"
+                    </tbody>
+                </table>
+"@
+        } else {
+            $htmlContent += @"
+                <div class="no-data">
+                    <p>✓ No hay pasos lentos. Todos los pasos se ejecutaron rápidamente (< 5s)</p>
+                </div>
+"@
+        }
+        
+        $htmlContent += @"
+            </div>
+        </div>
+        
+        <!-- Tests Fallidos -->
+        <div id="failed-tests" class="content-section">
+            <div class="table-wrapper">
+"@
+        
+        if ($failedTests -gt 0) {
+            $failedTestList = $testStats | Where-Object { $_.Estado -eq "FAILED" }
+            $htmlContent += @"
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Batch</th>
+                            <th>Total Pasos</th>
+                            <th>Pasos Fallidos</th>
+                            <th>Duración (s)</th>
+                            <th>Error Type</th>
+                            <th>Error Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+"@
+            foreach ($test in $failedTestList) {
+                $testErrorInfo = $testErrorMap[$test.Test]
+                $errorClass = "error-otros"
+                if ($testErrorInfo.ErrorType -match "Selenium") { $errorClass = "error-selenium" }
+                elseif ($testErrorInfo.ErrorType -match "UI") { $errorClass = "error-ui" }
+                elseif ($testErrorInfo.ErrorType -match "Datos") { $errorClass = "error-datos" }
+                elseif ($testErrorInfo.ErrorType -match "Validacion") { $errorClass = "error-validacion" }
+                
+                $failedSteps = $allSteps | Where-Object { $_.Test -eq $test.Test -and $_.Estado -eq "FAILED" }
+                $htmlContent += @"
+                        <tr>
+                            <td><strong>$($test.Test)</strong></td>
+                            <td>$($test.Batch)</td>
+                            <td>$($allSteps | Where-Object { $_.Test -eq $test.Test }).Count</td>
+                            <td class="status-fail">$($failedSteps.Count)</td>
+                            <td>$(($allSteps | Where-Object { $_.Test -eq $test.Test } | Measure-Object -Property Tiempo_ms -Sum).Sum / 1000)</td>
+                            <td><span class="error-type $errorClass">$($testErrorInfo.ErrorType)</span></td>
+                            <td title="$($testErrorInfo.ErrorMessage)">$($testErrorInfo.ErrorMessage.Substring(0, [Math]::Min(60, $testErrorInfo.ErrorMessage.Length)))...</td>
+                        </tr>
+"@
+            }
+            $htmlContent += @"
+                    </tbody>
+                </table>
+"@
+        } else {
+            $htmlContent += @"
+                <div class="no-data">
+                    <p>✓ Excelente! Todos los tests pasaron correctamente.</p>
+                </div>
+"@
+        }
+        
+        $htmlContent += @"
+            </div>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div id="statistics" class="content-section">
+            <div class="charts-container">
+                <div class="chart-box">
+                    <h3>Distribución de Estados</h3>
+                    <canvas id="stateChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>Distribución de Errores</h3>
+                    <canvas id="errorChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Reporte generado automáticamente por SARA3 Test Automation Framework</p>
+            <p>Timestamp: $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")</p>
+        </div>
     </div>
+    
+    <script>
+        function switchTab(tabName, element) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            
+            if (tabName === 'statistics') {
+                initCharts();
+            }
+        }
+        
+        function filterTable(tableId) {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const text = rows[i].textContent || rows[i].innerText;
+                rows[i].style.display = text.toUpperCase().includes(filter) ? '' : 'none';
+            }
+        }
+        
+        function initCharts() {
+            // Gráfico de estados
+            const stateCtx = document.getElementById('stateChart');
+            if (stateCtx && !stateCtx.chart) {
+                stateCtx.chart = new Chart(stateCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Exitosos', 'Fallidos'],
+                        datasets: [{
+                            data: [$passedCount, $failedCount],
+                            backgroundColor: ['#107c10', '#d83b01'],
+                            borderColor: ['#107c10', '#d83b01']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+            
+            // Gráfico de errores
+            const errorCtx = document.getElementById('errorChart');
+            if (errorCtx && !errorCtx.chart) {
+                errorCtx.chart = new Chart(errorCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+"@
+            
+            foreach ($error in $errorSummary) {
+                $htmlContent += @"
+                            '$($error.'Error Type')',
+"@
+            }
+            
+            $htmlContent += @"
+                        ],
+                        datasets: [{
+                            label: 'Cantidad',
+                            data: [
+"@
+            
+            foreach ($error in $errorSummary) {
+                $htmlContent += @"
+                                $($error.Cantidad),
+"@
+            }
+            
+            $htmlContent += @"
+                            ],
+                            backgroundColor: [
+                                '#fff4ce',
+                                '#fdeaf1',
+                                '#e7f3ff',
+                                '#f0f6e8',
+                                '#f0f0f0'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>
 "@
