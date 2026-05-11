@@ -41,6 +41,90 @@ function Get-ErrorType {
     return "Otros"
 }
 
+function Create-ExcelFile {
+    param(
+        [string]$filePath,
+        [array]$sheetData,
+        [array]$sheetNames
+    )
+    
+    try {
+        # Intentar crear instancia de Excel COM
+        $excel = New-Object -ComObject Excel.Application -ErrorAction Stop
+    }
+    catch {
+        try {
+            # Intentar LibreOffice como alternativa
+            $excel = New-Object -ComObject com.sun.star.ServiceManager -ErrorAction Stop
+        }
+        catch {
+            Write-Host "    Sin Excel/LibreOffice disponible" -ForegroundColor Yellow
+            return $false
+        }
+    }
+    
+    try {
+        $excel.Visible = $false
+        $excel.DisplayAlerts = $false
+        $workbook = $excel.Workbooks.Add()
+        
+        for ($i = 0; $i -lt $sheetData.Count; $i++) {
+            $sheet = $sheetData[$i]
+            if ($null -eq $sheet -or $sheet.Count -eq 0) { continue }
+            
+            $worksheet = if ($i -eq 0) { $workbook.Worksheets(1) } else { $workbook.Worksheets.Add() }
+            $worksheet.Name = $sheetNames[$i]
+            
+            $row = 1
+            $firstItem = $sheet | Select-Object -First 1
+            
+            if ($firstItem) {
+                # Headers
+                $col = 1
+                foreach ($prop in $firstItem.PSObject.Properties) {
+                    $worksheet.Cells($row, $col).Value = [string]$prop.Name
+                    $worksheet.Cells($row, $col).Font.Bold = $true
+                    $col++
+                }
+                $row++
+                
+                # Data
+                foreach ($item in $sheet) {
+                    $col = 1
+                    foreach ($prop in $item.PSObject.Properties) {
+                        $val = $prop.Value
+                        $worksheet.Cells($row, $col).Value = if ($null -eq $val) { "" } else { [string]$val }
+                        $col++
+                    }
+                    $row++
+                }
+                
+                # AutoFit
+                try {
+                    $worksheet.UsedRange.EntireColumn.AutoFit() | Out-Null
+                }
+                catch { }
+            }
+        }
+        
+        $absolutePath = [System.IO.Path]::GetFullPath($filePath)
+        $workbook.SaveAs($absolutePath, 51)  # 51 = xlOpenXMLWorkbook (Excel 2007+)
+        $workbook.Close($false)
+        $excel.Quit()
+        
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($workbook) | Out-Null
+        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null
+        [gc]::Collect()
+        
+        return $true
+    }
+    catch {
+        Write-Host "    Error Excel: $_" -ForegroundColor Red
+        try { $workbook.Close($false); $excel.Quit() } catch { }
+        return $false
+    }
+}
+
 function Extract-TestSteps {
     param([array]$jsonData)
     
@@ -146,6 +230,70 @@ foreach ($step in $allSteps) {
 $csvLines | Out-File -FilePath $csvPath -Encoding UTF8
 Write-Host "CSV generado: $csvPath" -ForegroundColor Green
 
+# ===== GENERAR EXCEL CON COM =====
+
+$excelPath = "$outputPath\step_details_$timestamp.xlsx"
+
+# Hoja 1: Todos los pasos
+$stepsSheet = $allSteps | Select-Object @{N="Test"; E={$_.Test}},
+                                        @{N="Batch"; E={$_.Batch}},
+                                        @{N="Maquina"; E={$machineName}},
+                                        @{N="Usuario"; E={$userName}},
+                                        @{N="Descripcion"; E={$_.Descripcion}},
+                                        @{N="Accion"; E={$_.Accion}},
+                                        @{N="Elemento"; E={$_.Elemento}},
+                                        @{N="Valor"; E={$_.Valor}},
+                                        @{N="Tiempo (s)"; E={$_.Tiempo_s}},
+                                        @{N="Estado"; E={$_.Estado}},
+                                        @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}},
+                                        @{N="Error Message"; E={if($_.Estado -eq "ERROR") { $_.ErrorMessage } else { "" }}}
+
+# Hoja 2: Pasos lentos
+$slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Object Tiempo_ms -Descending
+$slowSheet = if ($slowSteps.Count -gt 0) {
+    $slowSteps | Select-Object @{N="Test"; E={$_.Test}},
+                               @{N="Batch"; E={$_.Batch}},
+                               @{N="Maquina"; E={$machineName}},
+                               @{N="Usuario"; E={$userName}},
+                               @{N="Descripcion"; E={$_.Descripcion}},
+                               @{N="Tiempo (s)"; E={$_.Tiempo_s}},
+                               @{N="Estado"; E={$_.Estado}},
+                               @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}}
+} else {
+    @([PSCustomObject]@{ Mensaje = "Sin pasos lentos" })
+}
+
+# Hoja 3: Resumen de errores
+$errorSummary = $allSteps | Where-Object { $_.Estado -eq "ERROR" } | 
+                Group-Object ErrorType | 
+                Select-Object @{N="Error Type"; E={$_.Name}},
+                              @{N="Cantidad"; E={$_.Count}},
+                              @{N="Porcentaje"; E={"{0:N1}" -f (($_.Count / ($allSteps | Where-Object { $_.Estado -eq "ERROR" }).Count) * 100)}} |
+                Sort-Object Cantidad -Descending
+if ($errorSummary.Count -eq 0) {
+    $errorSummary = @([PSCustomObject]@{ "Error Type" = "Sin Errores"; Cantidad = 0; Porcentaje = "0,0" })
+}
+
+# Hoja 4: Resumen por Test
+$testSummary = $allSteps | Group-Object Test |
+               Select-Object @{N="Test"; E={$_.Name}},
+                             @{N="Total Pasos"; E={$_.Count}},
+                             @{N="Exitosos"; E={($_.Group | Where-Object { $_.Estado -eq "SUCCESS" }).Count}},
+                             @{N="Errores"; E={($_.Group | Where-Object { $_.Estado -eq "ERROR" }).Count}},
+                             @{N="Pasos Lentos"; E={($_.Group | Where-Object { $_.Tiempo_ms -gt 5000 }).Count}},
+                             @{N="Tiempo Total (s)"; E={"{0:N2}" -f ($_.Group | Measure-Object -Property Tiempo_s -Sum).Sum}}
+
+Write-Host "Generando Excel..." -ForegroundColor Cyan
+$excelSuccess = Create-ExcelFile -filePath $excelPath `
+                                 -sheetData @($stepsSheet, $slowSheet, $errorSummary, $testSummary) `
+                                 -sheetNames @("Todos los Pasos", "Pasos Lentos (>5s)", "Resumen de Errores", "Resumen por Test")
+
+if ($excelSuccess) {
+    Write-Host "Excel generado: $excelPath" -ForegroundColor Green
+} else {
+    Write-Host "No se generó Excel (LibreOffice/Excel no disponibles)" -ForegroundColor Yellow
+}
+
 # ===== GENERAR HTML =====
 
 $htmlPath = "$outputPath\step_details_$timestamp.html"
@@ -238,6 +386,7 @@ Write-Host "HTML generado: $htmlPath" -ForegroundColor Green
 
 Write-Host ""
 Write-Host "Reportes generados exitosamente:" -ForegroundColor Green
+Write-Host "  - $excelPath" -ForegroundColor Cyan
 Write-Host "  - $csvPath" -ForegroundColor Cyan
 Write-Host "  - $htmlPath" -ForegroundColor Cyan
 Write-Host ""
