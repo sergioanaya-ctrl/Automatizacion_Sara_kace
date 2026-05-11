@@ -504,196 +504,196 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch37
-  Scenario: Test Usuario 37 - CAUCA - SANTANDER DE QUILICHAO - HOGARES - VIGILANTE
+  Scenario: Test Usuario 37 - VICHADA - PUERTO CARREÑO - HOGARES - VIGILANTE
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio   |
-      | CAUCA                 | SANTANDER DE QUILICHAO | NO               | NO                  | HOGARES | VIGILANTE  |
+      | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | HOGARES | VIGILANTE  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch38
-  Scenario: Test Usuario 38 - QUINDIO - CALARCA - HOGARES - VIGILANTE SP
+  Scenario: Test Usuario 38 - VAUPES - MITU - HOGARES - VIGILANTE SP
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio     |
-      | QUINDIO               | CALARCA            | NO                   | NO                  | HOGARES | VIGILANTE SP |
+      | VAUPES                | MITU               | NO                   | NO                  | HOGARES | VIGILANTE SP |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch39
-  Scenario: Test Usuario 39 - RISARALDA - DOSQUEBRADAS - HOGARES - HOSPEDAJE VIAJERO
+  Scenario: Test Usuario 39 - AMAZONAS - ARARA - HOGARES - HOSPEDAJE VIAJERO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio            |
-      | RISARALDA             | DOSQUEBRADAS       | NO                   | NO                  | HOGARES | HOSPEDAJE VIAJERO   |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | HOGARES | HOSPEDAJE VIAJERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch40
-  Scenario: Test Usuario 40 - TOLIMA - MELGAR - HOGARES - TRASLADO DE BIENES
+  Scenario: Test Usuario 40 - PUTUMAYO - MOCOA - HOGARES - TRASLADO DE BIENES
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio            |
-      | TOLIMA                | MELGAR             | NO                   | NO                  | HOGARES | TRASLADO DE BIENES  |
+      | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | TRASLADO DE BIENES  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch41
-  Scenario: Test Usuario 41 - META - ACACIAS - HOGARES - SECADO DE ALFOMBRAS
+  Scenario: Test Usuario 41 - ANTIOQUIA - ENVIGADO - HOGARES - SECADO DE ALFOMBRAS
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                 |
-      | META                  | ACACIAS            | NO                   | NO                  | HOGARES | SECADO DE ALFOMBRAS |
+      | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | SECADO DE ALFOMBRAS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch42
-  Scenario: Test Usuario 42 - SUCRE - COLOSÓ - HOGARES - SERVICIOS EXEQUIAL
+  Scenario: Test Usuario 42 - ANTIOQUIA - ENVIGADO - HOGARES - SERVICIOS EXEQUIAL
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio              |
-      | SUCRE                 | COLOSO             | NO                   | NO                  | HOGARES | SERVICIOS EXEQUIAL |
+      | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | SERVICIOS EXEQUIAL |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch43
-  Scenario: Test Usuario 43 - CORDOBA - LORICA - HOGARES - GASTOS DE MUDANZA
+  Scenario: Test Usuario 43 - VALLE DEL CAUCA - CACHIMBAL - HOGARES - GASTOS DE MUDANZA
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio             |
-      | CORDOBA               | LORICA             | NO                   | NO                  | HOGARES | GASTOS DE MUDANZA |
+      | VALLE DEL CAUCA       | CACHIMBAL          | NO                   | NO                  | HOGARES | GASTOS DE MUDANZA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch44
-  Scenario: Test Usuario 44 - CESAR - CODAZZI - HOGARES - SEGUIMIENTO A LA REPARACION
+  Scenario: Test Usuario 44 - ATLANTICO - AGUADA DE PABLO - HOGARES - SEGUIMIENTO A LA REPARACION
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                      |
-      | CESAR                 | CODAZZI            | NO                   | NO                  | HOGARES | SEGUIMIENTO A LA REPARACION |
+      | ATLANTICO             | AGUADA DE PABLO    | NO                   | NO                  | HOGARES | SEGUIMIENTO A LA REPARACION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch45
-  Scenario: Test Usuario 45 - GUAJIRA - MAICAO - HOGARES - REVISION Y REDACCION DE CONTRATOS
+  Scenario: Test Usuario 45 - CUNDINAMARCA - ZIPAQUIRA - HOGARES - REVISION Y REDACCION DE CONTRATOS
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                          |
-      | GUAJIRA               | MAICAO             | NO                   | NO                  | HOGARES | REVISION Y REDACCION DE CONTRATOS |
+      | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | REVISION Y REDACCION DE CONTRATOS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch46
-  Scenario: Test Usuario 46 - ARAUCA - FORTUL - HOGARES - ASESORIA PSICOLOGICA
+  Scenario: Test Usuario 46 - SANTANORTE DE SANTANDER - ARBOLEDAS - HOGARES - ASESORIA PSICOLOGICA
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                |
-      | ARAUCA                | FORTUL             | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
+      | SANTANORTE DE SANTANDER | ARBOLEDAS        | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch47
-  Scenario: Test Usuario 47 - CASANARE - AGUAZUL - HOGARES - CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO
+  Scenario: Test Usuario 47 - NORTE DE SANTANDER - OCAÑA - HOGARES - CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                              |
-      | CASANARE              | AGUAZUL            | NO                   | NO                  | HOGARES | CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO |
+      | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch48
-  Scenario: Test Usuario 48 - VICHADA - LA PRIMAVERA - HOGARES - ORIENTACION JURIDICA TELEFONICA
+  Scenario: Test Usuario 48 - MAGDALENA - CIENAGA - HOGARES - ORIENTACION JURIDICA TELEFONICA
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                       |
-      | VICHADA               | LA PRIMAVERA       | NO                   | NO                  | HOGARES | ORIENTACION JURIDICA TELEFONICA |
+      | MAGDALENA             | CIENAGA            | NO                   | NO                  | HOGARES | ORIENTACION JURIDICA TELEFONICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch49
-  Scenario: Test Usuario 49 - GUAINIA - SAN FERNANDO DE ATABAPO - HOGARES - ORIENTACION MEDICA TELEFONICA
+  Scenario: Test Usuario 49 - BOLIVAR - TURBACO - HOGARES - ORIENTACION MEDICA TELEFONICA
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita         | servicios_especiales | gestor_coordinacion | linea  | servicio                      |
-      | GUAINIA               | SAN FERNANDO DE ATABAPO    | NO                   | NO                  | HOGARES | ORIENTACION MEDICA TELEFONICA |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                      |
+      | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION MEDICA TELEFONICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch50
-  Scenario: Test Usuario 50 - VAUPÉS - CARURU - HOGARES - PLAN DE ACCION
+  Scenario: Test Usuario 50 - NARIÑO - IPIALES - HOGARES - PLAN DE ACCION
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio        |
-      | VAUPÉS                | CARURU             | NO                   | NO                  | HOGARES | PLAN DE ACCION |
+      | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | PLAN DE ACCION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
