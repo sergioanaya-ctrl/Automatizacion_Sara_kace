@@ -94,11 +94,14 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte Excel unificado...
+echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en: target\reports\
+echo [INFO] Reportes generados en: target\reports\
+echo        - step_details_*.xlsx (Excel)
+echo        - step_details_*.csv  (CSV)
+echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu
@@ -109,11 +112,14 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte Excel unificado...
+echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en: target\reports\
+echo [INFO] Reportes generados en: target\reports\
+echo        - step_details_*.xlsx (Excel)
+echo        - step_details_*.csv  (CSV)
+echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu
@@ -124,11 +130,14 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte Excel unificado...
+echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en: target\reports\
+echo [INFO] Reportes generados en: target\reports\
+echo        - step_details_*.xlsx (Excel)
+echo        - step_details_*.csv  (CSV)
+echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu
@@ -139,11 +148,14 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte Excel unificado...
+echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en: target\reports\
+echo [INFO] Reportes generados en: target\reports\
+echo        - step_details_*.xlsx (Excel)
+echo        - step_details_*.csv  (CSV)
+echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu
@@ -154,11 +166,14 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reporte Excel unificado...
+echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en: target\reports\
+echo [INFO] Reportes generados en: target\reports\
+echo        - step_details_*.xlsx (Excel)
+echo        - step_details_*.csv  (CSV)
+echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu
@@ -172,11 +187,14 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los 50 tests se ejecutaron (fallen o no).
 echo.
-echo [INFO] Generando reporte Excel unificado...
+echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en: target\reports\
+echo [INFO] Reportes generados en: target\reports\
+echo        - step_details_*.xlsx (Excel)
+echo        - step_details_*.csv  (CSV)
+echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu
@@ -196,11 +214,14 @@ call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner_
 echo.
 echo [INFO] Ejecucion completada del runner individual.
 echo.
-echo [INFO] Generando reporte Excel unificado...
+echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en: target\reports\
+echo [INFO] Reportes generados en: target\reports\
+echo        - step_details_*.xlsx (Excel)
+echo        - step_details_*.csv  (CSV)
+echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu
@@ -310,11 +331,14 @@ for /l %%i in (1,1,50) do (
         echo.
         echo [INFO] Ejecucion completada del scenario %batch_num%
         echo.
-        echo [INFO] Generando reporte Excel unificado...
+        echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
         timeout /t 2 >nul
         powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
         echo.
-        echo [INFO] Reporte generado en: target\reports\
+        echo [INFO] Reportes generados en: target\reports\
+        echo        - step_details_*.xlsx (Excel)
+        echo        - step_details_*.csv  (CSV)
+        echo        - step_details_*.html (HTML)
         echo.
         pause
         goto menu
@@ -353,12 +377,15 @@ goto menu
 :step_details_report
 echo.
 echo ========================================================
-echo     GENERAR REPORTE DE PASOS DETALLADOS DE LOS TESTS
+echo     GENERAR REPORTES DE PASOS DETALLADOS DE LOS TESTS
 echo ========================================================
 echo.
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en: target\reports\
+echo [INFO] Reportes generados en: target\reports\
+echo        - step_details_*.xlsx (Excel)
+echo        - step_details_*.csv  (CSV)
+echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu

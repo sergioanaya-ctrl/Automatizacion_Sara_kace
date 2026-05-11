@@ -392,9 +392,190 @@ try {
         }
         Write-Host ""
         
+        # ============================================
+        # GENERAR CSV Y HTML COMO ALTERNATIVAS
+        # ============================================
+        
+        # Generar CSV (con Batch + Error Type/Message)
+        $csvPath = "$reportPath\step_details_$timestamp.csv"
+        $csvLines = @('"Test","Batch","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Estado","Error Type","Error Message"')
+        
+        foreach ($step in $allSteps) {
+            $desc = $step.Descripcion -replace '"', '""'
+            $errorType = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorType } else { "Sin Error" }
+            $errorMsg = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorMessage -replace '"', '""' } else { "" }
+            
+            $line = "`"$($step.Test)`",`"$($step.Batch)`",`"$desc`",`"$($step.Accion)`",`"$($step.Elemento)`",`"$($step.Valor)`",$($step.Nivel),$($step.Tiempo_ms),$($step.Tiempo_s),`"$($step.Estado)`",`"$errorType`",`"$errorMsg`""
+            $csvLines += $line
+        }
+        
+        $csvLines | Out-File -FilePath $csvPath -Encoding UTF8
+        Write-Host "  - CSV generado: step_details_$timestamp.csv"
+        
+        # Generar HTML (con Batch + Error Type/Message)
+        $htmlPath = "$reportPath\step_details_$timestamp.html"
+        $htmlContent = @"
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de Pasos - SARA3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #0078d4;
+            padding-bottom: 10px;
+        }
+        .summary {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0078d4;
+        }
+        .summary-item {
+            display: inline-block;
+            margin-right: 30px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        th {
+            background-color: #0078d4;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #0078d4;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f0f0f0;
+        }
+        .status-pass {
+            color: #107c10;
+            font-weight: bold;
+        }
+        .status-fail {
+            color: #d83b01;
+            font-weight: bold;
+        }
+        .error-type-selenium {
+            background-color: #fff4ce;
+        }
+        .error-type-ui {
+            background-color: #fdeaf1;
+        }
+        .error-type-datos {
+            background-color: #e7f3ff;
+        }
+        .error-type-validacion {
+            background-color: #f0f6e8;
+        }
+        .time-slow {
+            color: #d83b01;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>&#x1F4CA; Detalles de Pasos - SARA3</h1>
+    <div class="summary">
+        <div class="summary-item">Fecha: $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")</div>
+        <div class="summary-item">Total Tests: $($testStats.Count)</div>
+        <div class="summary-item">Tests Exitosos: $(($testStats | Where-Object { $_.Estado -eq "PASSED" }).Count)</div>
+        <div class="summary-item">Tests Fallidos: $failedTests</div>
+        <div class="summary-item">Total Pasos: $($allSteps.Count)</div>
+        <div class="summary-item">Pasos Lentos (>5s): $(($allSteps | Where-Object { $_.Tiempo_ms -gt 5000 }).Count)</div>
+    </div>
+    
+    <h2>Todos los Pasos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Test</th>
+                <th>Batch</th>
+                <th>Descripción Completa</th>
+                <th>Acción</th>
+                <th>Elemento/Campo</th>
+                <th>Valor Ingresado</th>
+                <th>Nivel</th>
+                <th>Tiempo (ms)</th>
+                <th>Tiempo (s)</th>
+                <th>Estado Paso</th>
+                <th>Error Type</th>
+                <th>Error Message</th>
+            </tr>
+        </thead>
+        <tbody>
+"@
+        
+        foreach ($step in $allSteps) {
+            $errorType = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorType } else { "Sin Error" }
+            $errorMsg = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorMessage } else { "" }
+            $stateClass = if($step.Estado -eq "PASSED") { "status-pass" } else { "status-fail" }
+            $timeClass = if($step.Tiempo_ms -gt 5000) { "time-slow" } else { "" }
+            
+            $htmlContent += @"
+            <tr>
+                <td>$($step.Test)</td>
+                <td>$($step.Batch)</td>
+                <td>$($step.Descripcion)</td>
+                <td>$($step.Accion)</td>
+                <td>$(if([string]::IsNullOrEmpty($step.Elemento)) { "N/A" } else { $step.Elemento })</td>
+                <td>$(if([string]::IsNullOrEmpty($step.Valor)) { "N/A" } else { $step.Valor })</td>
+                <td>$($step.Nivel)</td>
+                <td class="$timeClass">$($step.Tiempo_ms)</td>
+                <td class="$timeClass">$($step.Tiempo_s)</td>
+                <td class="$stateClass">$($step.Estado)</td>
+                <td>$errorType</td>
+                <td>$errorMsg</td>
+            </tr>
+"@
+        }
+        
+        $htmlContent += @"
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>Reporte generado automáticamente por SARA3 Test Automation Framework</p>
+        <p>Timestamp: $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")</p>
+    </div>
+</body>
+</html>
+"@
+        
+        $htmlContent | Out-File -FilePath $htmlPath -Encoding UTF8
+        Write-Host "  - HTML generado: step_details_$timestamp.html"
+        
     } else {
         Write-Host "INFO: ImportExcel no disponible. Instala con: Install-Module ImportExcel"
-        Write-Host "      Generando CSV en su lugar..."
+        Write-Host "      Generando CSV y HTML en su lugar..."
         
         # Generar CSV como alternativa (con Batch + Error Type/Message)
         $csvPath = "$reportPath\step_details_$timestamp.csv"
