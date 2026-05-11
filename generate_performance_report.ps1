@@ -44,7 +44,6 @@ $row++
 
 $summarySheet.Cells.Item($row, 1) = "Test Date:"
 $summarySheet.Cells.Item($row, 2) = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-$row += 2
 
 # Key Metrics
 $summarySheet.Cells.Item($row, 1) = "Key Metrics by Machine"
@@ -261,15 +260,20 @@ foreach ($rec in $recommendations) {
 
 $recSheet.Columns("A").ColumnWidth = 90
 
-# Guardar workbook
-$xlsxPath = "$outputPath\performance_report_$(Get-Date -Format 'yyyyMMdd_HHmmss').xlsx"
-$workbook.SaveAs($xlsxPath)
-$workbook.Close()
-$excelApp.Quit()
-[System.Runtime.InteropServices.Marshal]::ReleaseComObject($excelApp) | Out-Null
-Remove-Variable excelApp
+# Guardar workbook usando Excel COM (fallback si está disponible)
+try {
+    $xlsxPath = "$outputPath\performance_report_$(Get-Date -Format 'yyyyMMdd_HHmmss').xlsx"
+    $workbook.SaveAs($xlsxPath)
+    $workbook.Close()
+    $excelApp.Quit()
+    [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excelApp) | Out-Null
+    Remove-Variable excelApp
+    Write-Host "✓ Performance Report Generated: $xlsxPath" -ForegroundColor Green
+} catch {
+    Write-Host "⚠ No se pudo generar Excel con COM" -ForegroundColor Yellow
+    Write-Host "   CSV disponible en: $outputPath" -ForegroundColor Gray
+}
 
-Write-Host "✓ Performance Report Generated: $xlsxPath" -ForegroundColor Green
 Write-Host ""
 Write-Host "Report includes:"
 Write-Host "  - Performance Summary (10 machines aggregated)"

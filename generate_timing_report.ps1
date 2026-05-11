@@ -145,82 +145,17 @@ $statsSummary = @(
     }
 )
 
-# Intentar crear XLSX usando Excel COM (si esta disponible)
-try {
-    $excel = New-Object -ComObject Excel.Application
-    $excel.Visible = $false
-    
-    # Crear workbook
-    $workbook = $excel.Workbooks.Add()
-    
-    # Hoja 1: Detalles de tests
-    $sheet1 = $workbook.Sheets.Item(1)
-    $sheet1.Name = "Test Details"
-    
-    # Headers
-    $col = 1
-    @("Suite", "Test Name", "Class", "Duration (min)", "Status", "Error Message") | ForEach-Object {
-        $sheet1.Cells.Item(1, $col) = $_
-        $sheet1.Cells.Item(1, $col).Font.Bold = $true
-        $sheet1.Cells.Item(1, $col).Interior.ColorIndex = 15
-        $col++
-    }
-    
-    # Datos
-    $row = 2
-    $testData | ForEach-Object {
-        $sheet1.Cells.Item($row, 1) = $_.Suite
-        $sheet1.Cells.Item($row, 2) = $_."Test Name"
-        $sheet1.Cells.Item($row, 3) = $_.Class
-        $sheet1.Cells.Item($row, 4) = $_."Duration (min)"
-        $sheet1.Cells.Item($row, 5) = $_.Status
-        $sheet1.Cells.Item($row, 6) = $_."Error Message"
-        
-        # Colorear por status
-        if ($_.Status -eq "FAILED") {
-            $sheet1.Cells.Item($row, 5).Interior.Color = 255  # Rojo
-        } elseif ($_.Status -eq "SKIPPED") {
-            $sheet1.Cells.Item($row, 5).Interior.Color = 65535  # Amarillo
-        }
-        
-        $row++
-    }
-    
-    # Auto-ajustar columnas
-    $sheet1.UsedRange.Columns.AutoFit() | Out-Null
-    
-    # Hoja 2: Estadisticas
-    $sheet2 = $workbook.Sheets.Add()
-    $sheet2.Name = "Summary"
-    
-    # Headers
-    $sheet2.Cells.Item(1, 1) = "Metrica"
-    $sheet2.Cells.Item(1, 2) = "Valor"
-    $sheet2.Cells.Item(1, 1).Font.Bold = $true
-    $sheet2.Cells.Item(1, 2).Font.Bold = $true
-    $sheet2.Cells.Item(1, 1).Interior.ColorIndex = 15
-    $sheet2.Cells.Item(1, 2).Interior.ColorIndex = 15
-    
-    # Datos
-    $row = 2
-    $statsSummary | ForEach-Object {
-        $sheet2.Cells.Item($row, 1) = $_.Metrica
-        $sheet2.Cells.Item($row, 2) = $_.Valor
-        $sheet2.Cells.Item($row, 1).Font.Bold = $true
-        $row++
-    }
-    
-    $sheet2.UsedRange.Columns.AutoFit() | Out-Null
-    
-    # Guardar
-    $fullPath = (Get-Location).Path + "\" + $xlsxOutput
-    $workbook.SaveAs($fullPath)
-    $workbook.Close()
-    $excel.Quit()
-    
-    Write-Host "[OK] Reporte XLSX generado: $xlsxOutput" -ForegroundColor Green
-} catch {
-    Write-Host "[NOTA] No se pudo crear XLSX (Excel no instalado). Solo CSV disponible." -ForegroundColor Yellow
+# Generar Excel desde CSV usando función reutilizable
+Write-Host ""
+Write-Host "Generando Excel desde CSV..." -ForegroundColor Cyan
+
+. ".\generate_excel_from_csv.ps1"
+$excelSuccess = Convert-CsvToExcel -csvPath $csvOutput -outputPath $reportFolder -worksheetName "Test Timings"
+
+if ($excelSuccess) {
+    Write-Host "✓ Excel generado exitosamente" -ForegroundColor Green
+} else {
+    Write-Host "⚠ No se pudo generar Excel, pero CSV está disponible" -ForegroundColor Yellow
 }
 
 # Mostrar los 10 tests mas lentos
@@ -232,8 +167,8 @@ $testData | Select-Object -First 10 | ForEach-Object {
 }
 
 Write-Host ""
-Write-Host "[OK] Reportes generados exitosamente!" -ForegroundColor Green
-Write-Host "   CSV: $csvOutput" -ForegroundColor Green
-if (Test-Path $xlsxOutput) {
-    Write-Host "   XLSX: $xlsxOutput" -ForegroundColor Green
-}
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host "✅ REPORTES GENERADOS EXITOSAMENTE!" -ForegroundColor Green
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host "   CSV: $csvOutput" -ForegroundColor Gray
+Write-Host ""

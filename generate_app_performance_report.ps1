@@ -630,8 +630,24 @@ Write-Host ""
 Write-Host "Abriendo dashboard HTML en navegador..." -ForegroundColor Cyan
 Start-Process $htmlReportPath
 
+# Generar Excel desde CSV
+Write-Host ""
+Write-Host "Generando Excel desde CSV..." -ForegroundColor Cyan
 
-$htmlPath = "$outputPath\app_performance_report_$timestamp.html"
+# Importar función reutilizable
+. ".\generate_excel_from_csv.ps1"
+
+$excelSuccess = Convert-CsvToExcel -csvPath $csvReportPath -outputPath $outputPath -worksheetName "Performance"
+
+if ($excelSuccess) {
+    Write-Host "  ✓ Excel generado exitosamente" -ForegroundColor Green
+}
+
+Write-Host ""
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host "  ✅ INFORME CONSOLIDADO COMPLETADO" -ForegroundColor Green
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Green
+
 
 $htmlContent = @"
 <!DOCTYPE html>

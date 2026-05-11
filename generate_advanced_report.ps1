@@ -371,7 +371,7 @@ $html = @"
             </tr>
 "@
 
-$testData | Sort-Object -Property "DurationMin" -Ascending | Select-Object -First 10 | ForEach-Object {
+$testData | Sort-Object -Property "DurationMin" | Select-Object -First 10 | ForEach-Object {
     $statusClass = switch ($_.Status) {
         "PASSED" { "passed" }
         "FAILED" { "failed" }
@@ -432,9 +432,27 @@ $html += @"
 $html | Out-File -FilePath $htmlOutput -Encoding UTF8
 Write-Host "[OK] HTML generado: $htmlOutput" -ForegroundColor Green
 
+# Exportar datos a CSV para luego generar Excel
+$csvOutput = "$reportFolder\test_timings_report.csv"
+$testData | Export-Csv -Path $csvOutput -Encoding UTF8 -NoTypeInformation -Force
+Write-Host "[OK] CSV generado: $csvOutput" -ForegroundColor Green
+
+# Generar Excel desde CSV
+Write-Host ""
+Write-Host "Generando Excel desde CSV..." -ForegroundColor Cyan
+
+. ".\generate_excel_from_csv.ps1"
+$excelSuccess = Convert-CsvToExcel -csvPath $csvOutput -outputPath $reportFolder -worksheetName "Test Timings"
+
+if ($excelSuccess) {
+    Write-Host "✓ Excel generado exitosamente" -ForegroundColor Green
+}
+
 # Guardar en historico
 $timestamp_file = Get-Date -Format "yyyyMMdd_HHmmss"
-Copy-Item $xlsxOutput -Destination "$historicFolder\report_$timestamp_file.xlsx" -ErrorAction SilentlyContinue
 Copy-Item $htmlOutput -Destination "$historicFolder\report_$timestamp_file.html" -ErrorAction SilentlyContinue
 
-Write-Host "[OK] Reportes generados exitosamente!" -ForegroundColor Green
+Write-Host ""
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+Write-Host "✅ REPORTES GENERADOS EXITOSAMENTE!" -ForegroundColor Green
+Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Cyan
