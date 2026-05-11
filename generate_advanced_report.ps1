@@ -343,11 +343,35 @@ $headers = @("Test Name", "Region", "Duration (min)", "Error Type", "Error Messa
     
     # Guardar
     $fullPath = (Get-Location).Path + "\" + $xlsxOutput
-    $workbook.SaveAs($fullPath)
-    $workbook.Close()
-    $excel.Quit()
-    
-    Write-Host "[OK] Excel generado: $fullPath" -ForegroundColor Green
+    if (-not (Test-Path (Split-Path $fullPath))) {
+        New-Item -ItemType Directory -Path (Split-Path $fullPath) | Out-Null
+    }
+    if (Test-Path $fullPath) {
+        try {
+            Remove-Item -Path $fullPath -Force -ErrorAction Stop
+        } catch {
+            Write-Host "[WARN] No se pudo eliminar el archivo existente: $fullPath" -ForegroundColor Yellow
+        }
+    }
+
+    $excel.DisplayAlerts = $false
+    try {
+        $workbook.SaveAs($fullPath)
+        Write-Host "[OK] Excel generado: $fullPath" -ForegroundColor Green
+    } catch {
+        $alternatePath = Join-Path (Split-Path $fullPath) ("test_timings_report_{0}.xlsx" -f (Get-Date -Format "yyyyMMdd_HHmmss"))
+        Write-Host "[WARN] No se pudo guardar como $fullPath. Intentando ruta alternativa: $alternatePath" -ForegroundColor Yellow
+        $workbook.SaveAs($alternatePath)
+        Write-Host "[OK] Excel generado en archivo alternativo: $alternatePath" -ForegroundColor Green
+        $fullPath = $alternatePath
+    } finally {
+        if ($workbook -ne $null) {
+            $workbook.Close($false)
+        }
+        if ($excel -ne $null) {
+            $excel.Quit()
+        }
+    }
 } catch {
     Write-Host "[ERROR] No se pudo crear Excel: $_" -ForegroundColor Red
 }
@@ -385,7 +409,7 @@ $html = @"
 </head>
 <body>
     <div class="container">
-        <h1>📊 SARA3 - Reporte de Pruebas</h1>
+        <h1>&#x1F4CA; SARA3 - Reporte de Pruebas</h1>
         <p>Generado: $timestamp | Pass Rate: <strong>$passRate%</strong></p>
         
         <div class="stats">

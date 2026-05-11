@@ -273,6 +273,13 @@ if exist "build\test-results\test" (
     if exist "target\reports\test_timings_report.xlsx" (
         echo [INFO] Abriendo Excel...
         start "" "target\reports\test_timings_report.xlsx"
+    ) else (
+        for /f "delims=" %%F in ('dir /b /o-d "target\reports\test_timings_report*.xlsx" 2^>nul') do (
+            echo [INFO] Abriendo Excel (archivo mas reciente)...
+            start "" "target\reports\%%F"
+            goto :skipOpenExcel
+        )
+        :skipOpenExcel
     )
     if exist "target\reports\test_timings_report.html" (
         echo [INFO] Abriendo HTML...
