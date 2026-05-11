@@ -45,84 +45,116 @@ function Create-ExcelFile {
     param(
         [string]$filePath,
         [array]$sheetData,
-        [array]$sheetNames
+        [array]$sheetNames,
+        [string]$csvPath  # Ruta del CSV para fallback
     )
     
+    $hasExcel = $false
+    
+    # Intentar con Excel COM
     try {
-        # Intentar crear instancia de Excel COM
         $excel = New-Object -ComObject Excel.Application -ErrorAction Stop
+        $hasExcel = $true
     }
     catch {
-        try {
-            # Intentar LibreOffice como alternativa
-            $excel = New-Object -ComObject com.sun.star.ServiceManager -ErrorAction Stop
-        }
-        catch {
-            Write-Host "    Sin Excel/LibreOffice disponible" -ForegroundColor Yellow
-            return $false
-        }
+        $hasExcel = $false
     }
     
-    try {
-        $excel.Visible = $false
-        $excel.DisplayAlerts = $false
-        $workbook = $excel.Workbooks.Add()
-        
-        for ($i = 0; $i -lt $sheetData.Count; $i++) {
-            $sheet = $sheetData[$i]
-            if ($null -eq $sheet -or $sheet.Count -eq 0) { continue }
+    if ($hasExcel) {
+        try {
+            $excel.Visible = $false
+            $excel.DisplayAlerts = $false
+            $workbook = $excel.Workbooks.Add()
             
-            $worksheet = if ($i -eq 0) { $workbook.Worksheets(1) } else { $workbook.Worksheets.Add() }
-            $worksheet.Name = $sheetNames[$i]
-            
-            $row = 1
-            $firstItem = $sheet | Select-Object -First 1
-            
-            if ($firstItem) {
-                # Headers
-                $col = 1
-                foreach ($prop in $firstItem.PSObject.Properties) {
-                    $worksheet.Cells($row, $col).Value = [string]$prop.Name
-                    $worksheet.Cells($row, $col).Font.Bold = $true
-                    $col++
-                }
-                $row++
+            for ($i = 0; $i -lt $sheetData.Count; $i++) {
+                $sheet = $sheetData[$i]
+                if ($null -eq $sheet -or $sheet.Count -eq 0) { continue }
                 
-                # Data
-                foreach ($item in $sheet) {
+                $worksheet = if ($i -eq 0) { $workbook.Worksheets(1) } else { $workbook.Worksheets.Add() }
+                $worksheet.Name = $sheetNames[$i]
+                
+                $row = 1
+                $firstItem = $sheet | Select-Object -First 1
+                
+                if ($firstItem) {
+                    # Headers
                     $col = 1
-                    foreach ($prop in $item.PSObject.Properties) {
-                        $val = $prop.Value
-                        $worksheet.Cells($row, $col).Value = if ($null -eq $val) { "" } else { [string]$val }
+                    foreach ($prop in $firstItem.PSObject.Properties) {
+                        $worksheet.Cells($row, $col).Value = [string]$prop.Name
+                        $worksheet.Cells($row, $col).Font.Bold = $true
                         $col++
                     }
                     $row++
+                    
+                    # Data
+                    foreach ($item in $sheet) {
+                        $col = 1
+                        foreach ($prop in $item.PSObject.Properties) {
+                            $val = $prop.Value
+                            $worksheet.Cells($row, $col).Value = if ($null -eq $val) { "" } else { [string]$val }
+                            $col++
+                        }
+                        $row++
+                    }
+                    
+                    # AutoFit
+                    try {
+                        $worksheet.UsedRange.EntireColumn.AutoFit() | Out-Null
+                    }
+                    catch { }
                 }
+            }
+            
+            $absolutePath = [System.IO.Path]::GetFullPath($filePath)
+            $workbook.SaveAs($absolutePath, 51)  # 51 = xlOpenXMLWorkbook (Excel 2007+)
+            $workbook.Close($false)
+            $excel.Quit()
+            
+            [System.Runtime.InteropServices.Marshal]::ReleaseComObject($workbook) | Out-Null
+            [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null
+            [gc]::Collect()
+            
+            return $true
+        }
+        catch {
+            Write-Host "    Error Excel COM: $_" -ForegroundColor Yellow
+            try { $workbook.Close($false); $excel.Quit() } catch { }
+            [gc]::Collect()
+            # Continuar con fallback a LibreOffice CLI
+        }
+    }
+    
+    # Fallback: Usar LibreOffice CLI para convertir CSV a XLSX
+    if ($null -ne $csvPath -and (Test-Path $csvPath)) {
+        try {
+            $libreOfficePath = (Get-Command soffice -ErrorAction SilentlyContinue).Source
+            if ($null -eq $libreOfficePath) {
+                $libreOfficePath = "C:\Program Files\LibreOffice\program\soffice.exe"
+            }
+            
+            if (Test-Path $libreOfficePath) {
+                $outputDir = Split-Path $filePath -Parent
+                $absolutePath = [System.IO.Path]::GetFullPath($filePath)
+                $csvAbsPath = [System.IO.Path]::GetFullPath($csvPath)
                 
-                # AutoFit
-                try {
-                    $worksheet.UsedRange.EntireColumn.AutoFit() | Out-Null
+                # Convertir CSV a XLSX usando LibreOffice CLI
+                & $libreOfficePath --headless --convert-to xlsx --outdir $outputDir $csvAbsPath 2>&1 | Out-Null
+                
+                # Renombrar archivo generado al nombre esperado
+                $generatedXlsx = Join-Path $outputDir (Split-Path $csvAbsPath -Leaf).Replace(".csv", ".xlsx")
+                if (Test-Path $generatedXlsx) {
+                    Remove-Item $absolutePath -ErrorAction SilentlyContinue
+                    Rename-Item $generatedXlsx $absolutePath
+                    return $true
                 }
-                catch { }
             }
         }
-        
-        $absolutePath = [System.IO.Path]::GetFullPath($filePath)
-        $workbook.SaveAs($absolutePath, 51)  # 51 = xlOpenXMLWorkbook (Excel 2007+)
-        $workbook.Close($false)
-        $excel.Quit()
-        
-        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($workbook) | Out-Null
-        [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null
-        [gc]::Collect()
-        
-        return $true
+        catch {
+            Write-Host "    Error LibreOffice CLI: $_" -ForegroundColor Yellow
+        }
     }
-    catch {
-        Write-Host "    Error Excel: $_" -ForegroundColor Red
-        try { $workbook.Close($false); $excel.Quit() } catch { }
-        return $false
-    }
+    
+    return $false
 }
 
 function Extract-TestSteps {
@@ -286,7 +318,8 @@ $testSummary = $allSteps | Group-Object Test |
 Write-Host "Generando Excel..." -ForegroundColor Cyan
 $excelSuccess = Create-ExcelFile -filePath $excelPath `
                                  -sheetData @($stepsSheet, $slowSheet, $errorSummary, $testSummary) `
-                                 -sheetNames @("Todos los Pasos", "Pasos Lentos (>5s)", "Resumen de Errores", "Resumen por Test")
+                                 -sheetNames @("Todos los Pasos", "Pasos Lentos (>5s)", "Resumen de Errores", "Resumen por Test") `
+                                 -csvPath $csvPath
 
 if ($excelSuccess) {
     Write-Host "Excel generado: $excelPath" -ForegroundColor Green
