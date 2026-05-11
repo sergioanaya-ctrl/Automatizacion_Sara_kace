@@ -6,8 +6,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea             | servicio          |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio          |
+      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS | PASO DE GASOLINA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -21,7 +21,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | BOGOTA                | BOGOTA             | NO                   | NO                  | AUTOS | ABOGADO EN SITIO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -35,7 +35,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | VALLE DEL CAUCA       | CALI               | NO                   | NO                  | AUTOS | MECANICA BASICA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -48,8 +48,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ATLANTICO             | BARRANQUILLA       | NO                   | NO                  | AUTOS | FRENOS   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -62,8 +62,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio     |
+      | CUNDINAMARCA          | SOACHA             | NO                   | NO                  | AUTOS | AMBULANCIA   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -76,8 +76,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | SANTANDER             | BUCARAMANGA        | NO                   | NO                  | AUTOS | GRUA     |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -90,8 +90,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio        |
+      | NORTE DE SANTANDER    | CUCUTA             | NO                   | NO                  | AUTOS | CAMBIO LLANTAS  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -104,8 +104,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                            |
+      | MAGDALENA             | SANTA MARTA        | NO                   | NO                  | AUTOS | CERRAJERO AUTOS COMPLEJIDAD BAJA    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -118,8 +118,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                 |
+      | BOLIVAR               | CARTAGENA          | NO                   | NO                  | AUTOS | DESPLAZAMIENTO POR HORAS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -132,8 +132,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio              |
+      | NARIÑO                | PASTO              | NO                   | NO                  | AUTOS | FACILITADOR VIRTUAL   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -147,7 +147,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | CAUCA                 | POPAYAN            | NO                   | NO                  | AUTOS | ABOGADO VIRTUAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -160,8 +160,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                              |
+      | QUINDIO               | ARMENIA            | NO                   | NO                  | AUTOS | ORIENTACION JURIDICA TELEFONICA AUTOS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -174,8 +174,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio               |
+      | RISARALDA             | PEREIRA            | NO                   | NO                  | AUTOS | CONDUCTOR PROFESIONAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -188,8 +188,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio            |
+      | TOLIMA                | IBAGUE             | NO                   | NO                  | AUTOS | CONDUCTOR FAMILIAR  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -202,8 +202,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                        |
+      | META                  | VILLAVICENCIO      | NO                   | NO                  | AUTOS | ESTANCIA CONDUCTOR POR HURTO    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -216,8 +216,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                |
+      | SUCRE                 | SINCELEJO          | NO                   | NO                  | AUTOS | DESPLAZAMIENTO VIAJERO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -230,8 +230,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio            |
+      | CORDOBA               | MONTERIA           | NO                   | NO                  | AUTOS | HOSPEDAJE VIAJERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -244,8 +244,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                        |
+      | CESAR                 | VALLEDUPAR         | NO                   | NO                  | AUTOS | TRASLADO VEHICULO DE REEMPLAZO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -258,8 +258,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio              |
+      | GUAJIRA               | RIOHACHA           | NO                   | NO                  | AUTOS | RESCATE PARQUEADERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -272,8 +272,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio    |
+      | ARAUCA                | ARAUCA             | NO                   | NO                  | AUTOS | PARQUEADERO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -286,8 +286,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio              |
+      | CASANARE              | YOPAL              | NO                   | NO                  | AUTOS | DIAGNOSTICO VEHICULO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -300,8 +300,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio           |
+      | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE BATERIA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -314,8 +314,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio               |
+      | GUAINIA               | INIRIDA            | NO                   | NO                  | AUTOS | CAMBIO DE DISPOSITIVO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -328,8 +328,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio    |
+      | VAUPÉS                | MITÚ               | NO                   | NO                  | AUTOS | INSTALACION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -342,8 +342,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                   |
+      | AMAZONAS              | LETICIA            | NO                   | NO                  | AUTOS | MANTENIMIENTO PREVENTIVO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -356,8 +356,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                  |
+      | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | ATENCION VIRTUAL HOGAR    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -370,8 +370,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio         |
+      | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | ABOGADO EN SITIO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -384,8 +384,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio    |
+      | BOGOTA                | SOACHA             | NO                   | NO                  | HOGARES | ELECTRICISTA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -398,8 +398,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio |
+      | VALLE DEL CAUCA       | PALMIRA            | NO                   | NO                  | HOGARES | PLOMERO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -412,8 +412,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio    |
+      | ATLANTICO             | SOLEDAD            | NO                   | NO                  | HOGARES | CERRAJERO HO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -426,8 +426,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio |
+      | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | VIDRIERO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -440,8 +440,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                |
+      | SANTANDER             | FLORIDABLANCA      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS     |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -454,8 +454,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                    |
+      | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | DESAGUE POR INUNDACION      |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -468,8 +468,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                        |
+      | MAGDALENA             | CIÉNAGA            | NO                   | NO                  | HOGARES | ASESORIA JURIDICA PRESENCIAL    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -482,8 +482,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio             |
+      | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION DIGITAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -496,8 +496,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio              |
+      | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | FACILITADOR VIRTUAL   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -510,8 +510,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio   |
+      | CAUCA                 | SANTANDER DE QUILICHAO | NO               | NO                  | HOGARES | VIGILANTE  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -524,8 +524,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio     |
+      | QUINDIO               | CALARCA            | NO                   | NO                  | HOGARES | VIGILANTE SP |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -538,8 +538,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio            |
+      | RISARALDA             | DOSQUEBRADAS       | NO                   | NO                  | HOGARES | HOSPEDAJE VIAJERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -552,8 +552,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio            |
+      | TOLIMA                | MELGAR             | NO                   | NO                  | HOGARES | TRASLADO DE BIENES  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
