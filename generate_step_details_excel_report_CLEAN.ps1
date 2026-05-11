@@ -556,47 +556,47 @@ $html = @"
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Reporte de Detalles de Pasos - SARA3</h1>
-            <p>Análisis completo de ejecución de casos y pruebas automatizadas</p>
+            <h1>&#128202; Reporte de Detalles de Pasos - SARA3</h1>
+            <p>An&aacute;lisis completo de ejecuci&oacute;n de casos y pruebas automatizadas</p>
         </div>
         
         <div class="info-bar">
             <div class="info-item">
-                <span class="info-label">💻 Máquina:</span>
+                <span class="info-label">&#128187; M&aacute;quina:</span>
                 <span class="info-value">$machineName</span>
             </div>
             <div class="info-item">
-                <span class="info-label">👤 Usuario:</span>
+                <span class="info-label">&#128100; Usuario:</span>
                 <span class="info-value">$userName</span>
             </div>
             <div class="info-item">
-                <span class="info-label">📅 Fecha:</span>
+                <span class="info-label">&#128197; Fecha:</span>
                 <span class="info-value">$(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')</span>
             </div>
             <div class="info-item">
-                <span class="info-label">⏱️ Tiempo Total:</span>
+                <span class="info-label">&#9201; Tiempo Total:</span>
                 <span class="info-value">${totalTime:N2}s</span>
             </div>
         </div>
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">📋</div>
+                <div class="stat-icon">&#128203;</div>
                 <div class="stat-value">$($allSteps.Count)</div>
                 <div class="stat-label">Pasos Totales</div>
             </div>
             <div class="stat-card success">
-                <div class="stat-icon">✅</div>
+                <div class="stat-icon">&#9989;</div>
                 <div class="stat-value">$successCount</div>
                 <div class="stat-label">Pasos Exitosos ($(([math]::Round(($successCount/$($allSteps.Count)*100), 1)))%)</div>
             </div>
             <div class="stat-card error">
-                <div class="stat-icon">❌</div>
+                <div class="stat-icon">&#10060;</div>
                 <div class="stat-value">$errorCount</div>
                 <div class="stat-label">Pasos con Error ($(([math]::Round(($errorCount/$($allSteps.Count)*100), 1)))%)</div>
             </div>
             <div class="stat-card slow">
-                <div class="stat-icon">🐢</div>
+                <div class="stat-icon">&#128034;</div>
                 <div class="stat-value">$slowCount</div>
                 <div class="stat-label">Pasos Lentos (&gt;5s)</div>
             </div>
@@ -620,7 +620,7 @@ $html = @"
         
         <div id="todos" class="tab-content">
             <div class="search-box">
-                <input type="text" id="filtroTodos" placeholder="🔍 Filtrar pasos..." onkeyup="filtrarTabla('tablaTodos', this.value)">
+                <input type="text" id="filtroTodos" placeholder="&#128269; Filtrar pasos..." onkeyup="filtrarTabla('tablaTodos', this.value)">
             </div>
             <table id="tablaTodos">
                 <thead>
@@ -753,7 +753,7 @@ $html += @"
         </div>
         
         <footer>
-            <p>📈 Reporte generado automáticamente | Total de pasos procesados: $($allSteps.Count) | 🔧 Sara3 Automation Framework</p>
+            <p>&#128200; Reporte generado autom&aacute;ticamente | Total de pasos procesados: $($allSteps.Count) | &#128295; Sara3 Automation Framework</p>
         </footer>
     </div>
     
@@ -845,7 +845,9 @@ $html += @"
 </html>
 "@
 
-$html | Out-File -FilePath $htmlPath -Encoding UTF8
+# Guardar HTML con encoding UTF-8 BOM para máxima compatibilidad con navegadores
+$utf8WithBom = New-Object System.Text.UTF8Encoding($true)
+[System.IO.File]::WriteAllText($htmlPath, $html, $utf8WithBom)
 Write-Host "HTML generado: $htmlPath" -ForegroundColor Green
 
 # ===== RESUMEN =====
