@@ -742,7 +742,7 @@ try {
 <body>
     <div class="container">
         <header>
-            <h1>📊 SARA3 - Reporte de Detalles de Pasos</h1>
+            <h1>&#x1F4CA; SARA3 - Reporte de Detalles de Pasos</h1>
             <div class="timestamp">Generado: $(Get-Date -Format "dd/MM/yyyy HH:mm:ss")</div>
         </header>
         
@@ -774,10 +774,10 @@ try {
         </div>
         
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('all-steps', this)">📋 Todos los Pasos</button>
-            <button class="tab" onclick="switchTab('slow-steps', this)">🐢 Pasos Lentos</button>
-            <button class="tab" onclick="switchTab('failed-tests', this)">❌ Tests Fallidos</button>
-            <button class="tab" onclick="switchTab('statistics', this)">📈 Estadísticas</button>
+            <button class="tab active" onclick="switchTab('all-steps', this)">&#x1F4CB; Todos los Pasos</button>
+            <button class="tab" onclick="switchTab('slow-steps', this)">&#x1F422; Pasos Lentos</button>
+            <button class="tab" onclick="switchTab('failed-tests', this)">&#x274C; Tests Fallidos</button>
+            <button class="tab" onclick="switchTab('statistics', this)">&#x1F4C8; Estadísticas</button>
         </div>
         
         <!-- Todos los Pasos -->
@@ -882,7 +882,7 @@ try {
         } else {
             $htmlContent += @"
                 <div class="no-data">
-                    <p>✓ No hay pasos lentos. Todos los pasos se ejecutaron rápidamente (< 5s)</p>
+                    <p>&#x2713; No hay pasos lentos. Todos los pasos se ejecutaron rápidamente (< 5s)</p>
                 </div>
 "@
         }
@@ -941,7 +941,7 @@ try {
         } else {
             $htmlContent += @"
                 <div class="no-data">
-                    <p>✓ Excelente! Todos los tests pasaron correctamente.</p>
+                    <p>&#x2713; Excelente! Todos los tests pasaron correctamente.</p>
                 </div>
 "@
         }
@@ -954,11 +954,11 @@ try {
         <div id="statistics" class="content-section">
             <div class="charts-container">
                 <div class="chart-box">
-                    <h3>Distribución de Estados</h3>
+                    <h3>&#x1F4C8; Distribución de Estados</h3>
                     <canvas id="stateChart"></canvas>
                 </div>
                 <div class="chart-box">
-                    <h3>Distribución de Errores</h3>
+                    <h3>&#x274C; Distribución de Errores</h3>
                     <canvas id="errorChart"></canvas>
                 </div>
             </div>
