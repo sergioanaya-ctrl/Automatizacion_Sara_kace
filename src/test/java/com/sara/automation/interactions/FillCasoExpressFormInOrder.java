@@ -382,7 +382,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
             return;
         } catch (Exception e) {
             System.out.println("  [seleccionarComboWebDriver] ERROR: " + e.getMessage());
-            throw new RuntimeException("Error seleccionando combo: " + valor, e);
+            throw new RuntimeException("Error seleccionando Departamento: " + valor, e);
         }
     }
 

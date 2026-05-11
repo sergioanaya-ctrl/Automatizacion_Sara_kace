@@ -21,35 +21,35 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | BOGOTA                | BOGOTA             | NO                   | NO                  | AUTOS | ABOGADO EN SITIO |
+      | BOGOTA D.C.                | BOGOTA D.C.             | NO                   | NO                  | AUTOS | ABOGADO EN SITIO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch3
-  Scenario: Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA
+  Scenario: Test Usuario 03 - VALLE DEL CAUCA - BAJO CALIMA - AUTOS - MECANICA BASICA
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | VALLE DEL CAUCA       | CALI               | NO                   | NO                  | AUTOS | MECANICA BASICA  |
+      | VALLE DEL CAUCA       | BAJO CALIMA        | NO                   | NO                  | AUTOS | MECANICA BASICA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch4
-  Scenario: Test Usuario 04 - ATLANTICO - BARRANQUILLA - AUTOS - FRENOS
+  Scenario: Test Usuario 04 - ATLANTICO - BARANOA - AUTOS - FRENOS
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
-      | ATLANTICO             | BARRANQUILLA       | NO                   | NO                  | AUTOS | FRENOS   |
+      | ATLANTICO             | BARANOA            | NO                   | NO                  | AUTOS | FRENOS   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -112,14 +112,14 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch9
-  Scenario: Test Usuario 09 - BOLIVAR - CARTAGENA - AUTOS - DESPLAZAMIENTO POR HORAS
+  Scenario: Test Usuario 09 - BOLIVAR - CARTAGENA LAGUNA CLUB - AUTOS - DESPLAZAMIENTO POR HORAS
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                 |
-      | BOLIVAR               | CARTAGENA          | NO                   | NO                  | AUTOS | DESPLAZAMIENTO POR HORAS |
+      | BOLIVAR               | CARTAGENA LAGUNA CLUB | NO                   | NO                  | AUTOS | DESPLAZAMIENTO POR HORAS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -140,14 +140,14 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch11
-  Scenario: Test Usuario 11 - CAUCA - POPAYAN - AUTOS - ABOGADO VIRTUAL
+  Scenario: Test Usuario 11 - CAUCA - ALMAGUER - AUTOS - ABOGADO VIRTUAL
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CAUCA                 | POPAYAN            | NO                   | NO                  | AUTOS | ABOGADO VIRTUAL  |
+      | CAUCA                 | ALMAGUER           | NO                   | NO                  | AUTOS | ABOGADO VIRTUAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -224,14 +224,14 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch17
-  Scenario: Test Usuario 17 - CORDOBA - MONTERIA - AUTOS - HOSPEDAJE VIAJERO
+  Scenario: Test Usuario 17 - CORDOBA - ABROJAL - AUTOS - HOSPEDAJE VIAJERO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio            |
-      | CORDOBA               | MONTERIA           | NO                   | NO                  | AUTOS | HOSPEDAJE VIAJERO   |
+      | CORDOBA               | ABROJAL            | NO                   | NO                  | AUTOS | HOSPEDAJE VIAJERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -266,28 +266,28 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch20
-  Scenario: Test Usuario 20 - ARAUCA - ARAUCA - AUTOS - PARQUEADERO
+  Scenario: Test Usuario 20 - ARAUCA - PANAMA DE ARAUCA - AUTOS - PARQUEADERO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio    |
-      | ARAUCA                | ARAUCA             | NO                   | NO                  | AUTOS | PARQUEADERO |
+      | ARAUCA                | PANAMA DE ARAUCA   | NO                   | NO                  | AUTOS | PARQUEADERO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch21
-  Scenario: Test Usuario 21 - CASANARE - YOPAL - AUTOS - DIAGNOSTICO VEHICULO
+  Scenario: Test Usuario 21 - CASANARE - CARIBAYONA - AUTOS - DIAGNOSTICO VEHICULO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio              |
-      | CASANARE              | YOPAL              | NO                   | NO                  | AUTOS | DIAGNOSTICO VEHICULO  |
+      | CASANARE              | CARIBAYONA         | NO                   | NO                  | AUTOS | DIAGNOSTICO VEHICULO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -308,14 +308,14 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch23
-  Scenario: Test Usuario 23 - GUAINIA - INIRIDA - AUTOS - CAMBIO DE DISPOSITIVO
+  Scenario: Test Usuario 23 - VICHADA - PUERTO CARREÑO  - AUTOS - CAMBIO DE DISPOSITIVO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio               |
-      | GUAINIA               | INIRIDA            | NO                   | NO                  | AUTOS | CAMBIO DE DISPOSITIVO  |
+      | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE DISPOSITIVO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -329,21 +329,21 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio    |
-      | VAUPÉS                | MITÚ               | NO                   | NO                  | AUTOS | INSTALACION |
+      | VAUPES                | MITU               | NO                   | NO                  | AUTOS | INSTALACION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch25
-  Scenario: Test Usuario 25 - AMAZONAS - LETICIA - AUTOS - MANTENIMIENTO PREVENTIVO
+  Scenario: Test Usuario 25 - AMAZONAS - ARARA - AUTOS - MANTENIMIENTO PREVENTIVO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                   |
-      | AMAZONAS              | LETICIA            | NO                   | NO                  | AUTOS | MANTENIMIENTO PREVENTIVO   |
+      | AMAZONAS              | ARARA              | NO                   | NO                  | AUTOS | MANTENIMIENTO PREVENTIVO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -378,42 +378,42 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch28
-  Scenario: Test Usuario 28 - BOGOTA - SOACHA - HOGARES - ELECTRICISTA
+  Scenario: Test Usuario 28 - ANTIOQUIA - ENVIGADO - HOGARES - ELECTRICISTA
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio    |
-      | BOGOTA                | SOACHA             | NO                   | NO                  | HOGARES | ELECTRICISTA |
+      | ANTIOQUIA                | ENVIGADO             | NO                   | NO                  | HOGARES | ELECTRICISTA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch29
-  Scenario: Test Usuario 29 - VALLE DEL CAUCA - PALMIRA - HOGARES - PLOMERO
+  Scenario: Test Usuario 29 - VALLE DEL CAUCA - CACHIMBAL - HOGARES - PLOMERO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio |
-      | VALLE DEL CAUCA       | PALMIRA            | NO                   | NO                  | HOGARES | PLOMERO  |
+      | VALLE DEL CAUCA       | CACHIMBAL          | NO                   | NO                  | HOGARES | PLOMERO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
 
   @batch30
-  Scenario: Test Usuario 30 - ATLANTICO - SOLEDAD - HOGARES - CERRAJERO HO
+  Scenario: Test Usuario 30 - ATLANTICO - AGUADA DE PABLO - HOGARES - CERRAJERO HO
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio    |
-      | ATLANTICO             | SOLEDAD            | NO                   | NO                  | HOGARES | CERRAJERO HO |
+      | ATLANTICO             | AGUADA DE PABLO    | NO                   | NO                  | HOGARES | CERRAJERO HO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -434,14 +434,14 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch32
-  Scenario: Test Usuario 32 - SANTANDER - FLORIDABLANCA - HOGARES - RETIRO DE ESCOMBROS
+  Scenario: Test Usuario 32 - SANTANORTE DE SANTANDER  - ARBOLEDAS - HOGARES - RETIRO DE ESCOMBROS
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                |
-      | SANTANDER             | FLORIDABLANCA      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS     |
+      | SANTANORTE DE SANTANDER | ARBOLEDAS      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS     |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -469,7 +469,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                        |
-      | MAGDALENA             | CIÉNAGA            | NO                   | NO                  | HOGARES | ASESORIA JURIDICA PRESENCIAL    |
+      | MAGDALENA             | CIENAGA            | NO                   | NO                  | HOGARES | ASESORIA JURIDICA PRESENCIAL    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -566,8 +566,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                 |
+      | META                  | ACACIAS            | NO                   | NO                  | HOGARES | SECADO DE ALFOMBRAS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -580,8 +580,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio              |
+      | SUCRE                 | COLOSO             | NO                   | NO                  | HOGARES | SERVICIOS EXEQUIAL |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -594,8 +594,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio             |
+      | CORDOBA               | LORICA             | NO                   | NO                  | HOGARES | GASTOS DE MUDANZA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -608,8 +608,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                      |
+      | CESAR                 | CODAZZI            | NO                   | NO                  | HOGARES | SEGUIMIENTO A LA REPARACION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -622,8 +622,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                          |
+      | GUAJIRA               | MAICAO             | NO                   | NO                  | HOGARES | REVISION Y REDACCION DE CONTRATOS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -636,8 +636,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                |
+      | ARAUCA                | FORTUL             | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -650,8 +650,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                              |
+      | CASANARE              | AGUAZUL            | NO                   | NO                  | HOGARES | CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -664,8 +664,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                       |
+      | VICHADA               | LA PRIMAVERA       | NO                   | NO                  | HOGARES | ORIENTACION JURIDICA TELEFONICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -678,8 +678,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita         | servicios_especiales | gestor_coordinacion | linea  | servicio                      |
+      | GUAINIA               | SAN FERNANDO DE ATABAPO    | NO                   | NO                  | HOGARES | ORIENTACION MEDICA TELEFONICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -692,8 +692,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio        |
+      | VAUPÉS                | CARURU             | NO                   | NO                  | HOGARES | PLAN DE ACCION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
