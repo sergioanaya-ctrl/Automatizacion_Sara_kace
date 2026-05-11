@@ -6,6 +6,9 @@ param(
     [string]$outputPath = "target/reports/app_performance"
 )
 
+# Importar funciones de utilidad
+. ".\report_utilities.ps1"
+
 # Crear directorio si no existe
 if (!(Test-Path $outputPath)) {
     New-Item -ItemType Directory -Path $outputPath -Force | Out-Null
@@ -81,16 +84,19 @@ $endpoints = @()
 foreach ($metric in $consolidatedData.AllMetrics) {
     $times = $metric.Times
     if ($times.Count -gt 0) {
-        $avg = [math]::Round(($times | Measure-Object -Average).Average, 2)
-        $min = [math]::Round(($times | Measure-Object -Minimum).Minimum, 2)
-        $max = [math]::Round(($times | Measure-Object -Maximum).Maximum, 2)
+        $avg = ($times | Measure-Object -Average).Average
+        $min = ($times | Measure-Object -Minimum).Minimum
+        $max = ($times | Measure-Object -Maximum).Maximum
         $degradation = if ($min -gt 0) { [math]::Round(($max / $min - 1) * 100, 1) } else { 0 }
         
         $metrics += @{
             Nombre = $metric.Nombre
             Actual = $avg
+            ActualFormatted = Format-SecondsWithComma -Milliseconds ([int]$avg)
             Min = $min
+            MinFormatted = Format-SecondsWithComma -Milliseconds ([int]$min)
             Max = $max
+            MaxFormatted = Format-SecondsWithComma -Milliseconds ([int]$max)
             Degradation = $degradation
         }
     }
@@ -99,16 +105,19 @@ foreach ($metric in $consolidatedData.AllMetrics) {
 foreach ($endpoint in $consolidatedData.AllEndpoints) {
     $times = $endpoint.Times
     if ($times.Count -gt 0) {
-        $avg = [math]::Round(($times | Measure-Object -Average).Average, 2)
-        $min = [math]::Round(($times | Measure-Object -Minimum).Minimum, 2)
-        $max = [math]::Round(($times | Measure-Object -Maximum).Maximum, 2)
+        $avg = ($times | Measure-Object -Average).Average
+        $min = ($times | Measure-Object -Minimum).Minimum
+        $max = ($times | Measure-Object -Maximum).Maximum
         $degradation = if ($min -gt 0) { [math]::Round(($max / $min - 1) * 100, 1) } else { 0 }
         
         $endpoints += @{
             Name = $endpoint.Name
             Average = $avg
+            AverageFormatted = Format-SecondsWithComma -Milliseconds ([int]$avg)
             Min = $min
+            MinFormatted = Format-SecondsWithComma -Milliseconds ([int]$min)
             Max = $max
+            MaxFormatted = Format-SecondsWithComma -Milliseconds ([int]$max)
             Degradation = $degradation
         }
     }
@@ -134,7 +143,7 @@ $csvReportPath = "$outputPath/app_performance_consolidated_$timestamp.csv"
 $csvContent = "Endpoint API,Promedio (ms),Min (ms),Max (ms),Tests Procesados,Degradacion %`nTests Ejecutados,$($consolidatedData.TestCount)`n`n"
 
 foreach ($ep in $endpoints) {
-    $csvContent += "$($ep.Name),$($ep.Average),$($ep.Min),$($ep.Max),$($consolidatedData.TestCount),$($ep.Degradation)`n"
+    $csvContent += "$($ep.Name),$($ep.AverageFormatted),$($ep.MinFormatted),$($ep.MaxFormatted),$($consolidatedData.TestCount),$($ep.Degradation)`n"
 }
 
 $csvContent | Out-File -FilePath $csvReportPath -Encoding UTF8 -Force
@@ -175,7 +184,7 @@ $htmlLines = @(
 
 foreach ($ep in $endpoints | Sort-Object -Property Average -Descending) {
     $statusClass = if ($ep.Degradation -gt 50) { "critical" } elseif ($ep.Degradation -gt 30) { "warning" } else { "good" }
-    $htmlLines += "<tr><td>$($ep.Name)</td><td>$($ep.Average)</td><td>$($ep.Min)</td><td>$($ep.Max)</td><td class='$statusClass'>$($ep.Degradation)%</td></tr>"
+    $htmlLines += "<tr><td>$($ep.Name)</td><td>$($ep.AverageFormatted)</td><td>$($ep.MinFormatted)</td><td>$($ep.MaxFormatted)</td><td class='$statusClass'>$($ep.Degradation)%</td></tr>"
 }
 
 $htmlLines += "</table>"

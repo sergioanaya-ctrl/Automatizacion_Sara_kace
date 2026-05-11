@@ -3,6 +3,10 @@
 # ========================================================
 # Este script lee los archivos XML de resultados de Junit
 # y genera un reporte CSV/XLSX con tiempos de ejecucion
+# FORMATOS: Tiempos en minutos con COMA y desglose de pasos
+
+# Importar funciones auxiliares
+. "$PSScriptRoot\report_utilities.ps1"
 
 param(
     [string]$OutputFormat = "CSV"  # CSV o XLSX
@@ -69,7 +73,8 @@ Get-ChildItem -Path $testResultsPath -Filter "*.xml" | ForEach-Object {
                 "Suite" = $suiteName
                 "Test Name" = $testName
                 "Class" = $testClass
-                "Duration (min)" = [math]::Round($testTime / 60, 2)
+                "Duration (min)" = Format-MinutesWithComma -Milliseconds ($testTime * 1000)
+                "Duration (s)" = Format-SecondsWithComma -Milliseconds ($testTime * 1000)
                 "Status" = $status
                 "Error Message" = $errorMsg
             }
@@ -77,14 +82,22 @@ Get-ChildItem -Path $testResultsPath -Filter "*.xml" | ForEach-Object {
     }
 }
 
-# Ordenar por tiempo descendente
-$testData = $testData | Sort-Object -Property "Duration (min)" -Descending
+# Ordenar por tiempo descendente (convertir a número para comparar)
+$testDataSorted = $testData | Sort-Object { [double]($_.Tiempo_ms / 1000) } -Descending
 
-# Calcular estadisticas
-$totalTime = ($testData | Measure-Object -Property "Duration (min)" -Sum).Sum
-$avgTime = ($testData | Measure-Object -Property "Duration (min)" -Average).Average
-$maxTime = ($testData | Measure-Object -Property "Duration (min)" -Maximum).Maximum
-$minTime = ($testData | Measure-Object -Property "Duration (min)" -Minimum).Minimum
+# Calcular estadisticas en base a valores en segundos
+$timesInSeconds = @()
+foreach ($test in $testData) {
+    # Buscar el campo de tiempo (Duration en segundos o milisegundos)
+    $timeValue = if ($test.Tiempo_ms) { $test.Tiempo_ms / 1000 } elseif ($test."Duration (s)") { [double]($test."Duration (s)" -replace ",", ".") } else { 0 }
+    $timesInSeconds += $timeValue
+}
+
+$totalTimeSeconds = ($timesInSeconds | Measure-Object -Sum).Sum
+$avgTimeSeconds = if ($timesInSeconds.Count -gt 0) { $totalTimeSeconds / $timesInSeconds.Count } else { 0 }
+$maxTimeSeconds = ($timesInSeconds | Measure-Object -Maximum).Maximum
+$minTimeSeconds = ($timesInSeconds | Measure-Object -Minimum).Minimum
+
 $totalTests = @($testData).Count
 $passedTests = @($testData | Where-Object { $_.Status -eq "PASSED" }).Count
 $failedTests = @($testData | Where-Object { $_.Status -eq "FAILED" }).Count
@@ -98,10 +111,10 @@ Write-Host "Tests exitosos: $passedTests" -ForegroundColor Green
 Write-Host "Tests fallidos: $failedTests" -ForegroundColor Red
 Write-Host "Tests omitidos: $skippedTests" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "Tiempo total: $([math]::Round($totalTime, 2)) minutos" -ForegroundColor Cyan
-Write-Host "Tiempo promedio: $([math]::Round($avgTime, 2)) minutos" -ForegroundColor Cyan
-Write-Host "Tiempo maximo: $([math]::Round($maxTime, 2)) minutos" -ForegroundColor Yellow
-Write-Host "Tiempo minimo: $([math]::Round($minTime, 2)) minutos" -ForegroundColor Yellow
+Write-Host "Tiempo total: $(Format-TimeDisplay -Milliseconds ($totalTimeSeconds * 1000))" -ForegroundColor Cyan
+Write-Host "Tiempo promedio: $(Format-TimeDisplay -Milliseconds ($avgTimeSeconds * 1000))" -ForegroundColor Cyan
+Write-Host "Tiempo máximo: $(Format-TimeDisplay -Milliseconds ($maxTimeSeconds * 1000))" -ForegroundColor Yellow
+Write-Host "Tiempo mínimo: $(Format-TimeDisplay -Milliseconds ($minTimeSeconds * 1000))" -ForegroundColor Yellow
 Write-Host "========================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -129,19 +142,19 @@ $statsSummary = @(
     },
     [PSCustomObject]@{
         "Metrica" = "Tiempo Total (min)"
-        "Valor" = [math]::Round($totalTime, 2)
+        "Valor" = Format-MinutesWithComma -Milliseconds ($totalTimeSeconds * 1000)
     },
     [PSCustomObject]@{
         "Metrica" = "Tiempo Promedio (min)"
-        "Valor" = [math]::Round($avgTime, 2)
+        "Valor" = Format-MinutesWithComma -Milliseconds ($avgTimeSeconds * 1000)
     },
     [PSCustomObject]@{
-        "Metrica" = "Tiempo Maximo (min)"
-        "Valor" = [math]::Round($maxTime, 2)
+        "Metrica" = "Tiempo Máximo (min)"
+        "Valor" = Format-MinutesWithComma -Milliseconds ($maxTimeSeconds * 1000)
     },
     [PSCustomObject]@{
-        "Metrica" = "Tiempo Minimo (min)"
-        "Valor" = [math]::Round($minTime, 2)
+        "Metrica" = "Tiempo Mínimo (min)"
+        "Valor" = Format-MinutesWithComma -Milliseconds ($minTimeSeconds * 1000)
     }
 )
 

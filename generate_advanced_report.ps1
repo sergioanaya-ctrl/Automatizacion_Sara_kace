@@ -3,6 +3,9 @@
 # Genera reportes en Excel y HTML con multiples funcionalidades
 # ========================================================
 
+# Importar funciones de utilidad
+. ".\report_utilities.ps1"
+
 # Configuracion
 $testResultsPath = "build\test-results\test"
 $reportFolder = "target\reports"
@@ -75,7 +78,9 @@ Get-ChildItem -Path $testResultsPath -Filter "*.xml" | ForEach-Object {
                 "TestName" = $testName
                 "Region" = $region
                 "Class" = $testClass
+                "DurationSec" = $testTime
                 "DurationMin" = [math]::Round($testTime / 60, 2)
+                "DurationFormatted" = Format-MinutesWithComma -Milliseconds ([int]($testTime * 1000))
                 "Status" = $status
                 "Error" = $errorMsg
                 "IsSlow" = ($testTime / 60) -gt $alertThresholdMinutes
@@ -125,10 +130,10 @@ try {
         @("Tests Fallidos", $failedTests),
         @("Tests Omitidos", $skippedTests),
         @("Tests Lentos", $slowTests),
-        @("Tiempo Total (min)", [math]::Round($totalTime, 2)),
-        @("Tiempo Promedio (min)", [math]::Round($avgTime, 2)),
-        @("Tiempo Maximo (min)", [math]::Round($maxTime, 2)),
-        @("Tiempo Minimo (min)", [math]::Round($minTime, 2))
+        @("Tiempo Total (min)", (Format-MinutesWithComma -Milliseconds ([int]($totalTime * 60000)))),
+        @("Tiempo Promedio (min)", (Format-MinutesWithComma -Milliseconds ([int]($avgTime * 60000)))),
+        @("Tiempo Maximo (min)", (Format-MinutesWithComma -Milliseconds ([int]($maxTime * 60000)))),
+        @("Tiempo Minimo (min)", (Format-MinutesWithComma -Milliseconds ([int]($minTime * 60000))))
     )
     
     $row = 3
@@ -163,7 +168,7 @@ try {
         $sheet2.Cells.Item($row, 1) = $test.Suite
         $sheet2.Cells.Item($row, 2) = $test.TestName
         $sheet2.Cells.Item($row, 3) = $test.Region
-        $sheet2.Cells.Item($row, 4) = $test.DurationMin
+        $sheet2.Cells.Item($row, 4) = $test.DurationFormatted
         $sheet2.Cells.Item($row, 5) = $test.Status
         $sheet2.Cells.Item($row, 6) = $test.Error
         
@@ -194,7 +199,7 @@ try {
         foreach ($test in $passedData) {
             $sheet3.Cells.Item($row, 1) = $test.TestName
             $sheet3.Cells.Item($row, 2) = $test.Region
-            $sheet3.Cells.Item($row, 3) = $test.DurationMin
+            $sheet3.Cells.Item($row, 3) = $test.DurationFormatted
             $sheet3.Cells.Item($row, 4) = $test.Suite
             $row++
         }
@@ -219,7 +224,7 @@ try {
         foreach ($test in $failedData) {
             $sheet4.Cells.Item($row, 1) = $test.TestName
             $sheet4.Cells.Item($row, 2) = $test.Region
-            $sheet4.Cells.Item($row, 3) = $test.DurationMin
+            $sheet4.Cells.Item($row, 3) = $test.DurationFormatted
             $sheet4.Cells.Item($row, 4) = $test.Error
             $sheet4.Cells.Item($row, 5).Interior.Color = 255
             $row++
@@ -245,7 +250,7 @@ try {
         foreach ($test in $slowData) {
             $sheet5.Cells.Item($row, 1) = $test.TestName
             $sheet5.Cells.Item($row, 2) = $test.Region
-            $sheet5.Cells.Item($row, 3) = $test.DurationMin
+            $sheet5.Cells.Item($row, 3) = $test.DurationFormatted
             $sheet5.Cells.Item($row, 4) = $test.Status
             $sheet5.Cells.Item($row, 3).Interior.Color = 65535
             $row++
@@ -355,10 +360,10 @@ $html = @"
 
         <h2>Tiempos de Ejecucion</h2>
         <table>
-            <tr><td><strong>Tiempo Total:</strong></td><td>$([math]::Round($totalTime, 2)) minutos</td></tr>
-            <tr><td><strong>Promedio:</strong></td><td>$([math]::Round($avgTime, 2)) minutos</td></tr>
-            <tr><td><strong>Maximo:</strong></td><td>$([math]::Round($maxTime, 2)) minutos</td></tr>
-            <tr><td><strong>Minimo:</strong></td><td>$([math]::Round($minTime, 2)) minutos</td></tr>
+            <tr><td><strong>Tiempo Total:</strong></td><td>$( Format-MinutesWithComma -Milliseconds ([int]($totalTime * 60000)) )</td></tr>
+            <tr><td><strong>Promedio:</strong></td><td>$( Format-MinutesWithComma -Milliseconds ([int]($avgTime * 60000)) )</td></tr>
+            <tr><td><strong>Maximo:</strong></td><td>$( Format-MinutesWithComma -Milliseconds ([int]($maxTime * 60000)) )</td></tr>
+            <tr><td><strong>Minimo:</strong></td><td>$( Format-MinutesWithComma -Milliseconds ([int]($minTime * 60000)) )</td></tr>
         </table>
 
         <h2>Top 10 Tests Mas Rapidos</h2>
@@ -377,7 +382,7 @@ $testData | Sort-Object -Property "DurationMin" | Select-Object -First 10 | ForE
         "FAILED" { "failed" }
         default { "skipped" }
     }
-    $html += "<tr><td>$($_.TestName)</td><td>$($_.Region)</td><td>$($_.DurationMin)</td><td class='$statusClass'>$($_.Status)</td></tr>"
+    $html += "<tr><td>$($_.TestName)</td><td>$($_.Region)</td><td>$($_.DurationFormatted)</td><td class='$statusClass'>$($_.Status)</td></tr>"
 }
 
 $html += @"
@@ -399,7 +404,7 @@ $testData | Select-Object -First 10 | ForEach-Object {
         "FAILED" { "failed" }
         default { "skipped" }
     }
-    $html += "<tr><td>$($_.TestName)</td><td>$($_.Region)</td><td>$($_.DurationMin)</td><td class='$statusClass'>$($_.Status)</td></tr>"
+    $html += "<tr><td>$($_.TestName)</td><td>$($_.Region)</td><td>$($_.DurationFormatted)</td><td class='$statusClass'>$($_.Status)</td></tr>"
 }
 
 $html += "</table>"
@@ -434,7 +439,7 @@ Write-Host "[OK] HTML generado: $htmlOutput" -ForegroundColor Green
 
 # Exportar datos a CSV para luego generar Excel
 $csvOutput = "$reportFolder\test_timings_report.csv"
-$testData | Export-Csv -Path $csvOutput -Encoding UTF8 -NoTypeInformation -Force
+$testData | Select-Object Suite, TestName, Region, DurationFormatted, Status, Error -ErrorAction SilentlyContinue | Export-Csv -Path $csvOutput -Encoding UTF8 -NoTypeInformation -Force
 Write-Host "[OK] CSV generado: $csvOutput" -ForegroundColor Green
 
 # Generar Excel desde CSV
