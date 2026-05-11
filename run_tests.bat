@@ -98,7 +98,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -116,7 +116,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -134,7 +134,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -152,7 +152,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -170,7 +170,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -191,7 +191,7 @@ echo [INFO] Ejecucion completada. Los 50 tests se ejecutaron (fallen o no).
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -218,7 +218,7 @@ echo [INFO] Ejecucion completada del runner individual.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -335,7 +335,7 @@ for /l %%i in (1,1,50) do (
         echo.
         echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
         timeout /t 2 >nul
-        powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+        powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
         echo.
         echo [INFO] Reportes generados en: target\reports\
         echo        - step_details_*.xlsx (Excel)
@@ -382,7 +382,7 @@ echo ========================================================
 echo     GENERAR REPORTES DE PASOS DETALLADOS DE LOS TESTS
 echo ========================================================
 echo.
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
