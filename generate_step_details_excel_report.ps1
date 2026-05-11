@@ -495,7 +495,7 @@ try {
                                         @{N="Error Type"; E={$_.ErrorType}},
                                         @{N="Error Message"; E={$_.ErrorMessage}}
     if ($failedTestsDetails.Count -eq 0) {
-        $failedTestsDetails = @([PSCustomObject]@{ Test = "N/A"; Batch = "N/A"; Máquina = $machineName; Usuario = $userName; "Tiempo Total (min)" = 0; "Total Pasos" = 0; "Pasos Lentos" = 0; "Error Type" = "N/A"; "Error Message" = "N/A" })
+        $failedTestsDetails = @([PSCustomObject]@{ Test = "N/A"; Batch = "N/A"; "Máquina" = $machineName; "Usuario" = $userName; "Tiempo Total (min)" = 0; "Total Pasos" = 0; "Pasos Lentos" = 0; "Error Type" = "N/A"; "Error Message" = "N/A" })
     }
     
     # Intentar con ImportExcel primero (si está disponible)
@@ -553,30 +553,29 @@ try {
         Write-Host ""
     }
 
-        Write-Host "HOJAS GENERADAS:"
-        Write-Host ("  - Hoja 1: Resumen (Tests: " + $testStats.Count + ", Fallidos: " + $failedTests + ")")
-        Write-Host ("  - Hoja 2: Todos los Pasos (" + $allSteps.Count + " filas + Batch + Error Type/Message)")
-        Write-Host ("  - Hoja 3: Pasos Lentos (" + $slowSteps.Count + " pasos >5s + Batch + Error Type/Message)")
-        Write-Host ("  - Hoja 4: Estadísticas por Test (" + $testStats.Count + " tests + Batch + Error Type/Message)")
-        if ($errorSummary.Count -gt 0) {
-            Write-Host ("  - Hoja 5: Resumen de Errores (" + $errorSummary.Count + " categor\u00edas)")
-        }
-        if ($failedTestsDetails.Count -gt 0) {
-            Write-Host ("  - Hoja 6: Tests Fallidos (" + $failedTestsDetails.Count + " tests + Batch)")
-        }
-        if ($batchSummary.Count -gt 0) {
-            Write-Host ("  - Hoja 7: Resumen por Batch (" + $batchSummary.Count + " batches)")
-        }
-        Write-Host ""
-        Write-Host "CLASIFICACION DE ERRORES:"
-        foreach ($error in $errorSummary) {
-            $errorType = $error.'Error Type'
-            $errorCant = $error.Cantidad
-            $errorPorc = $error.Porcentaje
-            Write-Host "  - $errorType : $errorCant ($errorPorc%)" -ForegroundColor Yellow
-        }
-        Write-Host ""
-        
+    Write-Host "HOJAS GENERADAS:"
+    Write-Host ("  - Hoja 1: Resumen (Tests: " + $testStats.Count + ", Fallidos: " + $failedTests + ")")
+    Write-Host ("  - Hoja 2: Todos los Pasos (" + $allSteps.Count + " filas + Batch + Error Type/Message)")
+    Write-Host ("  - Hoja 3: Pasos Lentos (" + $slowSteps.Count + " pasos >5s + Batch + Error Type/Message)")
+    Write-Host ("  - Hoja 4: Estadísticas por Test (" + $testStats.Count + " tests + Batch + Error Type/Message)")
+    if ($errorSummary.Count -gt 0) {
+        Write-Host ("  - Hoja 5: Resumen de Errores (" + $errorSummary.Count + " categorías)")
+    }
+    if ($failedTestsDetails.Count -gt 0) {
+        Write-Host ("  - Hoja 6: Tests Fallidos (" + $failedTestsDetails.Count + " tests + Batch)")
+    }
+    if ($batchSummary.Count -gt 0) {
+        Write-Host ("  - Hoja 7: Resumen por Batch (" + $batchSummary.Count + " batches)")
+    }
+    Write-Host ""
+    Write-Host "CLASIFICACION DE ERRORES:"
+    foreach ($error in $errorSummary) {
+        $errorType = $error.'Error Type'
+        $errorCant = $error.Cantidad
+        $errorPorc = $error.Porcentaje
+        Write-Host "  - $errorType : $errorCant ($errorPorc%)" -ForegroundColor Yellow
+    }
+    Write-Host ""
 }
 catch {
     Write-Host "ERROR en generación de Excel: $_" -ForegroundColor Yellow
