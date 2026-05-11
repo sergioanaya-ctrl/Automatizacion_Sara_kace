@@ -65,16 +65,14 @@ function Create-XlsxFileDirect {
     )
     
     try {
-        $tempDir = Join-Path $env:TEMP ("Excel_" + (Get-Random))
-        New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
+        Add-Type -AssemblyName System.IO.Compression
         
-        # Crear estructura de directorios XLSX
-        $xl = Join-Path $tempDir "xl"
-        $rels = Join-Path $tempDir "_rels"
-        $xlWorksheets = Join-Path $xl "worksheets"
-        $xlRels = Join-Path $xl "_rels"
+        # Crear ZIP de forma manual para evitar problemas de estructura
+        $zipFilePath = $filePath
+        Remove-Item $zipFilePath -ErrorAction SilentlyContinue
         
-        New-Item -ItemType Directory -Path $xl, $rels, $xlWorksheets, $xlRels -Force | Out-Null
+        $zipStream = New-Object System.IO.FileStream($zipFilePath, [System.IO.FileMode]::Create)
+        $zipArchive = New-Object System.IO.Compression.ZipArchive($zipStream, [System.IO.Compression.ZipArchiveMode]::Create)
         
         # 1. Crear [Content_Types].xml
         $contentTypes = @"
@@ -86,28 +84,31 @@ function Create-XlsxFileDirect {
     <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
 "@
         
-        # Agregar referencias a hojas
         for ($i = 0; $i -lt $sheetData.Count; $i++) {
             $contentTypes += "`n    <Override PartName=""/xl/worksheets/sheet$($i+1).xml"" ContentType=""application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml""/>"
         }
         
-        $contentTypes += @"
-</Types>
-"@
+        $contentTypes += "`n</Types>"
         
-        [System.IO.File]::WriteAllText((Join-Path $tempDir "[Content_Types].xml"), $contentTypes, [System.Text.Encoding]::UTF8)
+        $entry = $zipArchive.CreateEntry("[Content_Types].xml")
+        $writer = New-Object System.IO.StreamWriter($entry.Open())
+        $writer.Write($contentTypes)
+        $writer.Close()
         
-        # 2. Crear .rels
-        $rels_xml = @"
+        # 2. Crear _rels/.rels
+        $relsXml = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
     <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
 </Relationships>
 "@
         
-        [System.IO.File]::WriteAllText((Join-Path $rels ".rels"), $rels_xml, [System.Text.Encoding]::UTF8)
+        $entry = $zipArchive.CreateEntry("_rels/.rels")
+        $writer = New-Object System.IO.StreamWriter($entry.Open())
+        $writer.Write($relsXml)
+        $writer.Close()
         
-        # 3. Crear workbook.xml
+        # 3. Crear xl/workbook.xml
         $workbookXml = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
@@ -118,14 +119,14 @@ function Create-XlsxFileDirect {
             $workbookXml += "`n        <sheet name=""$($sheetNames[$i])"" sheetId=""$($i+1)"" r:id=""rId$($i+2)""/>"
         }
         
-        $workbookXml += @"
-    </sheets>
-</workbook>
-"@
+        $workbookXml += "`n    </sheets>`n</workbook>"
         
-        [System.IO.File]::WriteAllText((Join-Path $xl "workbook.xml"), $workbookXml, [System.Text.Encoding]::UTF8)
+        $entry = $zipArchive.CreateEntry("xl/workbook.xml")
+        $writer = New-Object System.IO.StreamWriter($entry.Open())
+        $writer.Write($workbookXml)
+        $writer.Close()
         
-        # 4. Crear workbook.xml.rels
+        # 4. Crear xl/_rels/workbook.xml.rels
         $workbookRels = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
@@ -138,9 +139,12 @@ function Create-XlsxFileDirect {
         
         $workbookRels += "`n</Relationships>"
         
-        [System.IO.File]::WriteAllText((Join-Path $xlRels "workbook.xml.rels"), $workbookRels, [System.Text.Encoding]::UTF8)
+        $entry = $zipArchive.CreateEntry("xl/_rels/workbook.xml.rels")
+        $writer = New-Object System.IO.StreamWriter($entry.Open())
+        $writer.Write($workbookRels)
+        $writer.Close()
         
-        # 5. Crear styles.xml
+        # 5. Crear xl/styles.xml
         $stylesXml = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
@@ -152,7 +156,10 @@ function Create-XlsxFileDirect {
 </styleSheet>
 "@
         
-        [System.IO.File]::WriteAllText((Join-Path $xl "styles.xml"), $stylesXml, [System.Text.Encoding]::UTF8)
+        $entry = $zipArchive.CreateEntry("xl/styles.xml")
+        $writer = New-Object System.IO.StreamWriter($entry.Open())
+        $writer.Write($stylesXml)
+        $writer.Close()
         
         # 6. Crear worksheets
         for ($i = 0; $i -lt $sheetData.Count; $i++) {
@@ -201,30 +208,23 @@ function Create-XlsxFileDirect {
                 }
             }
             
-            $worksheetXml += @"
-    </sheetData>
-</worksheet>
-"@
+            $worksheetXml += "`n    </sheetData>`n</worksheet>"
             
-            [System.IO.File]::WriteAllText((Join-Path $xlWorksheets "sheet$($i+1).xml"), $worksheetXml, [System.Text.Encoding]::UTF8)
+            $entry = $zipArchive.CreateEntry("xl/worksheets/sheet$($i+1).xml")
+            $writer = New-Object System.IO.StreamWriter($entry.Open())
+            $writer.Write($worksheetXml)
+            $writer.Close()
         }
         
-        # 7. Crear archivo ZIP como XLSX
-        Remove-Item $filePath -ErrorAction SilentlyContinue
-        
-        # Usar .NET para crear ZIP
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::CreateFromDirectory($tempDir, $filePath, [System.IO.Compression.CompressionLevel]::Optimal, $true)
-        
-        # Limpiar
-        Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        # Cerrar ZIP
+        $zipArchive.Dispose()
+        $zipStream.Close()
         
         Write-Host "    Archivo Excel generado exitosamente (método nativo PowerShell)" -ForegroundColor Green
         return $true
     }
     catch {
         Write-Host "    Error creando XLSX nativo: $_" -ForegroundColor Yellow
-        Remove-Item $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         return $false
     }
 }
@@ -237,9 +237,15 @@ function Create-ExcelFile {
         [string]$csvPath  # Ruta del CSV para fallback
     )
     
+    # Fallback 1: Generar Excel nativo usando PowerShell puro (MÉTODO PRIMARIO - funciona en TODAS las máquinas)
+    Write-Host "    Generando Excel nativo con PowerShell..." -ForegroundColor Cyan
+    if (Create-XlsxFileDirect -filePath $filePath -sheetData $sheetData -sheetNames $sheetNames) {
+        return $true
+    }
+    
+    # Fallback 2: Intentar con Excel COM (si está instalado)
     $hasExcel = $false
     
-    # Intentar con Excel COM
     try {
         $excel = New-Object -ComObject Excel.Application -ErrorAction Stop
         $hasExcel = $true
@@ -249,11 +255,7 @@ function Create-ExcelFile {
     }
     
     if ($hasExcel) {
-        Write-Host "    (Excel COM deshabilitado - usando PowerShell nativo)" -ForegroundColor Cyan
-        $hasExcel = $false  # Forzar uso de método nativo
-    } 
-    
-    if ($true) {  # Método nativo habilitado siempre
+        Write-Host "    Intentando Excel COM (método alternativo)..." -ForegroundColor Cyan
         try {
             $excel.Visible = $false
             $excel.DisplayAlerts = $false
@@ -307,20 +309,14 @@ function Create-ExcelFile {
             [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excel) | Out-Null
             [gc]::Collect()
             
+            Write-Host "    Archivo Excel generado exitosamente via COM" -ForegroundColor Green
             return $true
         }
         catch {
             Write-Host "    Error Excel COM: $_" -ForegroundColor Yellow
             try { $workbook.Close($false); $excel.Quit() } catch { }
             [gc]::Collect()
-            # Continuar con fallbacks
         }
-    }  # Fin del bloque COM deshabilitado
-    
-    # Fallback 2: Generar Excel nativo usando PowerShell puro (sin depender de aplicaciones externas)
-    Write-Host "    Generando Excel nativo con PowerShell..." -ForegroundColor Cyan
-    if (Create-XlsxFileDirect -filePath $filePath -sheetData $sheetData -sheetNames $sheetNames) {
-        return $true
     }
     
     # Fallback 3: Usar LibreOffice CLI para convertir CSV a XLSX
