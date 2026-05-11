@@ -64,10 +64,11 @@ echo  9. Generar reporte SIMPLE (EXCEL/CSV con tiempos)
 echo 10. Generar reporte AVANZADO (EXCEL MULTIPLES HOJAS + HTML)
 echo 11. Limpiar reportes (en otro archivo)
 echo 12. Ejecutar 1 SCENARIO sin paralelo
-echo 13. Generar REPORTE DE RENDIMIENTO (solo performance)
-echo 14. Salir
+echo 13. Generar REPORTE DE RENDIMIENTO (8 archivos con metricas)
+echo 14. Generar REPORTE PASO A PASO (Detalles en Excel)
+echo 15. Salir
 echo.
-set /p choice="Selecciona opcion (1-14): "
+set /p choice="Selecciona opcion (1-15): "
 
 if "%choice%"=="1" goto custom_runners
 if "%choice%"=="2" goto run_2
@@ -82,7 +83,8 @@ if "%choice%"=="10" goto advanced_report
 if "%choice%"=="11" goto clean_help
 if "%choice%"=="12" goto run_one_no_parallel
 if "%choice%"=="13" goto performance_report
-if "%choice%"=="14" goto end
+if "%choice%"=="14" goto step_details_report
+if "%choice%"=="15" goto end
 goto menu
 
 :custom_runners
@@ -96,6 +98,7 @@ echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -115,6 +118,7 @@ echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -134,6 +138,7 @@ echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -153,6 +158,7 @@ echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -172,6 +178,7 @@ echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -194,6 +201,7 @@ echo [INFO] Generando reportes automaticamente...
 timeout /t 2 >nul
 powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 if exist "target\reports\test_timings_report.xlsx" (
     echo [INFO] Abriendo reportes...
     timeout /t 1 >nul
@@ -215,6 +223,13 @@ if %runner% LSS 10 (
 
 powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=1' | Set-Content gradle.properties"
 call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner_formatted%"
+echo.
+echo [INFO] Ejecucion completada del runner individual.
+echo.
+echo [INFO] Generando reportes automaticamente...
+timeout /t 2 >nul
+powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 pause
 goto menu
 
@@ -316,9 +331,10 @@ for /l %%i in (1,1,50) do (
         echo.
         echo [INFO] Ejecucion completada del scenario %batch_num%
         echo.
-        echo [INFO] Generando reportes de performance...
+        echo [INFO] Generando reportes automaticamente...
         timeout /t 2 >nul
         powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+        powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
         pause
         goto menu
     )
@@ -336,15 +352,43 @@ echo ========================================================
 echo.
 powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 echo.
-echo [INFO] Reportes generados en target\reports\
+echo [INFO] Reportes generados en target\reports\app_performance\
 echo.
 echo Archivos creados:
-echo   - app_performance_summary_*.csv
-echo   - app_network_timing_*.csv
-echo   - app_web_vitals_*.csv
-echo   - app_bottleneck_analysis_*.csv
-echo   - app_load_degradation_curve_*.csv
-echo   - app_performance_report_*.xlsx (si Excel esta disponible)
+echo   1. app_performance_consolidated_YYYYMMDD_HHMMSS.csv (CSV consolidado)
+echo   2. app_performance_report_YYYYMMDD_HHMMSS.html (Dashboard HTML)
+echo   3. app_network_timing_YYYYMMDD_HHMMSS.csv (Timing de red por endpoint)
+echo   4. app_bottleneck_analysis_YYYYMMDD_HHMMSS.csv (Analisis de cuellos de botella)
+echo   5. app_performance_summary_YYYYMMDD_HHMMSS.csv (Resumen ejecutivo)
+echo   6. app_web_vitals_YYYYMMDD_HHMMSS.csv (Metricas Web Vitals)
+echo   7. app_load_degradation_curve_YYYYMMDD_HHMMSS.csv (Curva de degradacion por carga)
+echo   8. app_performance_report_YYYYMMDD_HHMMSS.xlsx (Reporte Excel con multiples hojas - si Excel esta disponible)
+echo.
+echo [INFO] Los archivos se encuentran en: target\reports\app_performance\
+echo.
+pause
+goto menu
+
+:step_details_report
+echo.
+echo ========================================================
+echo     GENERAR REPORTE DE PASOS DETALLADOS DE LOS TESTS
+echo ========================================================
+echo.
+powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+echo.
+echo [INFO] Reporte generado en target\reports\
+echo.
+echo Archivo creado:
+echo   - step_details_YYYYMMDD_HHMMSS.xlsx
+echo.
+echo [INFO] El archivo se encuentra en: target\reports\
+echo.
+echo Hojas del Reporte:
+echo   - Resumen: Estadisticas totales de los tests
+echo   - Todos los Pasos: Lista completa de pasos ejecutados con timing
+echo   - Pasos Lentos: Pasos que tomaron mas de 5 segundos
+echo   - Estadisticas por Test: Consolidado por cada test ejecutado
 echo.
 pause
 goto menu

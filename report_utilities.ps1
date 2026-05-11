@@ -67,12 +67,17 @@ function Load-PerformanceStepData {
                 $csvData = Import-Csv -Path $_.FullName -Encoding UTF8 -ErrorAction SilentlyContinue
                 
                 foreach ($row in $csvData) {
-                    # Buscar filas que contengan timings de pasos
-                    if ($row.Métrica -like "Step*" -or $row.Métrica -like "*Duration*") {
-                        $stepData[$testFileName] += @{
-                            Paso = $row.Métrica
-                            Tiempo_ms = [int]($row.Valor -replace "[^0-9]", "")
-                            Unidad = $row.Unidad
+                    $propertyNames = $row | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+                    $metricColumn = $propertyNames | Where-Object { $_ -like "*Metrica*" -or $_ -like "*etrica*" } | Select-Object -First 1
+                    
+                    if ($metricColumn) {
+                        $metricValue = $row.$metricColumn
+                        if ($metricValue -like "Step*" -or $metricValue -like "*Duration*") {
+                            $stepData[$testFileName] += @{
+                                Paso = $metricValue
+                                Tiempo_ms = [int]($row.Valor -replace "[^0-9]", "")
+                                Unidad = $row.Unidad
+                            }
                         }
                     }
                 }

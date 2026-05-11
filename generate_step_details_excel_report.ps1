@@ -174,11 +174,15 @@ try {
         
         $stepsForExcel | Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos" -AutoSize -TableStyle "Light1" -Append
         
-        # Hoja 3: Pasos Lentos
-        $slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Object Tiempo_ms -Descending | Select-Object -First 50
+        # Hoja 3: Pasos Lentos (con todos los detalles como Hoja 2)
+        $slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Object Tiempo_ms -Descending
         if ($slowSteps.Count -gt 0) {
-            $slowSteps | Select-Object @{N="Test"; E={$_.Test.Substring(0, [Math]::Min(40, $_.Test.Length))}},
-                                       @{N="Descripción"; E={$_.Descripcion.Substring(0, 80)}},
+            $slowSteps | Select-Object @{N="Test"; E={$_.Test}},
+                                       @{N="Descripción Completa"; E={$_.Descripcion}},
+                                       @{N="Acción"; E={$_.Accion}},
+                                       @{N="Elemento/Campo"; E={if([string]::IsNullOrEmpty($_.Elemento)) { "N/A" } else { $_.Elemento }}},
+                                       @{N="Valor Ingresado"; E={if([string]::IsNullOrEmpty($_.Valor)) { "N/A" } else { $_.Valor }}},
+                                       @{N="Nivel"; E={$_.Nivel}},
                                        @{N="Tiempo (ms)"; E={$_.Tiempo_ms}},
                                        @{N="Tiempo (s)"; E={$_.Tiempo_s}},
                                        @{N="Estado"; E={$_.Estado}} | 
