@@ -94,17 +94,12 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reportes automaticamente...
+echo [INFO] Generando reporte Excel unificado...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
-powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
-if exist "target\reports\test_timings_report.xlsx" (
-    echo [INFO] Abriendo reportes...
-    timeout /t 1 >nul
-    start "" "target\reports\test_timings_report.xlsx"
-    start "" "target\reports\test_timings_report.html"
-)
+echo.
+echo [INFO] Reporte generado en: target\reports\
+echo.
 pause
 goto menu
 
@@ -114,17 +109,12 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reportes automaticamente...
+echo [INFO] Generando reporte Excel unificado...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
-powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
-if exist "target\reports\test_timings_report.xlsx" (
-    echo [INFO] Abriendo reportes...
-    timeout /t 1 >nul
-    start "" "target\reports\test_timings_report.xlsx"
-    start "" "target\reports\test_timings_report.html"
-)
+echo.
+echo [INFO] Reporte generado en: target\reports\
+echo.
 pause
 goto menu
 
@@ -134,17 +124,12 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reportes automaticamente...
+echo [INFO] Generando reporte Excel unificado...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
-powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
-if exist "target\reports\test_timings_report.xlsx" (
-    echo [INFO] Abriendo reportes...
-    timeout /t 1 >nul
-    start "" "target\reports\test_timings_report.xlsx"
-    start "" "target\reports\test_timings_report.html"
-)
+echo.
+echo [INFO] Reporte generado en: target\reports\
+echo.
 pause
 goto menu
 
@@ -154,17 +139,12 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reportes automaticamente...
+echo [INFO] Generando reporte Excel unificado...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
-powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
-if exist "target\reports\test_timings_report.xlsx" (
-    echo [INFO] Abriendo reportes...
-    timeout /t 1 >nul
-    start "" "target\reports\test_timings_report.xlsx"
-    start "" "target\reports\test_timings_report.html"
-)
+echo.
+echo [INFO] Reporte generado en: target\reports\
+echo.
 pause
 goto menu
 
@@ -174,17 +154,12 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
-echo [INFO] Generando reportes automaticamente...
+echo [INFO] Generando reporte Excel unificado...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
-powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
-if exist "target\reports\test_timings_report.xlsx" (
-    echo [INFO] Abriendo reportes...
-    timeout /t 1 >nul
-    start "" "target\reports\test_timings_report.xlsx"
-    start "" "target\reports\test_timings_report.html"
-)
+echo.
+echo [INFO] Reporte generado en: target\reports\
+echo.
 pause
 goto menu
 
@@ -197,17 +172,12 @@ call .\gradlew.bat test --parallel
 echo.
 echo [INFO] Ejecucion completada. Los 50 tests se ejecutaron (fallen o no).
 echo.
-echo [INFO] Generando reportes automaticamente...
+echo [INFO] Generando reporte Excel unificado...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
-powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
-if exist "target\reports\test_timings_report.xlsx" (
-    echo [INFO] Abriendo reportes...
-    timeout /t 1 >nul
-    start "" "target\reports\test_timings_report.xlsx"
-    start "" "target\reports\test_timings_report.html"
-)
+echo.
+echo [INFO] Reporte generado en: target\reports\
+echo.
 pause
 goto menu
 
@@ -226,10 +196,12 @@ call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%runner_
 echo.
 echo [INFO] Ejecucion completada del runner individual.
 echo.
-echo [INFO] Generando reportes automaticamente...
+echo [INFO] Generando reporte Excel unificado...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+echo.
+echo [INFO] Reporte generado en: target\reports\
+echo.
 pause
 goto menu
 
@@ -338,10 +310,12 @@ for /l %%i in (1,1,50) do (
         echo.
         echo [INFO] Ejecucion completada del scenario %batch_num%
         echo.
-        echo [INFO] Generando reportes automaticamente...
+        echo [INFO] Generando reporte Excel unificado...
         timeout /t 2 >nul
-        powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
         powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+        echo.
+        echo [INFO] Reporte generado en: target\reports\
+        echo.
         pause
         goto menu
     )
@@ -384,20 +358,10 @@ echo ========================================================
 echo.
 powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
 echo.
-echo [INFO] Reporte generado en target\reports\
-echo.
-echo Archivo creado:
-echo   - step_details_YYYYMMDD_HHMMSS.xlsx
-echo.
-echo [INFO] El archivo se encuentra en: target\reports\
-echo.
-echo Hojas del Reporte:
-echo   - Resumen: Estadisticas totales de los tests
-echo   - Todos los Pasos: Lista completa de pasos ejecutados con timing
-echo   - Pasos Lentos: Pasos que tomaron mas de 5 segundos
-echo   - Estadisticas por Test: Consolidado por cada test ejecutado
+echo [INFO] Reporte generado en: target\reports\
 echo.
 pause
+goto menu
 goto menu
 
 :end
