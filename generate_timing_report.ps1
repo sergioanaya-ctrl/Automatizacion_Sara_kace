@@ -153,22 +153,24 @@ Write-Host "Generando Excel desde CSV..." -ForegroundColor Cyan
 $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput -outputPath $reportFolder -worksheetName "Test Timings"
 
 if ($excelSuccess) {
-    Write-Host "✓ Excel generado exitosamente" -ForegroundColor Green
+    Write-Host "  OK Excel generado exitosamente" -ForegroundColor Green
 } else {
-    Write-Host "⚠ No se pudo generar Excel, pero CSV está disponible" -ForegroundColor Yellow
+    Write-Host "  Nota: No se pudo generar Excel, pero CSV esta disponible" -ForegroundColor Yellow
 }
 
 # Mostrar los 10 tests mas lentos
 Write-Host ""
 Write-Host "TOP 10 TESTS MAS LENTOS:" -ForegroundColor Yellow
-Write-Host "========================================================" -ForegroundColor Yellow
+Write-Host "============================================================" -ForegroundColor Yellow
 $testData | Select-Object -First 10 | ForEach-Object {
-    Write-Host "$($_.`"Test Name`") - $($_.`"Duration (min)`") min - $($_.Status)" -ForegroundColor Cyan
+    $name = $_."Test Name"
+    $duration = $_."Duration (min)"
+    Write-Host "$name - $duration min - $($_.Status)" -ForegroundColor Cyan
 }
 
 Write-Host ""
-Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Green
-Write-Host "✅ REPORTES GENERADOS EXITOSAMENTE!" -ForegroundColor Green
-Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host "============================================================" -ForegroundColor Green
+Write-Host "REPORTES GENERADOS EXITOSAMENTE!" -ForegroundColor Green
+Write-Host "============================================================" -ForegroundColor Green
 Write-Host "   CSV: $csvOutput" -ForegroundColor Gray
 Write-Host ""

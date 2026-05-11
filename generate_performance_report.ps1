@@ -159,7 +159,7 @@ foreach ($step in $steps) {
     $maxMs = $avgMs + (Get-Random -Minimum 100 -Maximum 800)
     
     # Determinar status (< 1000ms = FAST, < 2000ms = NORMAL, >= 2000ms = SLOW)
-    $status = if ($avgMs -lt 1000) { "✓ FAST" } elseif ($avgMs -lt 2000) { "○ NORMAL" } else { "⚠ SLOW" }
+    $status = if ($avgMs -lt 1000) { "FAST" } elseif ($avgMs -lt 2000) { "NORMAL" } else { "SLOW" }
     
     $stepsSheet.Cells.Item($row, 1) = $step
     $stepsSheet.Cells.Item($row, 2) = $avgMs
@@ -268,9 +268,9 @@ try {
     $excelApp.Quit()
     [System.Runtime.InteropServices.Marshal]::ReleaseComObject($excelApp) | Out-Null
     Remove-Variable excelApp
-    Write-Host "✓ Performance Report Generated: $xlsxPath" -ForegroundColor Green
+    Write-Host "OK Performance Report Generated: $xlsxPath" -ForegroundColor Green
 } catch {
-    Write-Host "⚠ No se pudo generar Excel con COM" -ForegroundColor Yellow
+    Write-Host "Nota: No se pudo generar Excel con COM" -ForegroundColor Yellow
     Write-Host "   CSV disponible en: $outputPath" -ForegroundColor Gray
 }
 
