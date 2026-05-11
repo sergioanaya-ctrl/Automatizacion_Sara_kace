@@ -1,8 +1,4 @@
-Feature: Apertura de la pagina de caso
-  Como equipo de automatizacion
-  Quiero abrir la pagina de casos con multiples departamentos y municipios
-  Para validar que funciona en toda Colombia
-
+Feature: Creacion de Expedientes en el sistema de gestion de casos
   @batch1
   Scenario: Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA
     Given el actor tiene un navegador disponible
