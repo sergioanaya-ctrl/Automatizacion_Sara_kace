@@ -29,18 +29,26 @@ function Get-ErrorType {
 
     $lower = $message.ToLower()
 
-    if ($lower -match "selenium|webdriver|driver executable|session not created|cannot start|cannot launch|chrome not reachable|geckodriver|edge driver|browser not reachable") {
+    # Selenium / Launch - WebDriver, browser launch, connection issues
+    if ($lower -match "selenium|webdriver|driver executable|session not created|cannot start|cannot launch|chrome not reachable|geckodriver|edge driver|browser not reachable|invalid session id|no such session") {
         return "Selenium / Launch"
     }
-    if ($lower -match "nosuchelement|element not found|not visible|not interactable|element not interactable|stale element|timeoutexception|timeout|wait|load|loading|field.*not|campo.*no|lista.*no|dropdown.*no|select.*no") {
+    
+    # UI / Elementos / Carga - Element locator, visibility, interaction issues
+    if ($lower -match "nosuchelement|element not found|not visible|not interactable|element not interactable|stale element|timeoutexception|timeout|wait|load|loading|field.*not|campo.*no|lista.*no|dropdown.*no|select.*no|combo|fieldset|iframe|selector not found|unable to locate|element is not clickable|invisible") {
         return "UI / Elementos / Carga"
     }
-    if ($lower -match "illegalargumentexception|not a valid|missing.*value|falta valor|required value|no se encontro|no se encontraron|missing resource|missing credentials") {
+    
+    # Datos / Feature / Input - Data validation, missing values, invalid input
+    if ($lower -match "illegalargumentexception|not a valid|missing.*value|falta valor|required value|no se encontro|no se encontraron|missing resource|missing credentials|null reference|empty value|invalid parameter|parameter.*null|valor.*null") {
         return "Datos / Feature / Input"
     }
-    if ($lower -match "assert|assertion|expected.*but.*was|assertion error|assertion failed") {
+    
+    # Validacion / Assertion - Assertions and validation errors
+    if ($lower -match "assert|assertion|expected.*but.*was|assertion error|assertion failed|java\.lang\.AssertionError|comparison failed|actual value.*expected") {
         return "Validacion / Assertion"
     }
+    
     return "Otros"
 }
 
@@ -111,6 +119,18 @@ function Extract-TestSteps {
         $timeS = Format-WithComma -Value ($timeMs / 1000) -Decimals 2
         $stepDetails = Extract-StepDetails -Description $step.description
         
+        # Extraer error del paso si existe
+        $stepError = ""
+        $stepErrorType = "Sin Error"
+        if ($step.result -eq "ERROR" -and $step.error) {
+            $stepError = $step.error
+            $stepErrorType = Get-ErrorType -message $stepError
+        }
+        elseif ($step.result -eq "ERROR" -and $step.exception) {
+            $stepError = $step.exception
+            $stepErrorType = Get-ErrorType -message $stepError
+        }
+        
         $result += [PSCustomObject]@{
             Test = $testName
             Batch = $batch
@@ -122,6 +142,8 @@ function Extract-TestSteps {
             Tiempo_ms = $timeMs
             Tiempo_s = $timeS
             Estado = $step.result
+            ErrorMessage = $stepError
+            ErrorType = $stepErrorType
         }
         
         if ($step.children -and $step.children.Count -gt 0) {
@@ -166,15 +188,28 @@ if (Test-Path $serenityPath) {
                 $totalMs = ($steps | Measure-Object -Property Tiempo_ms -Sum).Sum
                 $totalMin = Format-WithComma -Value ($totalMs / 60000) -Decimals 2
                 
+                # Detectar estado del test (si hay algún paso con ERROR, el test es FAILED)
+                $errorSteps = $steps | Where-Object { $_.Estado -eq "ERROR" }
+                $testState = if ($errorSteps.Count -gt 0) { "FAILED" } else { "PASSED" }
+                
+                # Obtener el primer error del test (si existe)
+                $testErrorMsg = ""
+                $testErrorType = "Sin Error"
+                if ($errorSteps.Count -gt 0) {
+                    $firstError = $errorSteps | Select-Object -First 1
+                    $testErrorMsg = $firstError.ErrorMessage
+                    $testErrorType = $firstError.ErrorType
+                }
+                
                 $testStats += [PSCustomObject]@{
                     Test = $testName
                     Batch = $batch
                     TotalPasos = $steps.Count
                     PasosLentos = $slowSteps.Count
                     TiempoTotal_min = $totalMin
-                    Estado = "PASSED"
-                    ErrorType = "Sin Error"
-                    ErrorMessage = ""
+                    Estado = $testState
+                    ErrorType = $testErrorType
+                    ErrorMessage = $testErrorMsg
                 }
                 
                 Write-Host "OK: $testName | Batch: $batch"
@@ -296,8 +331,8 @@ try {
                                    @{N="Tiempo (ms)"; E={$_.Tiempo_ms}},
                                    @{N="Tiempo (s)"; E={$_.Tiempo_s}},
                                    @{N="Estado Paso"; E={$_.Estado}},
-                                   @{N="Error Type"; E={if($testErrorMap.ContainsKey($_.Test)) { $testErrorMap[$_.Test].ErrorType } else { "Sin Error" }}},
-                                   @{N="Error Message"; E={if($testErrorMap.ContainsKey($_.Test)) { $testErrorMap[$_.Test].ErrorMessage } else { "" }}}
+                                   @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}},
+                                   @{N="Error Message"; E={if($_.Estado -eq "ERROR") { $_.ErrorMessage } else { "" }}}
         
         $stepsForExcel | Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos" -AutoSize -TableStyle "Light1" -Append
         
@@ -316,8 +351,8 @@ try {
                                        @{N="Tiempo (ms)"; E={$_.Tiempo_ms}},
                                        @{N="Tiempo (s)"; E={$_.Tiempo_s}},
                                        @{N="Estado Paso"; E={$_.Estado}},
-                                       @{N="Error Type"; E={if($testErrorMap.ContainsKey($_.Test)) { $testErrorMap[$_.Test].ErrorType } else { "Sin Error" }}},
-                                       @{N="Error Message"; E={if($testErrorMap.ContainsKey($_.Test)) { $testErrorMap[$_.Test].ErrorMessage } else { "" }}} | 
+                                       @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}},
+                                       @{N="Error Message"; E={if($_.Estado -eq "ERROR") { $_.ErrorMessage } else { "" }}} | 
                 Export-Excel -Path $excelPath -WorksheetName "Pasos Lentos (>5s)" -AutoSize -TableStyle "Light1" -Append
         }
         
@@ -417,8 +452,8 @@ try {
         
         foreach ($step in $allSteps) {
             $desc = $step.Descripcion -replace '"', '""'
-            $errorType = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorType } else { "Sin Error" }
-            $errorMsg = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorMessage -replace '"', '""' } else { "" }
+            $errorType = if($step.Estado -eq "ERROR") { $step.ErrorType } else { "" }
+            $errorMsg = if($step.Estado -eq "ERROR") { $step.ErrorMessage -replace '"', '""' } else { "" }
             
             $line = "`"$($step.Test)`",`"$($step.Batch)`",`"$machineName`",`"$userName`",`"$desc`",`"$($step.Accion)`",`"$($step.Elemento)`",`"$($step.Valor)`",$($step.Nivel),$($step.Tiempo_ms),$($step.Tiempo_s),`"$($step.Estado)`",`"$errorType`",`"$errorMsg`""
             $csvLines += $line
@@ -1122,8 +1157,8 @@ try {
         
         foreach ($step in $allSteps) {
             $desc = $step.Descripcion -replace '"', '""'
-            $errorType = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorType } else { "Sin Error" }
-            $errorMsg = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorMessage -replace '"', '""' } else { "" }
+            $errorType = if($step.Estado -eq "ERROR") { $step.ErrorType } else { "" }
+            $errorMsg = if($step.Estado -eq "ERROR") { $step.ErrorMessage -replace '"', '""' } else { "" }
             
             $line = "`"$($step.Test)`",`"$($step.Batch)`",`"$desc`",`"$($step.Accion)`",`"$($step.Elemento)`",`"$($step.Valor)`",$($step.Nivel),$($step.Tiempo_ms),$($step.Tiempo_s),`"$($step.Estado)`",`"$errorType`",`"$errorMsg`""
             $lines += $line
