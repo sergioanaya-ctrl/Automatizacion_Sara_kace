@@ -66,9 +66,10 @@ echo 11. Limpiar reportes (en otro archivo)
 echo 12. Ejecutar 1 SCENARIO sin paralelo
 echo 13. Generar REPORTE DE RENDIMIENTO (8 archivos con metricas)
 echo 14. Generar REPORTE PASO A PASO (Detalles en Excel)
-echo 15. Salir
+echo 15. CONSOLIDAR REPORTES DE MULTIPLES MAQUINAS
+echo 16. Salir
 echo.
-set /p choice="Selecciona opcion (1-15): "
+set /p choice="Selecciona opcion (1-16): "
 
 if "%choice%"=="1" goto custom_runners
 if "%choice%"=="2" goto run_2
@@ -84,7 +85,8 @@ if "%choice%"=="11" goto clean_help
 if "%choice%"=="12" goto run_one_no_parallel
 if "%choice%"=="13" goto performance_report
 if "%choice%"=="14" goto step_details_report
-if "%choice%"=="15" goto end
+if "%choice%"=="15" goto consolidate_reports
+if "%choice%"=="16" goto end
 goto menu
 
 :custom_runners
@@ -389,6 +391,27 @@ echo        - step_details_*.html (HTML)
 echo.
 pause
 goto menu
+
+:consolidate_reports
+cls
+echo.
+echo ================================================
+echo   CONSOLIDAR REPORTES DE MULTIPLES MAQUINAS
+echo ================================================
+echo.
+echo Este proceso consolidara todos los archivos CSV
+echo de diferentes maquinas en un solo reporte unificado.
+echo.
+echo INSTRUCCIONES:
+echo   1. Copia los archivos step_details_*.csv de cada
+echo      maquina a la carpeta: reports_consolidation\
+echo   2. Presiona cualquier tecla para continuar
+echo.
+pause >nul
+
+:: Llamar al script independiente de consolidación
+call consolidate_reports.bat
+
 goto menu
 
 :end

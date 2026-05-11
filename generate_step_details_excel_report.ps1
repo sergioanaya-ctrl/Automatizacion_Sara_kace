@@ -11,6 +11,11 @@ param(
 
 $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 
+# Capturar información de máquina y usuario
+$machineName = $env:COMPUTERNAME
+$userName = $env:USERNAME
+$machineUser = "$userName@$machineName"
+
 if (-not (Test-Path $reportPath)) {
     New-Item -ItemType Directory -Path $reportPath | Out-Null
 }
@@ -268,6 +273,8 @@ try {
         
         $summary = @()
         $summary += [PSCustomObject]@{ Metrica = "Fecha y Hora"; Valor = (Get-Date -Format "dd/MM/yyyy HH:mm:ss") }
+        $summary += [PSCustomObject]@{ Metrica = "Máquina"; Valor = $machineName }
+        $summary += [PSCustomObject]@{ Metrica = "Usuario"; Valor = $userName }
         $summary += [PSCustomObject]@{ Metrica = "Total Tests"; Valor = $testStats.Count }
         $summary += [PSCustomObject]@{ Metrica = "Tests Exitosos"; Valor = $passedTests }
         $summary += [PSCustomObject]@{ Metrica = "Tests Fallidos"; Valor = $failedTests }
@@ -276,9 +283,11 @@ try {
         
         $summary | Export-Excel -Path $excelPath -WorksheetName "Resumen" -AutoSize -TableStyle "Light1"
         
-        # Hoja 2: Todos los Pasos (CON ERROR TYPE/MESSAGE + BATCH)
+        # Hoja 2: Todos los Pasos (CON ERROR TYPE/MESSAGE + BATCH + MAQUINA)
         $stepsForExcel = $allSteps | Select-Object @{N="Test"; E={$_.Test}},
                                    @{N="Batch"; E={$_.Batch}},
+                                   @{N="Máquina"; E={$machineName}},
+                                   @{N="Usuario"; E={$userName}},
                                    @{N="Descripción Completa"; E={$_.Descripcion}},
                                    @{N="Acción"; E={$_.Accion}},
                                    @{N="Elemento/Campo"; E={if([string]::IsNullOrEmpty($_.Elemento)) { "N/A" } else { $_.Elemento }}},
@@ -292,11 +301,13 @@ try {
         
         $stepsForExcel | Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos" -AutoSize -TableStyle "Light1" -Append
         
-        # Hoja 3: Pasos Lentos (CON ERROR TYPE/MESSAGE + BATCH)
+        # Hoja 3: Pasos Lentos (CON ERROR TYPE/MESSAGE + BATCH + MAQUINA)
         $slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Object Tiempo_ms -Descending
         if ($slowSteps.Count -gt 0) {
             $slowSteps | Select-Object @{N="Test"; E={$_.Test}},
                                        @{N="Batch"; E={$_.Batch}},
+                                       @{N="Máquina"; E={$machineName}},
+                                       @{N="Usuario"; E={$userName}},
                                        @{N="Descripción Completa"; E={$_.Descripcion}},
                                        @{N="Acción"; E={$_.Accion}},
                                        @{N="Elemento/Campo"; E={if([string]::IsNullOrEmpty($_.Elemento)) { "N/A" } else { $_.Elemento }}},
@@ -310,10 +321,12 @@ try {
                 Export-Excel -Path $excelPath -WorksheetName "Pasos Lentos (>5s)" -AutoSize -TableStyle "Light1" -Append
         }
         
-        # Hoja 4: Estadísticas por Test (CON ERRORES + BATCH)
+        # Hoja 4: Estadísticas por Test (CON ERRORES + BATCH + MAQUINA)
         if ($testStats.Count -gt 0) {
             $testStats | Select-Object @{N="Test"; E={$_.Test}},
                                        @{N="Batch"; E={$_.Batch}},
+                                       @{N="Máquina"; E={$machineName}},
+                                       @{N="Usuario"; E={$userName}},
                                        @{N="Total Pasos"; E={$_.TotalPasos}},
                                        @{N="Pasos Lentos"; E={$_.PasosLentos}},
                                        @{N="Tiempo Total (min)"; E={$_.TiempoTotal_min}},
@@ -352,6 +365,8 @@ try {
         $failedTestsDetails = $testStats | Where-Object { $_.Estado -eq "FAILED" } | 
                               Select-Object @{N="Test"; E={$_.Test}},
                                             @{N="Batch"; E={$_.Batch}},
+                                            @{N="Máquina"; E={$machineName}},
+                                            @{N="Usuario"; E={$userName}},
                                             @{N="Tiempo Total (min)"; E={$_.TiempoTotal_min}},
                                             @{N="Total Pasos"; E={$_.TotalPasos}},
                                             @{N="Pasos Lentos"; E={$_.PasosLentos}},
@@ -396,16 +411,16 @@ try {
         # GENERAR CSV Y HTML COMO ALTERNATIVAS
         # ============================================
         
-        # Generar CSV (con Batch + Error Type/Message)
+        # Generar CSV (con Batch + Error Type/Message + Máquina/Usuario)
         $csvPath = "$reportPath\step_details_$timestamp.csv"
-        $csvLines = @('"Test","Batch","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Estado","Error Type","Error Message"')
+        $csvLines = @('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Estado","Error Type","Error Message"')
         
         foreach ($step in $allSteps) {
             $desc = $step.Descripcion -replace '"', '""'
             $errorType = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorType } else { "Sin Error" }
             $errorMsg = if($testErrorMap.ContainsKey($step.Test)) { $testErrorMap[$step.Test].ErrorMessage -replace '"', '""' } else { "" }
             
-            $line = "`"$($step.Test)`",`"$($step.Batch)`",`"$desc`",`"$($step.Accion)`",`"$($step.Elemento)`",`"$($step.Valor)`",$($step.Nivel),$($step.Tiempo_ms),$($step.Tiempo_s),`"$($step.Estado)`",`"$errorType`",`"$errorMsg`""
+            $line = "`"$($step.Test)`",`"$($step.Batch)`",`"$machineName`",`"$userName`",`"$desc`",`"$($step.Accion)`",`"$($step.Elemento)`",`"$($step.Valor)`",$($step.Nivel),$($step.Tiempo_ms),$($step.Tiempo_s),`"$($step.Estado)`",`"$errorType`",`"$errorMsg`""
             $csvLines += $line
         }
         
@@ -771,6 +786,14 @@ try {
                 <div class="label">Duración Promedio</div>
                 <div class="value">${avgDuration}ms</div>
             </div>
+            <div class="summary-card info">
+                <div class="label">Máquina</div>
+                <div class="value" style="font-size: 1.2em;">$machineName</div>
+            </div>
+            <div class="summary-card info">
+                <div class="label">Usuario</div>
+                <div class="value" style="font-size: 1.2em;">$userName</div>
+            </div>
         </div>
         
         <div class="tabs">
@@ -791,6 +814,8 @@ try {
                         <tr>
                             <th>Test</th>
                             <th>Batch</th>
+                            <th>Máquina</th>
+                            <th>Usuario</th>
                             <th>Descripción</th>
                             <th>Acción</th>
                             <th>Elemento</th>
@@ -816,6 +841,8 @@ try {
                         <tr>
                             <td><strong>$($step.Test)</strong></td>
                             <td>$($step.Batch)</td>
+                            <td>$machineName</td>
+                            <td>$userName</td>
                             <td title="$($step.Descripcion)">$($step.Descripcion.Substring(0, [Math]::Min(50, $step.Descripcion.Length)))...</td>
                             <td>$($step.Accion)</td>
                             <td>$(if([string]::IsNullOrEmpty($step.Elemento)) { "-" } else { $step.Elemento })</td>
@@ -844,6 +871,8 @@ try {
                         <tr>
                             <th>Test</th>
                             <th>Batch</th>
+                            <th>Máquina</th>
+                            <th>Usuario</th>
                             <th>Descripción</th>
                             <th>Acción</th>
                             <th>Elemento</th>
@@ -866,6 +895,8 @@ try {
                         <tr>
                             <td><strong>$($step.Test)</strong></td>
                             <td>$($step.Batch)</td>
+                            <td>$machineName</td>
+                            <td>$userName</td>
                             <td title="$($step.Descripcion)">$($step.Descripcion.Substring(0, [Math]::Min(50, $step.Descripcion.Length)))...</td>
                             <td>$($step.Accion)</td>
                             <td>$(if([string]::IsNullOrEmpty($step.Elemento)) { "-" } else { $step.Elemento })</td>
@@ -904,6 +935,8 @@ try {
                         <tr>
                             <th>Test</th>
                             <th>Batch</th>
+                            <th>Máquina</th>
+                            <th>Usuario</th>
                             <th>Total Pasos</th>
                             <th>Pasos Fallidos</th>
                             <th>Duración (s)</th>
@@ -926,6 +959,8 @@ try {
                         <tr>
                             <td><strong>$($test.Test)</strong></td>
                             <td>$($test.Batch)</td>
+                            <td>$machineName</td>
+                            <td>$userName</td>
                             <td>$($allSteps | Where-Object { $_.Test -eq $test.Test }).Count</td>
                             <td class="status-fail">$($failedSteps.Count)</td>
                             <td>$(($allSteps | Where-Object { $_.Test -eq $test.Test } | Measure-Object -Property Tiempo_ms -Sum).Sum / 1000)</td>
