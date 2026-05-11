@@ -1,0 +1,67 @@
+﻿"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Estado","Error Type","Error Message"
+"Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS","@{name=batch7; type=tag; displayName=batch7}","SERGIO","Sergio","Given el actor tiene un navegador disponible","","","",0,161,0.16,"SUCCESS","",""
+"Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS","@{name=batch7; type=tag; displayName=batch7}","SERGIO","Sergio","When abre la pagina de casos","","","",0,74547,74.55,"SUCCESS","",""
+"Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS","@{name=batch7; type=tag; displayName=batch7}","SERGIO","Sergio","And realiza login con credenciales","","","",0,48651,48.65,"SUCCESS","",""
+"Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS","@{name=batch7; type=tag; displayName=batch7}","SERGIO","Sergio","And navega a agent","","","",0,13424,13.42,"SUCCESS","",""
+"Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS","@{name=batch7; type=tag; displayName=batch7}","SERGIO","Sergio","And diligencia caso express completo desde feature
+| departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+| AMAZONAS | ARARA | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |","","","",0,99518,99.52,"SUCCESS","",""
+"Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS","@{name=batch7; type=tag; displayName=batch7}","SERGIO","Sergio","And diligenciamos el proveedor
+| Nombre del proveedor | Servicio |
+| PROVEEDOR PRUEBA | TOMA SERVICIO |","","","",0,125737,125.74,"SUCCESS","",""
+"Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS","@{name=batch7; type=tag; displayName=batch7}","SERGIO","Sergio","And transicionamos los estados del caso","","","",0,59492,59.49,"SUCCESS","",""
+"Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA","@{name=batch6; type=tag; displayName=batch6}","SERGIO","Sergio","Given el actor tiene un navegador disponible","","","",0,122,0.12,"SUCCESS","",""
+"Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA","@{name=batch6; type=tag; displayName=batch6}","SERGIO","Sergio","When abre la pagina de casos","","","",0,81506,81.51,"SUCCESS","",""
+"Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA","@{name=batch6; type=tag; displayName=batch6}","SERGIO","Sergio","And realiza login con credenciales","","","",0,61684,61.68,"SUCCESS","",""
+"Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA","@{name=batch6; type=tag; displayName=batch6}","SERGIO","Sergio","And navega a agent","","","",0,13465,13.46,"SUCCESS","",""
+"Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA","@{name=batch6; type=tag; displayName=batch6}","SERGIO","Sergio","And diligencia caso express completo desde feature
+| departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+| AMAZONAS | ARARA | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |","","","",0,129319,129.32,"SUCCESS","",""
+"Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA","@{name=batch6; type=tag; displayName=batch6}","SERGIO","Sergio","And diligenciamos el proveedor
+| Nombre del proveedor | Servicio |
+| PROVEEDOR PRUEBA | TOMA SERVICIO |","","","",0,144341,144.34,"SUCCESS","",""
+"Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA","@{name=batch6; type=tag; displayName=batch6}","SERGIO","Sergio","And transicionamos los estados del caso","","","",0,54396,54.4,"SUCCESS","",""
+"Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA","@{name=batch1; type=tag; displayName=batch1}","SERGIO","Sergio","Given el actor tiene un navegador disponible","","","",0,392,0.39,"SUCCESS","",""
+"Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA","@{name=batch1; type=tag; displayName=batch1}","SERGIO","Sergio","When abre la pagina de casos","","","",0,56681,56.68,"SUCCESS","",""
+"Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA","@{name=batch1; type=tag; displayName=batch1}","SERGIO","Sergio","And realiza login con credenciales","","","",0,40202,40.2,"SUCCESS","",""
+"Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA","@{name=batch1; type=tag; displayName=batch1}","SERGIO","Sergio","And navega a agent","","","",0,11460,11.46,"SUCCESS","",""
+"Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA","@{name=batch1; type=tag; displayName=batch1}","SERGIO","Sergio","And diligencia caso express completo desde feature
+| departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+| AMAZONAS | ARARA | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |","","","",0,141929,141.93,"SUCCESS","",""
+"Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA","@{name=batch1; type=tag; displayName=batch1}","SERGIO","Sergio","And diligenciamos el proveedor
+| Nombre del proveedor | Servicio |
+| PROVEEDOR PRUEBA | TOMA SERVICIO |","","","",0,179427,179.43,"SUCCESS","",""
+"Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA","@{name=batch1; type=tag; displayName=batch1}","SERGIO","Sergio","And transicionamos los estados del caso","","","",0,54897,54.9,"SUCCESS","",""
+"Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA","@{name=batch3; type=tag; displayName=batch3}","SERGIO","Sergio","Given el actor tiene un navegador disponible","","","",0,539,0.54,"SUCCESS","",""
+"Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA","@{name=batch3; type=tag; displayName=batch3}","SERGIO","Sergio","When abre la pagina de casos","","","",0,82050,82.05,"SUCCESS","",""
+"Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA","@{name=batch3; type=tag; displayName=batch3}","SERGIO","Sergio","And realiza login con credenciales","","","",0,61920,61.92,"SUCCESS","",""
+"Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA","@{name=batch3; type=tag; displayName=batch3}","SERGIO","Sergio","And navega a agent","","","",0,10977,10.98,"SUCCESS","",""
+"Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA","@{name=batch3; type=tag; displayName=batch3}","SERGIO","Sergio","And diligencia caso express completo desde feature
+| departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+| AMAZONAS | ARARA | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |","","","",0,135356,135.36,"SUCCESS","",""
+"Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA","@{name=batch3; type=tag; displayName=batch3}","SERGIO","Sergio","And diligenciamos el proveedor
+| Nombre del proveedor | Servicio |
+| PROVEEDOR PRUEBA | TOMA SERVICIO |","","","",0,142398,142.4,"SUCCESS","",""
+"Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA","@{name=batch3; type=tag; displayName=batch3}","SERGIO","Sergio","And transicionamos los estados del caso","","","",0,54953,54.95,"SUCCESS","",""
+"Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA","@{name=batch8; type=tag; displayName=batch8}","SERGIO","Sergio","Given el actor tiene un navegador disponible","","","",0,298,0.3,"SUCCESS","",""
+"Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA","@{name=batch8; type=tag; displayName=batch8}","SERGIO","Sergio","When abre la pagina de casos","","","",0,76075,76.08,"SUCCESS","",""
+"Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA","@{name=batch8; type=tag; displayName=batch8}","SERGIO","Sergio","And realiza login con credenciales","","","",0,59604,59.6,"SUCCESS","",""
+"Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA","@{name=batch8; type=tag; displayName=batch8}","SERGIO","Sergio","And navega a agent","","","",0,9616,9.62,"SUCCESS","",""
+"Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA","@{name=batch8; type=tag; displayName=batch8}","SERGIO","Sergio","And diligencia caso express completo desde feature
+| departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+| AMAZONAS | ARARA | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |","","","",0,124890,124.89,"SUCCESS","",""
+"Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA","@{name=batch8; type=tag; displayName=batch8}","SERGIO","Sergio","And diligenciamos el proveedor
+| Nombre del proveedor | Servicio |
+| PROVEEDOR PRUEBA | TOMA SERVICIO |","","","",0,161159,161.16,"SUCCESS","",""
+"Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA","@{name=batch8; type=tag; displayName=batch8}","SERGIO","Sergio","And transicionamos los estados del caso","","","",0,53923,53.92,"SUCCESS","",""
+"Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA","@{name=batch5; type=tag; displayName=batch5}","SERGIO","Sergio","Given el actor tiene un navegador disponible","","","",0,173,0.17,"SUCCESS","",""
+"Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA","@{name=batch5; type=tag; displayName=batch5}","SERGIO","Sergio","When abre la pagina de casos","","","",0,58130,58.13,"SUCCESS","",""
+"Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA","@{name=batch5; type=tag; displayName=batch5}","SERGIO","Sergio","And realiza login con credenciales","","","",0,40458,40.46,"SUCCESS","",""
+"Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA","@{name=batch5; type=tag; displayName=batch5}","SERGIO","Sergio","And navega a agent","","","",0,16205,16.2,"SUCCESS","",""
+"Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA","@{name=batch5; type=tag; displayName=batch5}","SERGIO","Sergio","And diligencia caso express completo desde feature
+| departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+| AMAZONAS | ARARA | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |","","","",0,129872,129.87,"SUCCESS","",""
+"Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA","@{name=batch5; type=tag; displayName=batch5}","SERGIO","Sergio","And diligenciamos el proveedor
+| Nombre del proveedor | Servicio |
+| PROVEEDOR PRUEBA | TOMA SERVICIO |","","","",0,213679,213.68,"SUCCESS","",""
+"Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA","@{name=batch5; type=tag; displayName=batch5}","SERGIO","Sergio","And transicionamos los estados del caso","","","",0,58048,58.05,"SUCCESS","",""

@@ -20,6 +20,21 @@ $userName = $env:USERNAME
 
 # ===== FUNCIONES UTILITARIAS =====
 
+# Función de HtmlEncode compatible que no depende de versiones de .NET
+function Encode-HtmlSpecialChars {
+    param([string]$text)
+    
+    if ([string]::IsNullOrEmpty($text)) { return "" }
+    
+    $text = $text -replace '&', '&amp;'
+    $text = $text -replace '<', '&lt;'
+    $text = $text -replace '>', '&gt;'
+    $text = $text -replace '"', '&quot;'
+    $text = $text -replace "'", '&#39;'
+    
+    return $text
+}
+
 function Get-ErrorType {
     param([string]$errorMessage)
     
@@ -184,6 +199,26 @@ function Create-ExcelFile {
         }
         catch {
             Write-Host "    Error LibreOffice CLI: $_" -ForegroundColor Yellow
+        }
+    }
+    
+    # Fallback Final: SIEMPRE copiar CSV como XLSX (Excel lo puede abrir)
+    if ($null -ne $csvPath -and (Test-Path $csvPath)) {
+        try {
+            $absolutePath = [System.IO.Path]::GetFullPath($filePath)
+            $csvAbsPath = [System.IO.Path]::GetFullPath($csvPath)
+            
+            Write-Host "    Generando XLSX como CSV (fallback garantizado)..." -ForegroundColor Cyan
+            Remove-Item $absolutePath -ErrorAction SilentlyContinue
+            Copy-Item -Path $csvAbsPath -Destination $absolutePath -Force
+            
+            if (Test-Path $absolutePath) {
+                Write-Host "    Archivo Excel generado exitosamente (formato CSV compatible)" -ForegroundColor Green
+                return $true
+            }
+        }
+        catch {
+            Write-Host "    Error en fallback final: $_" -ForegroundColor Yellow
         }
     }
     
@@ -644,10 +679,10 @@ foreach ($step in $allSteps) {
     
     $html += @"
                     <tr class="$rowClass">
-                        <td><strong>$([System.Net.WebUtility]::HtmlEncode($step.Test))</strong></td>
+                        <td><strong>$(Encode-HtmlSpecialChars $step.Test)</strong></td>
                         <td>$($step.Batch)</td>
-                        <td>$([System.Net.WebUtility]::HtmlEncode($step.Descripcion))</td>
-                        <td><small>$([System.Net.WebUtility]::HtmlEncode($step.Accion))</small></td>
+                        <td>$(Encode-HtmlSpecialChars $step.Descripcion)</td>
+                        <td><small>$(Encode-HtmlSpecialChars $step.Accion)</small></td>
                         <td><span class="badge $badgeClass">$($step.Estado)</span></td>
                         <td>$errorDisplay</td>
                         <td><strong>$($step.Tiempo_ms)</strong></td>
@@ -701,10 +736,10 @@ $html += @"
 foreach ($step in ($allSteps | Where-Object { $_.Estado -eq 'ERROR' })) {
     $html += @"
                     <tr class="ERROR">
-                        <td><strong>$([System.Net.WebUtility]::HtmlEncode($step.Test))</strong></td>
-                        <td>$([System.Net.WebUtility]::HtmlEncode($step.Descripcion))</td>
+                        <td><strong>$(Encode-HtmlSpecialChars $step.Test)</strong></td>
+                        <td>$(Encode-HtmlSpecialChars $step.Descripcion)</td>
                         <td><span class="badge badge-error">$($step.ErrorType)</span></td>
-                        <td><small>$([System.Net.WebUtility]::HtmlEncode($step.ErrorMessage))</small></td>
+                        <td><small>$(Encode-HtmlSpecialChars $step.ErrorMessage)</small></td>
                         <td>$($step.Tiempo_ms)</td>
                     </tr>
 
@@ -736,10 +771,10 @@ foreach ($step in ($allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Obj
     $percentageOfTotal = [math]::Round(($step.Tiempo_ms / ($totalTime * 1000) * 100), 1)
     $html += @"
                     <tr>
-                        <td><strong>$([System.Net.WebUtility]::HtmlEncode($step.Test))</strong></td>
+                        <td><strong>$(Encode-HtmlSpecialChars $step.Test)</strong></td>
                         <td>$($step.Batch)</td>
-                        <td>$([System.Net.WebUtility]::HtmlEncode($step.Descripcion))</td>
-                        <td><small>$([System.Net.WebUtility]::HtmlEncode($step.Accion))</small></td>
+                        <td>$(Encode-HtmlSpecialChars $step.Descripcion)</td>
+                        <td><small>$(Encode-HtmlSpecialChars $step.Accion)</small></td>
                         <td><strong style="color: #ffc107;">$($step.Tiempo_s)</strong></td>
                         <td>$percentageOfTotal%</td>
                     </tr>
