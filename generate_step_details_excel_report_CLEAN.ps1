@@ -136,17 +136,50 @@ function Create-ExcelFile {
                 $outputDir = Split-Path $filePath -Parent
                 $absolutePath = [System.IO.Path]::GetFullPath($filePath)
                 $csvAbsPath = [System.IO.Path]::GetFullPath($csvPath)
+                $csvBaseName = Split-Path $csvAbsPath -Leaf
                 
                 # Convertir CSV a XLSX usando LibreOffice CLI
+                Write-Host "    Convirtiendo CSV a XLSX con LibreOffice..." -ForegroundColor Cyan
                 & $libreOfficePath --headless --convert-to xlsx --outdir $outputDir $csvAbsPath 2>&1 | Out-Null
                 
-                # Renombrar archivo generado al nombre esperado
-                $generatedXlsx = Join-Path $outputDir (Split-Path $csvAbsPath -Leaf).Replace(".csv", ".xlsx")
-                if (Test-Path $generatedXlsx) {
-                    Remove-Item $absolutePath -ErrorAction SilentlyContinue
-                    Rename-Item $generatedXlsx $absolutePath
-                    return $true
+                # Esperar a que se complete la conversión
+                Start-Sleep -Milliseconds 2000
+                
+                # Buscar el archivo generado por LibreOffice
+                $expectedXlsx = Join-Path $outputDir ($csvBaseName.Replace(".csv", ".xlsx"))
+                Write-Host "    Buscando archivo generado: $expectedXlsx" -ForegroundColor Cyan
+                
+                # Intentar múltiples estrategias para encontrar el archivo
+                $foundXlsx = $null
+                
+                if (Test-Path $expectedXlsx) {
+                    $foundXlsx = $expectedXlsx
+                } else {
+                    # Buscar archivos .xlsx generados recientemente en el directorio
+                    $recentXlsx = Get-ChildItem -Path $outputDir -Filter "*.xlsx" -ErrorAction SilentlyContinue | 
+                        Where-Object { $_.LastWriteTime -gt (Get-Date).AddSeconds(-30) } | 
+                        Sort-Object LastWriteTime -Descending | 
+                        Select-Object -First 1
+                    
+                    if ($recentXlsx) {
+                        $foundXlsx = $recentXlsx.FullName
+                        Write-Host "    Archivo encontrado: $foundXlsx" -ForegroundColor Cyan
+                    }
                 }
+                
+                if ($foundXlsx -and (Test-Path $foundXlsx)) {
+                    # Mover/renombrar el archivo al destino final
+                    Remove-Item $absolutePath -ErrorAction SilentlyContinue
+                    Move-Item -Path $foundXlsx -Destination $absolutePath -Force -ErrorAction SilentlyContinue
+                    if (Test-Path $absolutePath) {
+                        Write-Host "    Archivo Excel generado exitosamente via LibreOffice" -ForegroundColor Green
+                        return $true
+                    }
+                } else {
+                    Write-Host "    No se encontró archivo XLSX generado por LibreOffice" -ForegroundColor Yellow
+                }
+            } else {
+                Write-Host "    LibreOffice no encontrada en: $libreOfficePath" -ForegroundColor Yellow
             }
         }
         catch {
@@ -327,87 +360,487 @@ if ($excelSuccess) {
     Write-Host "No se generó Excel (LibreOffice/Excel no disponibles)" -ForegroundColor Yellow
 }
 
-# ===== GENERAR HTML =====
+# ===== GENERAR HTML PROFESIONAL =====
 
 $htmlPath = "$outputPath\step_details_$timestamp.html"
 
+$successCount = @($allSteps | Where-Object { $_.Estado -eq 'SUCCESS' }).Count
+$errorCount = @($allSteps | Where-Object { $_.Estado -eq 'ERROR' }).Count
+$slowCount = @($allSteps | Where-Object { $_.Tiempo_ms -gt 5000 }).Count
+$totalTime = ($allSteps | Measure-Object -Property Tiempo_s -Sum).Sum
+
 $html = @"
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SARA3 - Reporte de Pasos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARA3 - Reporte de Pasos Detallado</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: Arial; margin: 20px; background-color: #f5f5f5; }
-        .header { background: linear-gradient(135deg, #0078d4, #106ebe); color: white; padding: 20px; border-radius: 5px; }
-        table { width: 100%; border-collapse: collapse; background-color: white; margin-top: 20px; }
-        th { background-color: #0078d4; color: white; padding: 10px; text-align: left; }
-        td { padding: 8px; border-bottom: 1px solid #ddd; }
-        tr:hover { background-color: #f0f0f0; }
-        .ERROR { background-color: #ffebee; }
-        .SUCCESS { background-color: #e8f5e9; }
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
-        .stat-box { background: white; padding: 15px; border-radius: 5px; text-align: center; border-left: 4px solid #0078d4; }
-        .stat-value { font-size: 24px; font-weight: bold; color: #0078d4; }
-        .stat-label { color: #666; font-size: 12px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            padding: 30px 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .header { 
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%); 
+            color: white; 
+            padding: 40px 30px; 
+            border-radius: 10px 10px 0 0;
+            border-bottom: 5px solid #ff6b6b;
+        }
+        .header h1 { font-size: 32px; margin-bottom: 10px; }
+        .header p { font-size: 14px; opacity: 0.95; }
+        .info-bar { 
+            background: #f8f9fa; 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .info-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .info-label { font-weight: 600; color: #333; }
+        .info-value { color: #0078d4; }
+        
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 20px; 
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        .stat-card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 8px; 
+            border-left: 5px solid #0078d4;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card.success { border-left-color: #28a745; }
+        .stat-card.error { border-left-color: #dc3545; }
+        .stat-card.slow { border-left-color: #ffc107; }
+        .stat-icon { font-size: 30px; margin-bottom: 10px; }
+        .stat-value { font-size: 36px; font-weight: bold; color: #0078d4; }
+        .stat-card.success .stat-value { color: #28a745; }
+        .stat-card.error .stat-value { color: #dc3545; }
+        .stat-card.slow .stat-value { color: #ffc107; }
+        .stat-label { color: #666; font-size: 13px; margin-top: 8px; }
+        
+        .tabs { 
+            display: flex; 
+            gap: 0; 
+            border-bottom: 2px solid #ddd;
+            padding: 0 30px;
+            background: white;
+        }
+        .tab-button { 
+            padding: 15px 25px; 
+            border: none; 
+            background: transparent; 
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-button:hover { color: #0078d4; }
+        .tab-button.active { 
+            color: #0078d4; 
+            border-bottom-color: #0078d4;
+            background: #f8f9fa;
+        }
+        .tab-content { display: none; padding: 30px; }
+        .tab-content.active { display: block; }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 13px;
+        }
+        th { 
+            background: linear-gradient(135deg, #0078d4, #106ebe); 
+            color: white; 
+            padding: 15px; 
+            text-align: left;
+            font-weight: 600;
+        }
+        td { 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover { background-color: #f8f9fa; }
+        tr.SUCCESS { background-color: #f1f8f5; }
+        tr.ERROR { background-color: #fff5f5; }
+        
+        .badge { 
+            display: inline-block; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: 600;
+        }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-error { background: #f8d7da; color: #721c24; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        
+        .error-summary { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px;
+        }
+        .error-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 10px 0; 
+            border-bottom: 1px solid #ddd;
+        }
+        .error-row:last-child { border-bottom: none; }
+        .error-type { font-weight: 600; color: #333; }
+        .error-count { 
+            color: #dc3545; 
+            font-weight: 700; 
+            font-size: 18px;
+        }
+        .error-percentage { color: #666; font-size: 12px; }
+        
+        .chart-container { 
+            position: relative; 
+            height: 300px; 
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        footer { 
+            padding: 20px 30px; 
+            background: #f8f9fa; 
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .search-box { 
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .search-box input { 
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        .search-box input:focus { 
+            outline: none;
+            border-color: #0078d4;
+            box-shadow: 0 0 5px rgba(0,120,212,0.3);
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Reporte de Detalles de Pasos - SARA3</h1>
-        <p>Máquina: $machineName | Usuario: $userName | Fecha: $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')</p>
-    </div>
-    
-    <div class="stats">
-        <div class="stat-box">
-            <div class="stat-value">$($allSteps.Count)</div>
-            <div class="stat-label">Pasos Totales</div>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Reporte de Detalles de Pasos - SARA3</h1>
+            <p>Análisis completo de ejecución de casos y pruebas automatizadas</p>
         </div>
-        <div class="stat-box">
-            <div class="stat-value">$($allSteps | Where-Object { $_.Estado -eq 'SUCCESS' } | Measure-Object | Select-Object -ExpandProperty Count)</div>
-            <div class="stat-label">Pasos Exitosos</div>
+        
+        <div class="info-bar">
+            <div class="info-item">
+                <span class="info-label">💻 Máquina:</span>
+                <span class="info-value">$machineName</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">👤 Usuario:</span>
+                <span class="info-value">$userName</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">📅 Fecha:</span>
+                <span class="info-value">$(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">⏱️ Tiempo Total:</span>
+                <span class="info-value">${totalTime:N2}s</span>
+            </div>
         </div>
-        <div class="stat-box">
-            <div class="stat-value">$($allSteps | Where-Object { $_.Estado -eq 'ERROR' } | Measure-Object | Select-Object -ExpandProperty Count)</div>
-            <div class="stat-label">Pasos con Error</div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-value">$($allSteps.Count)</div>
+                <div class="stat-label">Pasos Totales</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value">$successCount</div>
+                <div class="stat-label">Pasos Exitosos ($(([math]::Round(($successCount/$($allSteps.Count)*100), 1)))%)</div>
+            </div>
+            <div class="stat-card error">
+                <div class="stat-icon">❌</div>
+                <div class="stat-value">$errorCount</div>
+                <div class="stat-label">Pasos con Error ($(([math]::Round(($errorCount/$($allSteps.Count)*100), 1)))%)</div>
+            </div>
+            <div class="stat-card slow">
+                <div class="stat-icon">🐢</div>
+                <div class="stat-value">$slowCount</div>
+                <div class="stat-label">Pasos Lentos (&gt;5s)</div>
+            </div>
         </div>
-    </div>
-    
-    <h2>Detalle de Pasos</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Test</th>
-                <th>Batch</th>
-                <th>Descripción</th>
-                <th>Estado</th>
-                <th>Error Type</th>
-                <th>Tiempo (s)</th>
-            </tr>
-        </thead>
-        <tbody>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('resumen', this)">Resumen</button>
+            <button class="tab-button" onclick="showTab('todos', this)">Todos los Pasos</button>
+            <button class="tab-button" onclick="showTab('errores', this)">Errores</button>
+            <button class="tab-button" onclick="showTab('lentos', this)">Pasos Lentos</button>
+        </div>
+        
+        <div id="resumen" class="tab-content active">
+            <div class="chart-container">
+                <canvas id="chartEstados"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chartErrores"></canvas>
+            </div>
+        </div>
+        
+        <div id="todos" class="tab-content">
+            <div class="search-box">
+                <input type="text" id="filtroTodos" placeholder="🔍 Filtrar pasos..." onkeyup="filtrarTabla('tablaTodos', this.value)">
+            </div>
+            <table id="tablaTodos">
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Batch</th>
+                        <th>Descripción</th>
+                        <th>Acción</th>
+                        <th>Estado</th>
+                        <th>Error Type</th>
+                        <th>Tiempo (ms)</th>
+                    </tr>
+                </thead>
+                <tbody>
 "@
 
 foreach ($step in $allSteps) {
-    $cssClass = $step.Estado
+    $badgeClass = if($step.Estado -eq 'SUCCESS') { 'badge-success' } else { 'badge-error' }
     $errorDisplay = if($step.Estado -eq "ERROR") { $step.ErrorType } else { "-" }
+    $rowClass = $step.Estado
     
     $html += @"
-            <tr class="$cssClass">
-                <td>$($step.Test)</td>
-                <td>$($step.Batch)</td>
-                <td>$($step.Descripcion)</td>
-                <td>$($step.Estado)</td>
-                <td>$errorDisplay</td>
-                <td>$($step.Tiempo_s)</td>
-            </tr>
+                    <tr class="$rowClass">
+                        <td><strong>$([System.Net.WebUtility]::HtmlEncode($step.Test))</strong></td>
+                        <td>$($step.Batch)</td>
+                        <td>$([System.Net.WebUtility]::HtmlEncode($step.Descripcion))</td>
+                        <td><small>$([System.Net.WebUtility]::HtmlEncode($step.Accion))</small></td>
+                        <td><span class="badge $badgeClass">$($step.Estado)</span></td>
+                        <td>$errorDisplay</td>
+                        <td><strong>$($step.Tiempo_ms)</strong></td>
+                    </tr>
 
 "@
 }
 
 $html += @"
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="errores" class="tab-content">
+            <h3>Resumen de Errores</h3>
+            <div class="error-summary">
+"@
+
+$errorsByType = $allSteps | Where-Object { $_.Estado -eq 'ERROR' } | Group-Object -Property ErrorType | Sort-Object -Property Count -Descending
+$totalErrors = $errorCount
+
+foreach ($errorGroup in $errorsByType) {
+    $percentage = if ($totalErrors -gt 0) { [math]::Round(($errorGroup.Count / $totalErrors * 100), 1) } else { 0 }
+    $html += @"
+                <div class="error-row">
+                    <div>
+                        <div class="error-type">$($errorGroup.Name)</div>
+                        <div class="error-percentage">$($errorGroup.Count) ocurrencias ($percentage%)</div>
+                    </div>
+                    <div class="error-count">$($errorGroup.Count)</div>
+                </div>
+
+"@
+}
+
+$html += @"
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Descripción</th>
+                        <th>Error Type</th>
+                        <th>Mensaje de Error</th>
+                        <th>Tiempo (ms)</th>
+                    </tr>
+                </thead>
+                <tbody>
+"@
+
+foreach ($step in ($allSteps | Where-Object { $_.Estado -eq 'ERROR' })) {
+    $html += @"
+                    <tr class="ERROR">
+                        <td><strong>$([System.Net.WebUtility]::HtmlEncode($step.Test))</strong></td>
+                        <td>$([System.Net.WebUtility]::HtmlEncode($step.Descripcion))</td>
+                        <td><span class="badge badge-error">$($step.ErrorType)</span></td>
+                        <td><small>$([System.Net.WebUtility]::HtmlEncode($step.ErrorMessage))</small></td>
+                        <td>$($step.Tiempo_ms)</td>
+                    </tr>
+
+"@
+}
+
+$html += @"
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="lentos" class="tab-content">
+            <h3>Pasos que tardaron más de 5 segundos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>Batch</th>
+                        <th>Descripción</th>
+                        <th>Acción</th>
+                        <th>Tiempo (s)</th>
+                        <th>% del Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+"@
+
+foreach ($step in ($allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Object -Property Tiempo_ms -Descending)) {
+    $percentageOfTotal = [math]::Round(($step.Tiempo_ms / ($totalTime * 1000) * 100), 1)
+    $html += @"
+                    <tr>
+                        <td><strong>$([System.Net.WebUtility]::HtmlEncode($step.Test))</strong></td>
+                        <td>$($step.Batch)</td>
+                        <td>$([System.Net.WebUtility]::HtmlEncode($step.Descripcion))</td>
+                        <td><small>$([System.Net.WebUtility]::HtmlEncode($step.Accion))</small></td>
+                        <td><strong style="color: #ffc107;">$($step.Tiempo_s)</strong></td>
+                        <td>$percentageOfTotal%</td>
+                    </tr>
+
+"@
+}
+
+$html += @"
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <p>📈 Reporte generado automáticamente | Total de pasos procesados: $($allSteps.Count) | 🔧 Sara3 Automation Framework</p>
+        </footer>
+    </div>
+    
+    <script>
+        function showTab(tabName, button) {
+            var tabs = document.getElementsByClassName('tab-content');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            var buttons = document.getElementsByClassName('tab-button');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            document.getElementById(tabName).classList.add('active');
+            button.classList.add('active');
+            
+            if (tabName === 'resumen') {
+                setTimeout(function() {
+                    if (chart1) chart1.resize();
+                    if (chart2) chart2.resize();
+                }, 100);
+            }
+        }
+        
+        function filtrarTabla(tableId, filter) {
+            var table = document.getElementById(tableId);
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            for (var i = 0; i < rows.length; i++) {
+                var text = rows[i].textContent.toLowerCase();
+                rows[i].style.display = text.indexOf(filter.toLowerCase()) > -1 ? '' : 'none';
+            }
+        }
+        
+        var chart1, chart2;
+        
+        var ctxEstados = document.getElementById('chartEstados').getContext('2d');
+        chart1 = new Chart(ctxEstados, {
+            type: 'doughnut',
+            data: {
+                labels: ['Exitosos', 'Con Error'],
+                datasets: [{
+                    data: [$successCount, $errorCount],
+                    backgroundColor: ['#28a745', '#dc3545'],
+                    borderColor: ['white', 'white'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Estado de Pasos' }
+                }
+            }
+        });
+        
+        var ctxErrores = document.getElementById('chartErrores').getContext('2d');
+        chart2 = new Chart(ctxErrores, {
+            type: 'bar',
+            data: {
+                labels: ['Selenium', 'UI', 'Data', 'Validacion', 'Otros'],
+                datasets: [{
+                    label: 'Cantidad de Errores',
+                    data: [
+                        $(@($allSteps | Where-Object { $_.ErrorType -eq 'Selenium' }).Count),
+                        $(@($allSteps | Where-Object { $_.ErrorType -eq 'UI' }).Count),
+                        $(@($allSteps | Where-Object { $_.ErrorType -eq 'Data' }).Count),
+                        $(@($allSteps | Where-Object { $_.ErrorType -eq 'Validacion' }).Count),
+                        $(@($allSteps | Where-Object { $_.ErrorType -eq 'Otros' }).Count)
+                    ],
+                    backgroundColor: '#0078d4',
+                    borderColor: '#106ebe',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Errores por Tipo' }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
 "@
