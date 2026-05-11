@@ -446,6 +446,7 @@ function Extract-TestSteps {
                 Nivel = $step.level
                 Tiempo_ms = $step.duration
                 Tiempo_s = [math]::Round($step.duration / 1000, 2)
+                Tiempo_min = [math]::Round($step.duration / 60000, 2)
                 Estado = if ($step.result -eq "SUCCESS") { "SUCCESS" } elseif ($step.result -eq "ERROR") { "ERROR" } else { "SKIPPED" }
                 ErrorType = $errorType
                 ErrorMessage = $errorMessage
@@ -481,7 +482,7 @@ if ($allSteps.Count -eq 0) {
 # ===== GENERAR CSV =====
 
 $csvPath = "$outputPath\step_details_$timestamp.csv"
-$csvLines = @('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Estado","Error Type","Error Message"')
+$csvLines = @('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Tiempo (min)","Estado","Error Type","Error Message"')
 
 foreach ($step in $allSteps) {
     $desc = $step.Descripcion -replace '"', '""'
@@ -501,6 +502,7 @@ foreach ($step in $allSteps) {
         "$($step.Nivel)"
         "$($step.Tiempo_ms)"
         "$($step.Tiempo_s)"
+        "$($step.Tiempo_min)"
         "`"$($step.Estado)`""
         "`"$errorType`""
         "`"$errorMsg`""
@@ -526,6 +528,7 @@ $stepsSheet = $allSteps | Select-Object @{N="Test"; E={$_.Test}},
                                         @{N="Elemento"; E={$_.Elemento}},
                                         @{N="Valor"; E={$_.Valor}},
                                         @{N="Tiempo (s)"; E={$_.Tiempo_s}},
+                                        @{N="Tiempo (min)"; E={$_.Tiempo_min}},
                                         @{N="Estado"; E={$_.Estado}},
                                         @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}},
                                         @{N="Error Message"; E={if($_.Estado -eq "ERROR") { $_.ErrorMessage } else { "" }}}
@@ -539,6 +542,7 @@ $slowSheet = if ($slowSteps.Count -gt 0) {
                                @{N="Usuario"; E={$userName}},
                                @{N="Descripcion"; E={$_.Descripcion}},
                                @{N="Tiempo (s)"; E={$_.Tiempo_s}},
+                               @{N="Tiempo (min)"; E={$_.Tiempo_min}},
                                @{N="Estado"; E={$_.Estado}},
                                @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}}
 } else {
