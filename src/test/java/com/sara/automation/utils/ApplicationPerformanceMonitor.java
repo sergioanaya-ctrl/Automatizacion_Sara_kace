@@ -31,6 +31,13 @@ public class ApplicationPerformanceMonitor {
     }
     
     /**
+     * Setter para asignar driver después de inicialización
+     */
+    public void setDriver(WebDriver driver) {
+        this.driver = driver;
+    }
+    
+    /**
      * MÉTRICA 1: Captura Network Timing (cuánto tarda la app en responder)
      * Ejecuta JavaScript para leer Performance API del navegador
      */
