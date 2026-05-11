@@ -20,6 +20,58 @@ function Format-WithComma {
     return $rounded.ToString("N$Decimals", [System.Globalization.CultureInfo]::GetCultureInfo("es-CO"))
 }
 
+function Extract-StepDetails {
+    param([string]$Description)
+    
+    $actionType = "Otra"
+    $element = ""
+    $value = ""
+    
+    if ($Description -like "*enters*") {
+        $actionType = "Escribe"
+        if ($Description -match "'([^']*)'.*into\s+(.+)") {
+            $value = $matches[1]
+            $element = $matches[2]
+        }
+    }
+    elseif ($Description -like "*clicks*" -or $Description -like "*click*") {
+        $actionType = "Click/Selecciona"
+        # Patrones: "clicks on Element" o "click Element"
+        if ($Description -match "on\s+(.+)$") {
+            $element = $matches[1]
+        }
+        elseif ($Description -match "click\s+(.+)$") {
+            $element = $matches[1]
+        }
+    }
+    elseif ($Description -like "*switch*") {
+        $actionType = "Navega/Cambia"
+        if ($Description -match "to\s+(.+)") {
+            $element = $matches[1]
+        }
+    }
+    elseif ($Description -like "*open*") {
+        $actionType = "Abre"
+        if ($Description -match "at\s+(.+)") {
+            $element = $matches[1]
+        }
+    }
+    elseif ($Description -like "*fill*") {
+        $actionType = "Completa"
+        $element = $Description
+    }
+    elseif ($Description -like "*And*" -or $Description -like "*Given*" -or $Description -like "*When*") {
+        $actionType = "Ejecuta"
+        $element = $Description
+    }
+    
+    return @{
+        Accion = $actionType
+        Elemento = $element
+        Valor = $value
+    }
+}
+
 function Extract-TestSteps {
     param([array]$steps, [int]$level = 0, [string]$testName)
     $result = @()
@@ -27,11 +79,15 @@ function Extract-TestSteps {
     foreach ($step in $steps) {
         $timeMs = [int]$step.duration
         $timeS = Format-WithComma -Value ($timeMs / 1000) -Decimals 2
+        $stepDetails = Extract-StepDetails -Description $step.description
         
         $result += [PSCustomObject]@{
             Test = $testName
             Nivel = $level
-            Descripcion = $step.description.Substring(0, [Math]::Min(150, $step.description.Length))
+            Descripcion = $step.description
+            Accion = $stepDetails.Accion
+            Elemento = $stepDetails.Elemento
+            Valor = $stepDetails.Valor
             Tiempo_ms = $timeMs
             Tiempo_s = $timeS
             Estado = $step.result
@@ -43,6 +99,7 @@ function Extract-TestSteps {
     }
     return $result
 }
+
 
 Write-Host "====== Generando Excel con detalles de pasos ======"
 
@@ -105,13 +162,17 @@ try {
         $summary | Export-Excel -Path $excelPath -WorksheetName "Resumen" -AutoSize -TableStyle "Light1"
         
         # Hoja 2: Todos los Pasos
-        $allSteps | Select-Object @{N="Test"; E={$_.Test}},
-                                   @{N="Descripción"; E={$_.Descripcion.Substring(0, 80)}},
+        $stepsForExcel = $allSteps | Select-Object @{N="Test"; E={$_.Test}},
+                                   @{N="Descripción Completa"; E={$_.Descripcion}},
+                                   @{N="Acción"; E={$_.Accion}},
+                                   @{N="Elemento/Campo"; E={if([string]::IsNullOrEmpty($_.Elemento)) { "N/A" } else { $_.Elemento }}},
+                                   @{N="Valor Ingresado"; E={if([string]::IsNullOrEmpty($_.Valor)) { "N/A" } else { $_.Valor }}},
                                    @{N="Nivel"; E={$_.Nivel}},
                                    @{N="Tiempo (ms)"; E={$_.Tiempo_ms}},
                                    @{N="Tiempo (s)"; E={$_.Tiempo_s}},
-                                   @{N="Estado"; E={$_.Estado}} | 
-            Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos" -AutoSize -TableStyle "Light1" -Append
+                                   @{N="Estado"; E={$_.Estado}}
+        
+        $stepsForExcel | Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos" -AutoSize -TableStyle "Light1" -Append
         
         # Hoja 3: Pasos Lentos
         $slowSteps = $allSteps | Where-Object { $_.Tiempo_ms -gt 5000 } | Sort-Object Tiempo_ms -Descending | Select-Object -First 50
