@@ -445,7 +445,7 @@ Write-Host "Generando Excel desde CSV..." -ForegroundColor Cyan
 $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput -outputPath $reportFolder -worksheetName "Test Timings"
 
 if ($excelSuccess) {
-    Write-Host "✓ Excel generado exitosamente" -ForegroundColor Green
+    Write-Host "  OK Excel generado exitosamente" -ForegroundColor Green
 }
 
 # Guardar en historico
@@ -453,6 +453,6 @@ $timestamp_file = Get-Date -Format "yyyyMMdd_HHmmss"
 Copy-Item $htmlOutput -Destination "$historicFolder\report_$timestamp_file.html" -ErrorAction SilentlyContinue
 
 Write-Host ""
-Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-Write-Host "✅ REPORTES GENERADOS EXITOSAMENTE!" -ForegroundColor Green
-Write-Host "════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+Write-Host "============================================================" -ForegroundColor Cyan
+Write-Host "REPORTES GENERADOS EXITOSAMENTE!" -ForegroundColor Green
+Write-Host "============================================================" -ForegroundColor Cyan
