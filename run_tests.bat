@@ -310,11 +310,15 @@ for /l %%i in (1,1,50) do (
         powershell -Command "(Get-Content gradle.properties) -replace '^maxParallelForks=.*', 'maxParallelForks=1' | Set-Content gradle.properties"
         echo.
         echo [INFO] Ejecutando SCENARIO %batch_num% SIN PARALELO...
-        echo [INFO] Usando tag: @batch%batch_num_formatted%
+        echo [INFO] Usando runner: CasesRunner%batch_num_formatted%
         echo.
-        call .\gradlew.bat test -Dcucumber.filter.tags="@batch%batch_num_formatted%"
+        call .\gradlew.bat test --tests "com.sara.automation.runners.CasesRunner%batch_num_formatted%" -Dgeb.env=chrome
         echo.
         echo [INFO] Ejecucion completada del scenario %batch_num%
+        echo.
+        echo [INFO] Generando reportes de performance...
+        timeout /t 2 >nul
+        powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
         pause
         goto menu
     )
