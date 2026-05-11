@@ -553,27 +553,26 @@ try {
         Write-Host ""
     }
 
-    Write-Host "HOJAS GENERADAS:"
-    Write-Host ("  - Hoja 1: Resumen (Tests: " + $testStats.Count + ", Fallidos: " + $failedTests + ")")
-    Write-Host ("  - Hoja 2: Todos los Pasos (" + $allSteps.Count + " filas + Batch + Error Type/Message)")
-    Write-Host ("  - Hoja 3: Pasos Lentos (" + $slowSteps.Count + " pasos >5s + Batch + Error Type/Message)")
-    Write-Host ("  - Hoja 4: Estadísticas por Test (" + $testStats.Count + " tests + Batch + Error Type/Message)")
-    if ($errorSummary.Count -gt 0) {
-        Write-Host ("  - Hoja 5: Resumen de Errores (" + $errorSummary.Count + " categorías)")
-    }
-    if ($failedTestsDetails.Count -gt 0) {
-        Write-Host ("  - Hoja 6: Tests Fallidos (" + $failedTestsDetails.Count + " tests + Batch)")
-    }
-    if ($batchSummary.Count -gt 0) {
-        Write-Host ("  - Hoja 7: Resumen por Batch (" + $batchSummary.Count + " batches)")
-    }
     Write-Host ""
-    Write-Host "CLASIFICACION DE ERRORES:"
-    foreach ($error in $errorSummary) {
-        $errorType = $error.'Error Type'
-        $errorCant = $error.Cantidad
-        $errorPorc = $error.Porcentaje
-        Write-Host "  - $errorType : $errorCant ($errorPorc%)" -ForegroundColor Yellow
+    Write-Host "REPORTES GENERADOS:"
+    Write-Host "  - step_details_*.xlsx (Excel con 7 hojas)"
+    Write-Host "  - step_details_*.csv  (CSV con datos detallados)"
+    Write-Host "  - step_details_*.html (Reporte HTML interactivo)"
+    Write-Host ""
+    Write-Host "CONTENIDO DEL REPORTE:"
+    Write-Host "  - Tests procesados: $($testStats.Count)"
+    Write-Host "  - Pasos totales: $($allSteps.Count)"
+    Write-Host "  - Pasos lentos mayor a 5s: $($slowSteps.Count)"
+    Write-Host "  - Errores clasificados: $($errorSummary.Count) categorías"
+    Write-Host ""
+    if ($errorSummary.Count -gt 0) {
+        Write-Host "CLASIFICACION DE ERRORES:"
+        foreach ($error in $errorSummary) {
+            $errorType = $error.'Error Type'
+            $errorCant = $error.Cantidad
+            $errorPorc = $error.Porcentaje
+            Write-Host ("  {0} : {1} ({2}%)" -f $errorType, $errorCant, $errorPorc) -ForegroundColor Yellow
+        }
     }
     Write-Host ""
 }
