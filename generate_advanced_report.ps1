@@ -19,6 +19,27 @@ if (-not (Test-Path $reportFolder)) {
 }
 $alertThresholdMinutes = 3
 
+function Get-ErrorType {
+    param([string]$message)
+    if ([string]::IsNullOrWhiteSpace($message)) { return "None" }
+
+    $lower = $message.ToLower()
+
+    if ($lower -match "selenium|webdriver|driver executable|session not created|cannot start|cannot launch|chrome not reachable|geckodriver|edge driver|browser not reachable") {
+        return "Selenium / Launch"
+    }
+    if ($lower -match "nosuchelement|element not found|not visible|not interactable|element not interactable|stale element|timeoutexception|timeout|wait|load|loading|field.*not|campo.*no|lista.*no|dropdown.*no|select.*no") {
+        return "UI / Elementos / Carga"
+    }
+    if ($lower -match "illegalargumentexception|not a valid|missing.*value|falta valor|required value|no se encontro|no se encontraron|missing resource|missing credentials") {
+        return "Datos / Feature / Input"
+    }
+    if ($lower -match "assert|assertion|expected.*but.*was|assertion error|assertion failed") {
+        return "Validacion / Assertion"
+    }
+    return "Otros"
+}
+
 # Crear carpeta de historico
 if (-not (Test-Path $historicFolder)) {
     New-Item -ItemType Directory -Path $historicFolder | Out-Null
@@ -73,6 +94,8 @@ Get-ChildItem -Path $testResultsPath -Filter "*.xml" | ForEach-Object {
                 $region = $matches[1].Trim()
             }
             
+            $errorType = Get-ErrorType -message $errorMsg
+
             $testData += [PSCustomObject]@{
                 "Suite" = $suiteName
                 "TestName" = $testName
@@ -83,6 +106,7 @@ Get-ChildItem -Path $testResultsPath -Filter "*.xml" | ForEach-Object {
                 "DurationFormatted" = Format-MinutesWithComma -Milliseconds ([int]($testTime * 1000))
                 "Status" = $status
                 "Error" = $errorMsg
+                "ErrorType" = $errorType
                 "IsSlow" = ($testTime / 60) -gt $alertThresholdMinutes
             }
         }
@@ -156,13 +180,13 @@ try {
     $sheet2 = $workbook.Sheets.Add()
     $sheet2.Name = "All Tests"
     
-    $headers = @("Suite", "Test Name", "Region", "Duration (min)", "Status", "Error")
+$headers = @("Suite", "Test Name", "Region", "Duration (min)", "Status", "Error Type", "Error")
     for ($i = 0; $i -lt $headers.Count; $i++) {
         $sheet2.Cells.Item(1, $i + 1) = $headers[$i]
         $sheet2.Cells.Item(1, $i + 1).Font.Bold = $true
         $sheet2.Cells.Item(1, $i + 1).Interior.ColorIndex = 15
     }
-    
+
     $row = 2
     foreach ($test in $testData) {
         $sheet2.Cells.Item($row, 1) = $test.Suite
@@ -170,7 +194,8 @@ try {
         $sheet2.Cells.Item($row, 3) = $test.Region
         $sheet2.Cells.Item($row, 4) = $test.DurationFormatted
         $sheet2.Cells.Item($row, 5) = $test.Status
-        $sheet2.Cells.Item($row, 6) = $test.Error
+        $sheet2.Cells.Item($row, 6) = $test.ErrorType
+        $sheet2.Cells.Item($row, 7) = $test.Error
         
         if ($test.Status -eq "FAILED") {
             $sheet2.Cells.Item($row, 5).Interior.Color = 255
@@ -213,19 +238,20 @@ try {
         $sheet4 = $workbook.Sheets.Add()
         $sheet4.Name = "FAILED"
         
-        $headers = @("Test Name", "Region", "Duration (min)", "Error Message")
+$headers = @("Test Name", "Region", "Duration (min)", "Error Type", "Error Message")
         for ($i = 0; $i -lt $headers.Count; $i++) {
             $sheet4.Cells.Item(1, $i + 1) = $headers[$i]
             $sheet4.Cells.Item(1, $i + 1).Font.Bold = $true
             $sheet4.Cells.Item(1, $i + 1).Interior.ColorIndex = 3
         }
-        
+
         $row = 2
         foreach ($test in $failedData) {
             $sheet4.Cells.Item($row, 1) = $test.TestName
             $sheet4.Cells.Item($row, 2) = $test.Region
             $sheet4.Cells.Item($row, 3) = $test.DurationFormatted
-            $sheet4.Cells.Item($row, 4) = $test.Error
+            $sheet4.Cells.Item($row, 4) = $test.ErrorType
+            $sheet4.Cells.Item($row, 5) = $test.Error
             $sheet4.Cells.Item($row, 5).Interior.Color = 255
             $row++
         }
@@ -259,7 +285,30 @@ try {
         $sheet5.UsedRange.Columns.AutoFit() | Out-Null
     }
     
-    # HOJA 6: COBERTURA POR REGION
+    # HOJA 6: TIPOS DE ERROR
+    $errorTypes = $testData | Where-Object { $_.Status -eq 'FAILED' } | Group-Object -Property ErrorType | Sort-Object Count -Descending
+    if ($errorTypes.Count -gt 0) {
+        $sheetErrorType = $workbook.Sheets.Add()
+        $sheetErrorType.Name = "Error Types"
+        
+        $headers = @("Error Type", "Count")
+        for ($i = 0; $i -lt $headers.Count; $i++) {
+            $sheetErrorType.Cells.Item(1, $i + 1) = $headers[$i]
+            $sheetErrorType.Cells.Item(1, $i + 1).Font.Bold = $true
+            $sheetErrorType.Cells.Item(1, $i + 1).Interior.ColorIndex = 3
+        }
+        
+        $row = 2
+        foreach ($group in $errorTypes) {
+            $sheetErrorType.Cells.Item($row, 1) = $group.Name
+            $sheetErrorType.Cells.Item($row, 2) = $group.Count
+            $row++
+        }
+        
+        $sheetErrorType.UsedRange.Columns.AutoFit() | Out-Null
+    }
+    
+    # HOJA 7: COBERTURA POR REGION
     $regions = @($testData | Select-Object -ExpandProperty "Region" -Unique)
     if ($regions.Count -gt 0) {
         $sheet6 = $workbook.Sheets.Add()
@@ -409,6 +458,15 @@ $testData | Select-Object -First 10 | ForEach-Object {
 
 $html += "</table>"
 
+$failedGroup = $testData | Where-Object { $_.Status -eq 'FAILED' } | Group-Object -Property ErrorType | Sort-Object Count -Descending
+if ($failedGroup.Count -gt 0) {
+    $html += "<h2>Clasificación de Errores</h2><table><tr><th>Error Type</th><th>Count</th></tr>"
+    foreach ($group in $failedGroup) {
+        $html += "<tr><td>$($group.Name)</td><td>$($group.Count)</td></tr>"
+    }
+    $html += "</table>"
+}
+
 # Agregar tabla de region coverage
 if ($regions.Count -gt 0) {
     $html += "<h2>Cobertura por Region</h2><table><tr><th>Region</th><th>Total</th><th>Passed</th><th>Failed</th><th>Pass Rate</th></tr>"
@@ -439,7 +497,7 @@ Write-Host "[OK] HTML generado: $htmlOutput" -ForegroundColor Green
 
 # Exportar datos a CSV para luego generar Excel
 $csvOutput = "$reportFolder\test_timings_report.csv"
-$testData | Select-Object Suite, TestName, Region, DurationFormatted, Status, Error -ErrorAction SilentlyContinue | Export-Csv -Path $csvOutput -Encoding UTF8 -NoTypeInformation -Force
+$testData | Select-Object Suite, TestName, Region, DurationFormatted, Status, ErrorType, Error -ErrorAction SilentlyContinue | Export-Csv -Path $csvOutput -Encoding UTF8 -NoTypeInformation -Force
 Write-Host "[OK] CSV generado: $csvOutput" -ForegroundColor Green
 
 # Generar Excel desde CSV

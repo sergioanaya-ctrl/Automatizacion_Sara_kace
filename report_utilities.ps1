@@ -200,12 +200,5 @@ function Create-StepTable {
     return $html
 }
 
-Export-ModuleMember -Function @(
-    'Format-DecimalWithComma',
-    'Format-TimeDisplay',
-    'Format-SecondsWithComma',
-    'Format-MinutesWithComma',
-    'Load-PerformanceStepData',
-    'Analyze-StepPerformance',
-    'Create-StepTable'
-)
+# Este archivo se usa como script de utilidades (dot-source) desde los reportes.
+# No se necesita Export-ModuleMember aquí, y causa error cuando no se ejecuta como módulo.

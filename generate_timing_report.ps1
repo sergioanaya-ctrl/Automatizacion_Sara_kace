@@ -5,12 +5,12 @@
 # y genera un reporte CSV/XLSX con tiempos de ejecucion
 # FORMATOS: Tiempos en minutos con COMA y desglose de pasos
 
-# Importar funciones auxiliares
-. "$PSScriptRoot\report_utilities.ps1"
-
 param(
     [string]$OutputFormat = "CSV"  # CSV o XLSX
 )
+
+# Importar funciones auxiliares
+. "$PSScriptRoot\report_utilities.ps1"
 
 # Ruta de los resultados
 $testResultsPath = "build\test-results\test"
