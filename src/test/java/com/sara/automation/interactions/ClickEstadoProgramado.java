@@ -131,7 +131,7 @@ public class ClickEstadoProgramado implements Interaction {
                 if (timerCancel.isDisplayed()) {
                     System.out.println("  [ClickEstadoProgramado]   Popup Timer encontrado, cerrando...");
                     js.executeScript("arguments[0].click();", timerCancel);
-                    Thread.sleep(800);
+                    Thread.sleep(1);
                     System.out.println("  [ClickEstadoProgramado]   ✓ Timer cerrado");
                     return;
                 }
@@ -145,7 +145,7 @@ public class ClickEstadoProgramado implements Interaction {
                 if (anyCancel.isDisplayed()) {
                     System.out.println("  [ClickEstadoProgramado]   Botón Cancelar encontrado, clickeando...");
                     js.executeScript("arguments[0].click();", anyCancel);
-                    Thread.sleep(800);
+                    Thread.sleep(1);
                     System.out.println("  [ClickEstadoProgramado]   ✓ Timer cerrado");
                     return;
                 }
