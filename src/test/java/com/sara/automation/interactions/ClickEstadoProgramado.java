@@ -70,7 +70,7 @@ public class ClickEstadoProgramado implements Interaction {
             System.out.println("  [ClickEstadoProgramado] Paso 3: Clickeando 'Programado'...");
             ejecutarClickConReintentos(js, estadoProgramado, "Programado");
             
-            Thread.sleep(1500);
+            Thread.sleep(500);
             System.out.println("  [ClickEstadoProgramado] ✓ 'Programado' seleccionado");
             
             // PASO 4: Buscar y clickear botón de guardado
@@ -97,7 +97,7 @@ public class ClickEstadoProgramado implements Interaction {
             System.out.println("  [ClickEstadoProgramado] Paso 5: Clickeando guardado...");
             ejecutarClickConReintentos(js, guardarButton, "Guardado");
             
-            Thread.sleep(1500);
+            Thread.sleep(500);
             System.out.println("  [ClickEstadoProgramado] ✓✓ 'Programado' guardado exitosamente");
             
             driver.switchTo().defaultContent();

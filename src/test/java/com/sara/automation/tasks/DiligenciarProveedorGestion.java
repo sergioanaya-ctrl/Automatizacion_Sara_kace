@@ -99,7 +99,7 @@ public class DiligenciarProveedorGestion implements Task {
             
             if (closeBtn != null) {
                 closeBtn.click();
-                Thread.sleep(500); // Dar tiempo a que se cierre
+                Thread.sleep(1); // Dar tiempo a que se cierre
                 System.out.println("  [DiligenciarProveedorGestion] Timer cerrado OK");
                 if (perfMonitor != null) perfMonitor.captureNetworkTiming("CerrarTimer");
             } else {
@@ -111,7 +111,7 @@ public class DiligenciarProveedorGestion implements Task {
 
         // Esperar adicional después de cerrar timer
         try {
-            Thread.sleep(800);
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -267,7 +267,7 @@ public class DiligenciarProveedorGestion implements Task {
         actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Proveedor));
 
         // Esperar a que el diálogo de proveedor se cierre y volver al contexto principal.
-        waitForProveedorDialogToClose(driver, Duration.ofSeconds(20));
+        waitForProveedorDialogToClose(driver, Duration.ofSeconds(5));
         driver.switchTo().defaultContent();
         sleep(500);
 

@@ -81,7 +81,7 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] Paso 3: Clickeando 'Aceptado'...");
             ejecutarClickConReintentos(js, estadoAceptado, "Aceptado");
             
-            Thread.sleep(1500);
+            Thread.sleep(500);
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓ 'Aceptado' seleccionado");
             
             // PASO 4: Buscar y clickear botón de guardado
@@ -108,7 +108,7 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] Paso 5: Clickeando guardado...");
             ejecutarClickConReintentos(js, guardarButton, "Guardado");
             
-            Thread.sleep(1500);
+            Thread.sleep(500);
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓✓ 'Aceptado' guardado exitosamente");
             
             driver.switchTo().defaultContent();

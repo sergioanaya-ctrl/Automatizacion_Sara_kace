@@ -70,7 +70,7 @@ public class ClickEstadoConcluido implements Interaction {
             System.out.println("  [ClickEstadoConcluido] Paso 3: Clickeando 'Concluido'...");
             ejecutarClickConReintentos(js, estado, "Concluido");
             
-            Thread.sleep(1500);
+            Thread.sleep(500);
             System.out.println("  [ClickEstadoConcluido] ✓ 'Concluido' seleccionado");
             
             // PASO 4: Buscar y clickear botón de guardado
@@ -97,7 +97,7 @@ public class ClickEstadoConcluido implements Interaction {
             System.out.println("  [ClickEstadoConcluido] Paso 5: Clickeando guardado...");
             ejecutarClickConReintentos(js, guardarButton, "Guardado");
             
-            Thread.sleep(1500);
+            Thread.sleep(500);
             System.out.println("  [ClickEstadoConcluido] ✓✓ 'Concluido' guardado exitosamente");
             
             driver.switchTo().defaultContent();
