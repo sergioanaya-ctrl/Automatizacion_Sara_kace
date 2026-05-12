@@ -441,7 +441,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                |
-      | SANTANORTE DE SANTANDER | ARBOLEDAS      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS     |
+      | NORTE DE SANTANDER | ARBOLEDAS      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS     |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |

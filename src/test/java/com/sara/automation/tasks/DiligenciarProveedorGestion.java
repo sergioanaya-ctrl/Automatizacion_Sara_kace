@@ -65,7 +65,7 @@ public class DiligenciarProveedorGestion implements Task {
         // Esperar a que la página se recargue completamente después de guardar
         // La página hace reload y vuelve a mostrar los elementos del formulario
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -85,7 +85,7 @@ public class DiligenciarProveedorGestion implements Task {
                 By.xpath("//button[contains(@aria-label, 'Cerrar') or contains(@aria-label, 'Close')]")
             };
             
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             WebElement closeBtn = null;
             for (By selector : timerCloseSelectors) {
                 try {
@@ -99,7 +99,7 @@ public class DiligenciarProveedorGestion implements Task {
             
             if (closeBtn != null) {
                 closeBtn.click();
-                Thread.sleep(1000); // Dar tiempo a que se cierre
+                Thread.sleep(500); // Dar tiempo a que se cierre
                 System.out.println("  [DiligenciarProveedorGestion] Timer cerrado OK");
                 if (perfMonitor != null) perfMonitor.captureNetworkTiming("CerrarTimer");
             } else {
@@ -111,7 +111,7 @@ public class DiligenciarProveedorGestion implements Task {
 
         // Esperar adicional después de cerrar timer
         try {
-            Thread.sleep(1500);
+            Thread.sleep(800);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
