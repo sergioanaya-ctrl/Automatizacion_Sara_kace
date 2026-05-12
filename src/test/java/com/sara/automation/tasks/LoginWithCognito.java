@@ -58,7 +58,7 @@ public class LoginWithCognito implements Task {
 
     private void esperarEnAgentPage(Actor actor) {
         long startTime = System.currentTimeMillis();
-        long timeout = 20000; // 20 segundos
+        long timeout = 8000; // 8 segundos
 
         while (System.currentTimeMillis() - startTime < timeout) {
             try {
