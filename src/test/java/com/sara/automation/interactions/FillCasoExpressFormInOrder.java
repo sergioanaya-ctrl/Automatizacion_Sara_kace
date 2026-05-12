@@ -346,44 +346,82 @@ public class FillCasoExpressFormInOrder implements Interaction {
 
     private void seleccionarComboWebDriver(WebDriver driver, String comboXpath, String valor) {
         WebDriverWait waitShort = new WebDriverWait(driver, Duration.ofSeconds(12));
+        WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(40));
 
         By searchSelector = By.cssSelector("input.custom-dropdown-search, input[placeholder*='buscar'], input[placeholder*='Buscar']");
         By listItemExact = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(.)='" + valor + "'] | //li[normalize-space(.)='" + valor + "']");
         By listItems = By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li");
 
-        try {
-            WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
-            combo.click();
-            WebElement search = waitShort.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
-            search.clear();
-            search.sendKeys(valor);
-            Thread.sleep(300);
+        Exception lastError = null;
+        for (int intento = 1; intento <= 4; intento++) {
+            try {
+                driver.switchTo().defaultContent();
+                new WebDriverWait(driver, Duration.ofSeconds(20))
+                        .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
 
-            System.out.println("  [seleccionarComboWebDriver] Escribi: " + valor + ", esperando a que aparezca el listado...");
+                System.out.println("  [seleccionarComboWebDriver] Intento " + intento + " para seleccionar: " + valor);
 
-            waitShort.until(driver1 -> {
-                List<WebElement> items = driver1.findElements(listItems);
-                return items.stream().anyMatch(item ->
-                    item.isDisplayed() && valor.equals(item.getText().trim()));
-            });
+                WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
+                combo.click();
 
-            Thread.sleep(200);
-            List<WebElement> items = driver.findElements(listItems);
-            for (WebElement item : items) {
-                if (valor.equals(item.getText().trim()) && item.isDisplayed()) {
-                    System.out.println("  [seleccionarComboWebDriver] Haciendo clic en: " + valor);
-                    item.click();
-                    Thread.sleep(300);
+                WebElement search = waitLong.until(ExpectedConditions.visibilityOfElementLocated(searchSelector));
+                search.clear();
+                search.sendKeys(valor);
+                Thread.sleep(350);
+
+                System.out.println("  [seleccionarComboWebDriver] Escribí: " + valor + ", esperando listado...");
+
+                waitLong.until(driver1 -> {
+                    List<WebElement> items = driver1.findElements(listItems);
+                    return items.stream().anyMatch(item -> {
+                        try {
+                            return item.isDisplayed() && valor.equals(item.getText().trim());
+                        } catch (org.openqa.selenium.StaleElementReferenceException stale) {
+                            return false;
+                        }
+                    });
+                });
+
+                Thread.sleep(250);
+                if (clickOption(driver, listItemExact, valor)) {
                     return;
                 }
+            } catch (org.openqa.selenium.StaleElementReferenceException stale) {
+                lastError = stale;
+                System.out.println("  [seleccionarComboWebDriver] StaleElementReference detectado, reintentando... intento " + intento);
+                continue;
+            } catch (Exception e) {
+                lastError = e;
+                System.out.println("  [seleccionarComboWebDriver] ERROR en intento " + intento + ": " + e.getMessage());
+                if (e instanceof org.openqa.selenium.StaleElementReferenceException && intento < 4) {
+                    continue;
+                }
+                break;
             }
-            WebElement option = waitShort.until(ExpectedConditions.elementToBeClickable(listItemExact));
-            option.click();
-            return;
-        } catch (Exception e) {
-            System.out.println("  [seleccionarComboWebDriver] ERROR: " + e.getMessage());
-            throw new RuntimeException("Error seleccionando Departamento: " + valor, e);
         }
+
+        System.out.println("  [seleccionarComboWebDriver] ERROR final: no se pudo seleccionar " + valor);
+        throw new RuntimeException("Error seleccionando Departamento: " + valor, lastError);
+    }
+
+    private boolean clickOption(WebDriver driver, By listItemExact, String valor) {
+        List<WebElement> items = driver.findElements(listItemExact);
+        for (WebElement item : items) {
+            try {
+                if (item.isDisplayed()) {
+                    try {
+                        item.click();
+                        return true;
+                    } catch (org.openqa.selenium.ElementClickInterceptedException intercepted) {
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", item);
+                        return true;
+                    }
+                }
+            } catch (org.openqa.selenium.StaleElementReferenceException stale) {
+                // Reintentar con la siguiente referencia
+            }
+        }
+        return false;
     }
 
     private <T extends Actor> void llenarDireccionesYUbicacionEnOrden(T actor) {

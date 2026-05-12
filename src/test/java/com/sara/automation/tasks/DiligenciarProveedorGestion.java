@@ -3,6 +3,7 @@ package com.sara.automation.tasks;
 import com.sara.automation.interactions.SwitchToOneScriptIframe;
 import com.sara.automation.interactions.OneScriptDynamicElements;
 import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.utils.ApplicationPerformanceMonitor;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -49,6 +50,15 @@ public class DiligenciarProveedorGestion implements Task {
     @Override
     @Step("Gestionar proveedor: abrir tab, crear, seleccionar nombre/respuesta y guardar")
     public <T extends Actor> void performAs(T actor) {
+        long taskStartTime = System.currentTimeMillis();
+        ApplicationPerformanceMonitor perfMonitor = null;
+        
+        try {
+            perfMonitor = actor.recall("perfMonitor");
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] Advertencia: No se pudo recuperar perfMonitor");
+        }
+        
         // Este paso ocurre dentro del formulario OneScript luego de crear el caso.
         actor.attemptsTo(SwitchToOneScriptIframe.required());
 
@@ -91,6 +101,7 @@ public class DiligenciarProveedorGestion implements Task {
                 closeBtn.click();
                 Thread.sleep(1000); // Dar tiempo a que se cierre
                 System.out.println("  [DiligenciarProveedorGestion] Timer cerrado OK");
+                if (perfMonitor != null) perfMonitor.captureNetworkTiming("CerrarTimer");
             } else {
                 System.out.println("  [DiligenciarProveedorGestion] Timer no encontrado con ningún selector (puede ya estar cerrado)");
             }
@@ -108,6 +119,7 @@ public class DiligenciarProveedorGestion implements Task {
         // PASO CRÍTICO: Activar el tab de Gestión de proveedores
         // Estrategia optimizada: 1) 10 TABs para hacer visible, 2) Scroll, 3) Clic directo, 4) Si falla: 16 TABs completos
         System.out.println("  [DiligenciarProveedorGestion] Activando tab de Gestión de proveedores...");
+        if (perfMonitor != null) perfMonitor.captureNetworkTiming("InicioActivarTab");
         boolean tabEncontrado = false;
         JavascriptExecutor js = (JavascriptExecutor) driver;
         
@@ -132,6 +144,8 @@ public class DiligenciarProveedorGestion implements Task {
         } catch (Exception e) {
             System.out.println("  [DiligenciarProveedorGestion] Error en navegación TAB (continuando): " + e.getMessage());
         }
+        
+        if (perfMonitor != null) perfMonitor.captureNetworkTiming("ActivarTabNavegacion");
         
         // PASO 2: Hacer scroll para asegurar que el área de tabs esté completamente visible
         try {
@@ -269,7 +283,15 @@ public class DiligenciarProveedorGestion implements Task {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        System.out.println("  [DiligenciarProveedorGestion] ✓ Página recargada, interfaz lista para transición de estados");
+        System.out.println("  [DiligenciarProveedorGestion] Page recargada, interfaz lista para transicion de estados");
+        
+        if (perfMonitor != null) {
+            long totalTime = System.currentTimeMillis() - taskStartTime;
+            perfMonitor.captureFormSubmissionTime("GuardarProveedor", totalTime);
+            perfMonitor.captureNetworkTiming("ProveedorSyncFinal");
+        }
+        System.out.println("  [APP-PERF] DiligenciarProveedorGestion completado en " + 
+                         (System.currentTimeMillis() - taskStartTime) + "ms");
     }
 
     private <T extends Actor> boolean clickGeneralSaveIfPresent(WebDriver driver, T actor) {

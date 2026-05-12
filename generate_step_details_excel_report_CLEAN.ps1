@@ -407,54 +407,103 @@ function Create-ExcelFile {
     return $false
 }
 
-function Extract-TestSteps {
-    param([array]$jsonData)
+function Format-WithComma {
+    param([double]$Value, [int]$Decimals = 2)
+    $rounded = [math]::Round($Value, $Decimals)
+    return $rounded.ToString("N$Decimals", [System.Globalization.CultureInfo]::GetCultureInfo("es-CO"))
+}
+
+function Extract-StepDetails {
+    param([string]$Description)
     
-    $steps = @()
+    $actionType = "Otra"
+    $element = ""
+    $value = ""
     
-    foreach ($result in $jsonData) {
-        $testName = $result.title
-        $batch = "N/A"
-        if ($result.tags) {
-            foreach ($tag in $result.tags) {
-                if ($tag -match "batch") {
-                    $batch = $tag
-                    break
-                }
-            }
-        }
-        
-        $testSteps = $result.testSteps
-        if ($null -eq $testSteps) { $testSteps = @() }
-        
-        foreach ($step in $testSteps) {
-            $errorMessage = ""
-            $errorType = ""
-            
-            if ($step.result -eq "ERROR") {
-                $errorMessage = if ($step.error) { $step.error } elseif ($step.exception) { $step.exception } else { "" }
-                $errorType = Get-ErrorType $errorMessage
-            }
-            
-            $steps += [PSCustomObject]@{
-                Test = $testName
-                Batch = $batch
-                Descripcion = $step.description
-                Accion = $step.action
-                Elemento = $step.element
-                Valor = $step.value
-                Nivel = $step.level
-                Tiempo_ms = $step.duration
-                Tiempo_s = [math]::Round($step.duration / 1000, 2)
-                Tiempo_min = [math]::Round($step.duration / 60000, 2)
-                Estado = if ($step.result -eq "SUCCESS") { "SUCCESS" } elseif ($step.result -eq "ERROR") { "ERROR" } else { "SKIPPED" }
-                ErrorType = $errorType
-                ErrorMessage = $errorMessage
-            }
+    if ($Description -like "*enters*") {
+        $actionType = "Escribe"
+        if ($Description -match "'([^']*)'.*into\s+(.+)") {
+            $value = $matches[1]
+            $element = $matches[2]
         }
     }
+    elseif ($Description -like "*clicks*" -or $Description -like "*click*") {
+        $actionType = "Click/Selecciona"
+        if ($Description -match "on\s+(.+)$") {
+            $element = $matches[1]
+        }
+        elseif ($Description -match "click\s+(.+)$") {
+            $element = $matches[1]
+        }
+    }
+    elseif ($Description -like "*switch*") {
+        $actionType = "Navega/Cambia"
+        if ($Description -match "to\s+(.+)") {
+            $element = $matches[1]
+        }
+    }
+    elseif ($Description -like "*open*") {
+        $actionType = "Abre"
+        if ($Description -match "at\s+(.+)") {
+            $element = $matches[1]
+        }
+    }
+    elseif ($Description -like "*fill*") {
+        $actionType = "Completa"
+        $element = $Description
+    }
+    elseif ($Description -like "*And*" -or $Description -like "*Given*" -or $Description -like "*When*") {
+        $actionType = "Ejecuta"
+        $element = $Description
+    }
     
-    return $steps
+    return @{
+        Accion = $actionType
+        Elemento = $element
+        Valor = $value
+    }
+}
+
+function Extract-TestSteps {
+    param([array]$steps, [int]$level = 0, [string]$testName, [string]$batch = "")
+    $result = @()
+    
+    foreach ($step in $steps) {
+        $timeMs = [int]$step.duration
+        $timeS = Format-WithComma -Value ($timeMs / 1000) -Decimals 2
+        $stepDetails = Extract-StepDetails -Description $step.description
+        
+        # Extraer error del paso si existe
+        $stepError = ""
+        $stepErrorType = "Sin Error"
+        if ($step.result -eq "ERROR" -and $step.error) {
+            $stepError = $step.error
+            $stepErrorType = Get-ErrorType -message $stepError
+        }
+        elseif ($step.result -eq "ERROR" -and $step.exception) {
+            $stepError = $step.exception
+            $stepErrorType = Get-ErrorType -message $stepError
+        }
+        
+        $result += [PSCustomObject]@{
+            Test = $testName
+            Batch = $batch
+            Descripcion = $step.description
+            Accion = $stepDetails.Accion
+            Elemento = $stepDetails.Elemento
+            Valor = $stepDetails.Valor
+            Tiempo_ms = $timeMs
+            Tiempo_s = $timeS
+            Estado = $step.result
+            ErrorMessage = $stepError
+            ErrorType = $stepErrorType
+        }
+        
+        if ($step.children -and $step.children.Count -gt 0) {
+            $result += Extract-TestSteps -steps $step.children -level ($level + 1) -testName $testName -batch $batch
+        }
+    }
+    return $result
 }
 
 # ===== CARGAR DATOS =====
@@ -467,22 +516,58 @@ Write-Host ""
 # Cargar JSON de Serenity
 $jsonFiles = Get-ChildItem -Path $serenityReportPath -Filter "*.json" -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch "index" }
 $allSteps = @()
+$testStats = @()
 
 foreach ($jsonFile in $jsonFiles) {
     $jsonContent = Get-Content $jsonFile.FullName | ConvertFrom-Json
-    $steps = Extract-TestSteps @($jsonContent)
-    $allSteps += $steps
-}
-
-if ($allSteps.Count -eq 0) {
-    Write-Host "No se encontraron datos. Asegúrate de ejecutar los tests primero." -ForegroundColor Yellow
-    exit 1
+    $testName = $jsonContent.title
+    
+    # Extraer Batch del tag (batch25, batch50, etc.)
+    $batch = ""
+    if ($jsonContent.tags) {
+        $batchTag = $jsonContent.tags | Where-Object { $_.name -like "batch*" } | Select-Object -First 1
+        if ($batchTag) {
+            $batch = $batchTag.name
+        }
+    }
+    
+    if ($jsonContent.testSteps) {
+        $steps = Extract-TestSteps -steps $jsonContent.testSteps -testName $testName -batch $batch
+        $allSteps += $steps
+        
+        $slowSteps = $steps | Where-Object { $_.Tiempo_ms -gt 5000 }
+        $totalMs = ($steps | Measure-Object -Property Tiempo_ms -Sum).Sum
+        $totalMin = Format-WithComma -Value ($totalMs / 60000) -Decimals 2
+        
+        # Detectar estado del test
+        $errorSteps = $steps | Where-Object { $_.Estado -eq "ERROR" }
+        $testState = if ($errorSteps.Count -gt 0) { "FAILED" } else { "PASSED" }
+        
+        $testErrorMsg = ""
+        $testErrorType = "Sin Error"
+        if ($errorSteps.Count -gt 0) {
+            $firstError = $errorSteps | Select-Object -First 1
+            $testErrorMsg = $firstError.ErrorMessage
+            $testErrorType = $firstError.ErrorType
+        }
+        
+        $testStats += [PSCustomObject]@{
+            Test = $testName
+            Batch = $batch
+            TotalPasos = $steps.Count
+            PasosLentos = $slowSteps.Count
+            TiempoTotal_min = $totalMin
+            Estado = $testState
+            ErrorType = $testErrorType
+            ErrorMessage = $testErrorMsg
+        }
+    }
 }
 
 # ===== GENERAR CSV =====
 
 $csvPath = "$outputPath\step_details_$timestamp.csv"
-$csvLines = @('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Nivel","Tiempo (ms)","Tiempo (s)","Tiempo (min)","Estado","Error Type","Error Message"')
+$csvLines = @('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Tiempo (ms)","Tiempo (s)","Tiempo (min)","Estado","Error Type","Error Message"')
 
 foreach ($step in $allSteps) {
     $desc = $step.Descripcion -replace '"', '""'
@@ -499,7 +584,6 @@ foreach ($step in $allSteps) {
         "`"$($step.Accion)`""
         "`"$($step.Elemento)`""
         "`"$($step.Valor)`""
-        "$($step.Nivel)"
         "$($step.Tiempo_ms)"
         "$($step.Tiempo_s)"
         "$($step.Tiempo_min)"
@@ -517,18 +601,20 @@ Write-Host "CSV generado: $csvPath" -ForegroundColor Green
 # ===== GENERAR EXCEL CON COM =====
 
 $excelPath = "$outputPath\step_details_$timestamp.xlsx"
+$failedTests = ($testStats | Where-Object { $_.Estado -eq "FAILED" }).Count
+$passedTests = ($testStats | Where-Object { $_.Estado -eq "PASSED" }).Count
 
-# Hoja 1: Todos los pasos
+# Hoja 1: Todos los pasos con información completa
 $stepsSheet = $allSteps | Select-Object @{N="Test"; E={$_.Test}},
                                         @{N="Batch"; E={$_.Batch}},
                                         @{N="Maquina"; E={$machineName}},
                                         @{N="Usuario"; E={$userName}},
                                         @{N="Descripcion"; E={$_.Descripcion}},
                                         @{N="Accion"; E={$_.Accion}},
-                                        @{N="Elemento"; E={$_.Elemento}},
-                                        @{N="Valor"; E={$_.Valor}},
+                                        @{N="Elemento"; E={if([string]::IsNullOrEmpty($_.Elemento)) { "N/A" } else { $_.Elemento }}},
+                                        @{N="Valor"; E={if([string]::IsNullOrEmpty($_.Valor)) { "N/A" } else { $_.Valor }}},
+                                        @{N="Tiempo (ms)"; E={$_.Tiempo_ms}},
                                         @{N="Tiempo (s)"; E={$_.Tiempo_s}},
-                                        @{N="Tiempo (min)"; E={$_.Tiempo_min}},
                                         @{N="Estado"; E={$_.Estado}},
                                         @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}},
                                         @{N="Error Message"; E={if($_.Estado -eq "ERROR") { $_.ErrorMessage } else { "" }}}
@@ -541,8 +627,10 @@ $slowSheet = if ($slowSteps.Count -gt 0) {
                                @{N="Maquina"; E={$machineName}},
                                @{N="Usuario"; E={$userName}},
                                @{N="Descripcion"; E={$_.Descripcion}},
+                               @{N="Accion"; E={$_.Accion}},
+                               @{N="Elemento"; E={if([string]::IsNullOrEmpty($_.Elemento)) { "N/A" } else { $_.Elemento }}},
+                               @{N="Tiempo (ms)"; E={$_.Tiempo_ms}},
                                @{N="Tiempo (s)"; E={$_.Tiempo_s}},
-                               @{N="Tiempo (min)"; E={$_.Tiempo_min}},
                                @{N="Estado"; E={$_.Estado}},
                                @{N="Error Type"; E={if($_.Estado -eq "ERROR") { $_.ErrorType } else { "" }}}
 } else {
@@ -550,24 +638,27 @@ $slowSheet = if ($slowSteps.Count -gt 0) {
 }
 
 # Hoja 3: Resumen de errores
-$errorSummary = $allSteps | Where-Object { $_.Estado -eq "ERROR" } | 
+$errorSummary = $testStats | Where-Object { $_.Estado -eq "FAILED" } | 
                 Group-Object ErrorType | 
                 Select-Object @{N="Error Type"; E={$_.Name}},
                               @{N="Cantidad"; E={$_.Count}},
-                              @{N="Porcentaje"; E={"{0:N1}" -f (($_.Count / ($allSteps | Where-Object { $_.Estado -eq "ERROR" }).Count) * 100)}} |
+                              @{N="Porcentaje"; E={Format-WithComma -Value (($_.Count / $failedTests) * 100) -Decimals 1}} |
                 Sort-Object Cantidad -Descending
 if ($errorSummary.Count -eq 0) {
-    $errorSummary = @([PSCustomObject]@{ "Error Type" = "Sin Errores"; Cantidad = 0; Porcentaje = "0,0" })
+    $errorSummary = @([PSCustomObject]@{ "Error Type" = "Sin Errores"; Cantidad = 0; Porcentaje = 0 })
 }
 
-# Hoja 4: Resumen por Test
-$testSummary = $allSteps | Group-Object Test |
-               Select-Object @{N="Test"; E={$_.Name}},
-                             @{N="Total Pasos"; E={$_.Count}},
-                             @{N="Exitosos"; E={($_.Group | Where-Object { $_.Estado -eq "SUCCESS" }).Count}},
-                             @{N="Errores"; E={($_.Group | Where-Object { $_.Estado -eq "ERROR" }).Count}},
-                             @{N="Pasos Lentos"; E={($_.Group | Where-Object { $_.Tiempo_ms -gt 5000 }).Count}},
-                             @{N="Tiempo Total (s)"; E={"{0:N2}" -f ($_.Group | Measure-Object -Property Tiempo_s -Sum).Sum}}
+# Hoja 4: Estadísticas por Test
+$testSummary = $testStats | Select-Object @{N="Test"; E={$_.Test}},
+                                           @{N="Batch"; E={$_.Batch}},
+                                           @{N="Maquina"; E={$machineName}},
+                                           @{N="Usuario"; E={$userName}},
+                                           @{N="Total Pasos"; E={$_.TotalPasos}},
+                                           @{N="Pasos Lentos"; E={$_.PasosLentos}},
+                                           @{N="Tiempo Total (min)"; E={$_.TiempoTotal_min}},
+                                           @{N="Estado"; E={$_.Estado}},
+                                           @{N="Error Type"; E={$_.ErrorType}},
+                                           @{N="Error Message"; E={$_.ErrorMessage}}
 
 Write-Host "Generando Excel..." -ForegroundColor Cyan
 $excelSuccess = Create-ExcelFile -filePath $excelPath `

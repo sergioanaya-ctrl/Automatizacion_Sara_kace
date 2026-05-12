@@ -40,6 +40,8 @@ public class CasesStepDefinitions {
         actor = OnStage.theActorCalled("Sara");
         // Inicializar monitor de performance para capturar métricas reales de la app
         perfMonitor = new ApplicationPerformanceMonitor("CasesTest_" + System.currentTimeMillis(), null);
+        // Guardar el monitor en ActorMemory para que las Tasks puedan acceder a él
+        actor.remember("perfMonitor", perfMonitor);
     }
 
     @After
@@ -147,14 +149,22 @@ public class CasesStepDefinitions {
 
     @When("diligencia caso express completo desde feature")
     public void diligenciaCasoExpressCompletoDesdeFeature(DataTable dataTable) {
+        long startTime = System.currentTimeMillis();
         // Este step funciona como alias legible del feature.
         // Reutiliza el mismo flujo para no duplicar lógica de negocio en los steps.
         completaListasManualesDesdeFeature(dataTable);
+        long duration = System.currentTimeMillis() - startTime;
+        
+        if (perfMonitor != null) {
+            perfMonitor.captureNetworkTiming("DiligenciaCasoExpress");
+        }
+        System.out.println("[APP-PERF] Caso Express completado en " + duration + "ms");
     }
 
     @When("diligenciamos el proveedor")
     @When("digilenciamos el poriveedor")
     public void diligenciamosElProveedor(DataTable dataTable) {
+        long startTime = System.currentTimeMillis();
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         Map<String, String> row = rows.get(0);
 
@@ -162,6 +172,13 @@ public class CasesStepDefinitions {
         String servicio = requiredAnyKey(row, "Servicio", "servicio", "Respuesta", "respuesta de proveedor");
 
         actor.attemptsTo(DiligenciarProveedorGestion.conDatos(nombreProveedor, servicio));
+        long duration = System.currentTimeMillis() - startTime;
+        
+        if (perfMonitor != null) {
+            perfMonitor.captureFormSubmissionTime("GestionProveedor", duration);
+            perfMonitor.captureNetworkTiming("GestionProveedor");
+        }
+        System.out.println("[APP-PERF] Gestión Proveedor completada en " + duration + "ms");
     }
 
     private String required(Map<String, String> row, String key) {
@@ -188,7 +205,14 @@ public class CasesStepDefinitions {
 
     @When("transicionamos los estados del caso")
     public void transicionamosLosEstadosDelCaso() {
+        long startTime = System.currentTimeMillis();
         // Transiciona el caso a través de: Programado -> Aceptado y en desplazamiento -> Concluido -> Finalizado
         actor.attemptsTo(TransicionarEstadosCaso.completarSecuencia());
+        long duration = System.currentTimeMillis() - startTime;
+        
+        if (perfMonitor != null) {
+            perfMonitor.captureNetworkTiming("TransicionesEstados");
+        }
+        System.out.println("[APP-PERF] Transiciones de estados completadas en " + duration + "ms");
     }
 }

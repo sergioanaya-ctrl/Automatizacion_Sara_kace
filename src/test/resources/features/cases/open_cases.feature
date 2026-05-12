@@ -630,14 +630,14 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And transicionamos los estados del caso
 
   @batch46
-  Scenario: Test Usuario 46 - SANTANORTE DE SANTANDER - ARBOLEDAS - HOGARES - ASESORIA PSICOLOGICA
+  Scenario: Test Usuario 46 - NORTE DE SANTANDER - ARBOLEDAS - HOGARES - ASESORIA PSICOLOGICA
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                |
-      | SANTANORTE DE SANTANDER | ARBOLEDAS        | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
+      | NORTE DE SANTANDER | ARBOLEDAS        | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
