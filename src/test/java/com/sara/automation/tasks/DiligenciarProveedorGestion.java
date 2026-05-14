@@ -204,7 +204,7 @@ public class DiligenciarProveedorGestion implements Task {
                 // Esperar a que el tab se active después del clic
                 try {
                     new WebDriverWait(driver, Duration.ofSeconds(5)).until(
-                        ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@id, 'gestionDeProveedores')]"))
+                        ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@type='text']"))
                     );
                 } catch (Exception e) {
                     System.out.println("  [DiligenciarProveedorGestion] Timeout esperando tab activo: " + e.getMessage());
@@ -237,7 +237,7 @@ public class DiligenciarProveedorGestion implements Task {
                 // Esperar a que el tab se active después de ENTER
                 try {
                     new WebDriverWait(driver, Duration.ofSeconds(5)).until(
-                        ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@id, 'gestionDeProveedores')]"))
+                        ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@type='text']"))
                     );
                 } catch (Exception e) {
                     System.out.println("  [DiligenciarProveedorGestion] Timeout esperando tab activo tras ENTER: " + e.getMessage());
