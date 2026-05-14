@@ -108,11 +108,12 @@ public class TransicionarEstadosCaso implements Task {
         System.out.println("  [TransicionarEstadosCaso] Detectando próximo estado disponible...");
         try {
             driver.switchTo().defaultContent();
-            WebElement iframeElement = driver.findElement(By.id("form_onescript_iframe"));
-            driver.switchTo().frame(iframeElement);
-            
             org.openqa.selenium.support.ui.WebDriverWait wait = 
-                new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(8));
+                new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(20));
+
+            System.out.println("  [TransicionarEstadosCaso]   Esperando a que iframe OneScript esté disponible...");
+            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+            System.out.println("  [TransicionarEstadosCaso]   ✓ Iframe OneScript listo");
             
             // INTENTO 1: Esperar ACTIVAMENTE por botón "Aceptado y en desplazamiento"
             System.out.println("  [TransicionarEstadosCaso]   Esperando activamente por 'Aceptado y en desplazamiento'...");
@@ -179,9 +180,9 @@ public class TransicionarEstadosCaso implements Task {
     private void esperarRecargaPagina() {
         System.out.println("  [TransicionarEstadosCaso]   Esperando a que página recargue y nuevos estados estén disponibles...");
         try {
-            // OPTIMIZACIÓN: Reducido de 15s a 5s ya que los waits proactivos en detectarProximoEstado() 
-            // buscarán activamente los botones
-            Thread.sleep(5000);
+            // Ajustado a 8s porque la recarga completa del iframe puede tardar más
+            // y el siguiente estado suele habilitarse después de varios segundos.
+            Thread.sleep(8000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
