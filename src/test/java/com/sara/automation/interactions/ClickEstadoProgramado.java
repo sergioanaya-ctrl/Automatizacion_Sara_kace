@@ -55,7 +55,6 @@ public class ClickEstadoProgramado implements Interaction {
             
             // Scroll y visibilidad
             js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", estadoProgramado);
-            Thread.sleep(500);
             
             // Esperar clickeable
             estadoProgramado = wait.until(
@@ -83,7 +82,6 @@ public class ClickEstadoProgramado implements Interaction {
             );
             
             js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", guardarButton);
-            Thread.sleep(500);
             
             guardarButton = wait.until(
                 ExpectedConditions.elementToBeClickable(

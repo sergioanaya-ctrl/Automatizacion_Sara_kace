@@ -70,7 +70,6 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
             
             // Scroll y visibilidad
             js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", estadoAceptado);
-            Thread.sleep(500);
             
             // Esperar clickeable - reutilizar el elemento ya encontrado
             wait.until(ExpectedConditions.elementToBeClickable(estadoAceptado));
@@ -94,7 +93,6 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
             );
             
             js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", guardarButton);
-            Thread.sleep(500);
             
             guardarButton = wait.until(
                 ExpectedConditions.elementToBeClickable(
