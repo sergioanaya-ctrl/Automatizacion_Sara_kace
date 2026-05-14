@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
@@ -279,7 +280,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
                     List<WebElement> todosLosItems = driver.findElements(listItemsAll);
                     List<WebElement> itemsDisponibles = todosLosItems.stream()
                         .filter(WebElement::isDisplayed)
-                        .toList();
+                        .collect(Collectors.toList());
 
                     if (!itemsDisponibles.isEmpty()) {
                         String itemAlternativo = itemsDisponibles.get(0).getText().trim();
@@ -426,7 +427,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
                     List<WebElement> todosLosServicios = driver.findElements(listItemsAll);
                     List<WebElement> serviciosDisponibles = todosLosServicios.stream()
                         .filter(WebElement::isDisplayed)
-                        .toList();
+                        .collect(Collectors.toList());
 
                     if (!serviciosDisponibles.isEmpty()) {
                         String servicioAlternativo = serviciosDisponibles.get(0).getText().trim();
@@ -561,7 +562,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
                     List<WebElement> todosLosItems = driver.findElements(listItemsAll);
                     List<WebElement> itemsDisponibles = todosLosItems.stream()
                         .filter(WebElement::isDisplayed)
-                        .toList();
+                        .collect(Collectors.toList());
 
                     if (!itemsDisponibles.isEmpty()) {
                         String itemAlternativo = itemsDisponibles.get(0).getText().trim();
