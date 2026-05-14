@@ -16,7 +16,7 @@ import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 /**
  * Interaction para clickear el estado "Aceptado" dentro del iframe OneScript
- * Cierra Timer popup, busca botón con XPath simple, clickea y guarda
+ * Busca botón con XPath simple, clickea y guarda
  */
 public class ClickEstadoAceptadoDesplazamiento implements Interaction {
 
@@ -37,10 +37,6 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
             WebElement iframeElement = driver.findElement(By.id("form_onescript_iframe"));
             driver.switchTo().frame(iframeElement);
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓ Iframe OK");
-            
-            // PASO 1: Cerrar Timer
-            System.out.println("  [ClickEstadoAceptadoDesplazamiento] Paso 1: Cerrando popup Timer si existe...");
-            cerrarTimerPopup(driver, js);
             
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
             
@@ -147,40 +143,6 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
                 WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
                 driver.switchTo().defaultContent();
             } catch (Exception ignored) {}
-        }
-    }
-    
-    private void cerrarTimerPopup(WebDriver driver, JavascriptExecutor js) {
-        try {
-            try {
-                WebElement timerCancel = driver.findElement(
-                    By.xpath("//div[contains(@class, 'timer') or contains(@class, 'modal')]//button[contains(text(), 'Cancelar')]")
-                );
-                if (timerCancel.isDisplayed()) {
-                    System.out.println("  [ClickEstadoAceptadoDesplazamiento]   Popup Timer encontrado, cerrando...");
-                    js.executeScript("arguments[0].click();", timerCancel);
-                    Thread.sleep(800);
-                    System.out.println("  [ClickEstadoAceptadoDesplazamiento]   ✓ Timer cerrado");
-                    return;
-                }
-            } catch (Exception e) {
-                System.out.println("  [ClickEstadoAceptadoDesplazamiento]   Intento 1 falló, probando otra estrategia...");
-            }
-            
-            try {
-                WebElement anyCancel = driver.findElement(By.xpath("//button[contains(text(), 'Cancelar')]"));
-                if (anyCancel.isDisplayed()) {
-                    System.out.println("  [ClickEstadoAceptadoDesplazamiento]   Botón Cancelar encontrado, clickeando...");
-                    js.executeScript("arguments[0].click();", anyCancel);
-                    Thread.sleep(800);
-                    System.out.println("  [ClickEstadoAceptadoDesplazamiento]   ✓ Timer cerrado");
-                    return;
-                }
-            } catch (Exception e) {
-                System.out.println("  [ClickEstadoAceptadoDesplazamiento]   ✓ No hay Timer visible");
-            }
-        } catch (Exception e) {
-            System.out.println("  [ClickEstadoAceptadoDesplazamiento]   ✓ No se encontró Timer popup");
         }
     }
     
