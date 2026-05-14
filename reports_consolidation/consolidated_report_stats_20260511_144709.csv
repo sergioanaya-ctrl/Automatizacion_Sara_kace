@@ -1,7 +1,0 @@
-﻿"Test","Batch","Maquina","Usuario","Total Pasos","Pasos Lentos","Tiempo Total (min)","Estado","Error Type","Error Message"
-"Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS","@{name=batch7; type=tag; displayName=batch7}","SERGIO","Sergio","7","3","7,03","SUCCESS","",""
-"Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA","@{name=batch6; type=tag; displayName=batch6}","SERGIO","Sergio","7","3","8,08","SUCCESS","",""
-"Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA","@{name=batch1; type=tag; displayName=batch1}","SERGIO","Sergio","7","2","8,08","SUCCESS","",""
-"Test Usuario 03 - VALLE DEL CAUCA - CALI - AUTOS - MECANICA BASICA","@{name=batch3; type=tag; displayName=batch3}","SERGIO","Sergio","7","4","8,14","SUCCESS","",""
-"Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA","@{name=batch8; type=tag; displayName=batch8}","SERGIO","Sergio","7","4","8,09","SUCCESS","",""
-"Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA","@{name=batch5; type=tag; displayName=batch5}","SERGIO","Sergio","7","2","8,61","SUCCESS","",""

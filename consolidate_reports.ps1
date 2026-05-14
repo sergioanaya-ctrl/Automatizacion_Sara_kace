@@ -12,7 +12,8 @@
 param(
     [string]$inputFolder = ".\reports_consolidation",
     [string]$outputFolder = ".\reports_consolidation",
-    [string]$outputFileName = "consolidated_report"
+    [string]$outputFileName = "consolidated_report",
+    [switch]$NoWait = $false
 )
 
 $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
@@ -95,19 +96,27 @@ Write-Host ""
 # ============================================
 Write-Host "[INFO] Generando análisis consolidado..." -ForegroundColor Cyan
 
-# Obtener lista única de tests (agrupando por Test)
-$uniqueTests = $allSteps | Group-Object Test
+# Obtener lista única de tests (agrupando por Test + Máquina + Usuario para preservar todos los usuarios)
+# Esto crea una "ejecución" única por cada combinación test/máquina/usuario
+$uniqueTestExecutions = $allSteps | Group-Object { "$($_.Test)|||$($_.Maquina)|||$($_.Usuario)" }
 
 # Calcular estadísticas por test
-$testStats = $uniqueTests | ForEach-Object {
-    $testName = $_.Name
+$testStats = $uniqueTestExecutions | ForEach-Object {
+    $parts = $_.Name -split '\|\|\|'
+    $testName = $parts[0]
+    $maquina = $parts[1]
+    $usuario = $parts[2]
     $steps = $_.Group
     $batch = ($steps | Select-Object -First 1).Batch
-    $maquina = ($steps | Select-Object -First 1).Maquina
-    $usuario = ($steps | Select-Object -First 1).Usuario
-    $estado = ($steps | Select-Object -First 1).Estado
-    $errorType = ($steps | Select-Object -First 1)."Error Type"
-    $errorMsg = ($steps | Select-Object -First 1)."Error Message"
+    
+    # IMPORTANTE: El estado del test se determina por si hay ERRORES, no por el campo Estado (que siempre está vacío)
+    $tieneError = ($steps | Where-Object { $_."Error Type" -eq "ERROR" }).Count -gt 0
+    $estado = if ($tieneError) { "FAILED" } else { "PASSED" }
+    
+    # Para error type y message, tomar del primer error si existe
+    $primerError = $steps | Where-Object { $_."Error Type" -eq "ERROR" } | Select-Object -First 1
+    $errorType = if ($primerError) { $primerError."Error Type" } else { "" }
+    $errorMsg = if ($primerError) { $primerError."Error Message" } else { "" }
     
     $totalPasos = $steps.Count
     $pasosLentos = ($steps | Where-Object { $_."Tiempo (ms)" -gt 5000 }).Count
@@ -131,16 +140,21 @@ $testStats = $uniqueTests | ForEach-Object {
 # Pasos lentos (>5s)
 $slowSteps = $allSteps | Where-Object { $_."Tiempo (ms)" -gt 5000 } | Sort-Object { [int]$_."Tiempo (ms)" } -Descending
 
-# Tests fallidos
-$failedTests = $testStats | Where-Object { $_.Estado -eq "FAILED" }
-
 # Resumen General Consolidado
 $totalTests = $testStats.Count
 $totalPassed = ($testStats | Where-Object { $_.Estado -eq "PASSED" }).Count
 $totalFailed = ($testStats | Where-Object { $_.Estado -eq "FAILED" }).Count
 $totalSteps = $allSteps.Count
 $totalSlowSteps = $slowSteps.Count
-$uniqueMachines = ($allSteps | Select-Object -Unique Maquina).Count
+
+# Contar máquinas únicas del CSV original (no de testStats)
+$uniqueMachines = @($allSteps | Select-Object -Unique Maquina | Where-Object { $_.Maquina -and $_.Maquina.Trim() -ne "" }).Count
+if ($uniqueMachines -eq 0) {
+    $uniqueMachines = ($allSteps | Select-Object -Unique Maquina).Count
+}
+
+# Tests fallidos
+$failedTests = $testStats | Where-Object { $_.Estado -eq "FAILED" }
 
 $resumenGeneral = @()
 $resumenGeneral += [PSCustomObject]@{ "Metrica" = "Fecha Consolidación"; "Valor" = (Get-Date -Format "dd/MM/yyyy HH:mm:ss") }
@@ -154,7 +168,7 @@ $resumenGeneral += [PSCustomObject]@{ "Metrica" = "Total Pasos Ejecutados"; "Val
 $resumenGeneral += [PSCustomObject]@{ "Metrica" = "Total Pasos Lentos (>5s)"; "Valor" = $totalSlowSteps }
 
 # Estadísticas por Máquina
-$statsByMachine = $testStats | Group-Object Maquina | ForEach-Object {
+$statsByMachine = $testStats | Where-Object { $_.Maquina -and $_.Maquina.Trim() -ne "" } | Group-Object Maquina | ForEach-Object {
     $machine = $_.Name
     $tests = $_.Group
     $passed = ($tests | Where-Object { $_.Estado -eq "PASSED" }).Count
@@ -169,6 +183,27 @@ $statsByMachine = $testStats | Group-Object Maquina | ForEach-Object {
         "Tests Fallidos" = $failed
         "Tasa Éxito %" = if($tests.Count -gt 0) { [math]::Round(($passed / $tests.Count) * 100, 2) } else { 0 }
         "Tiempo Promedio (min)" = [math]::Round($avgTime, 2)
+    }
+} | Sort-Object "Tests Fallidos" -Descending
+
+# Estadísticas por Usuario
+$statsByUser = $testStats | Where-Object { $_.Usuario -and $_.Usuario.Trim() -ne "" } | Group-Object Usuario | ForEach-Object {
+    $usuario = $_.Name
+    $tests = $_.Group
+    $passed = ($tests | Where-Object { $_.Estado -eq "PASSED" }).Count
+    $failed = ($tests | Where-Object { $_.Estado -eq "FAILED" }).Count
+    $avgTime = ($tests | Measure-Object -Property "Tiempo Total (min)" -Average).Average
+    $maquinas = ($tests | Select-Object -Unique Maquina).Count
+    
+    [PSCustomObject]@{
+        "Usuario" = $usuario
+        "Total Tests" = $tests.Count
+        "Tests Exitosos" = $passed
+        "Tests Fallidos" = $failed
+        "Tasa Exito %" = if($tests.Count -gt 0) { [math]::Round(($passed / $tests.Count) * 100, 2) } else { 0 }
+        "Tiempo Promedio (min)" = [math]::Round($avgTime, 2)
+        "Maquinas Usadas" = $maquinas
+        "Pasos Lentos" = ($tests | Measure-Object -Property "Pasos Lentos" -Sum).Sum
     }
 } | Sort-Object "Tests Fallidos" -Descending
 
@@ -220,66 +255,106 @@ $csvMachinePath = "$outputFolder\${outputFileName}_by_machine_$timestamp.csv"
 $statsByMachine | Export-Csv -Path $csvMachinePath -NoTypeInformation -Encoding UTF8
 Write-Host "  - CSV Máquinas generado: $csvMachinePath" -ForegroundColor Green
 
+# 4. CSV de Estadísticas por Usuario
+$csvUserPath = "$outputFolder\${outputFileName}_by_user_$timestamp.csv"
+$statsByUser | Export-Csv -Path $csvUserPath -NoTypeInformation -Encoding UTF8
+Write-Host "  - CSV Usuarios generado: $csvUserPath" -ForegroundColor Green
+
 # 4. Intentar generar Excel (si ImportExcel está disponible)
 $excelGenerated = $false
-if (Get-Module -ListAvailable -Name ImportExcel) {
-    try {
-        Import-Module ImportExcel -ErrorAction SilentlyContinue
-        
-        $excelPath = "$outputFolder\${outputFileName}_$timestamp.xlsx"
-        
-        # Hoja 1: Resumen General
-        $resumenGeneral | Export-Excel -Path $excelPath -WorksheetName "Resumen General" -AutoSize -TableStyle "Medium2"
-        
-        # Hoja 2: Estadísticas por Máquina
-        if ($statsByMachine.Count -gt 0) {
-            $statsByMachine | Export-Excel -Path $excelPath -WorksheetName "Por Máquina" -AutoSize -TableStyle "Medium2" -Append
-        }
-        
-        # Hoja 3: Estadísticas por Test
-        if ($testStats.Count -gt 0) {
-            $testStats | Export-Excel -Path $excelPath -WorksheetName "Estadísticas por Test" -AutoSize -TableStyle "Light1" -Append
-        }
-        
-        # Hoja 4: Todos los Pasos Consolidados (muestra limitada si son muchos)
-        if ($allSteps.Count -gt 0) {
-            if ($allSteps.Count -le 100000) {
-                $allSteps | Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos" -AutoSize -TableStyle "Light1" -Append
-            } else {
-                # Si son más de 100k pasos, solo exportar primeros 100k
-                $allSteps | Select-Object -First 100000 | Export-Excel -Path $excelPath -WorksheetName "Todos los Pasos (100k)" -AutoSize -TableStyle "Light1" -Append
-                Write-Host "    NOTA: Solo se exportaron los primeros 100,000 pasos al Excel" -ForegroundColor Yellow
-            }
-        }
-        
-        # Hoja 5: Pasos Lentos Consolidados
-        if ($slowSteps.Count -gt 0) {
-            $slowSteps | Select-Object -First 10000 | Export-Excel -Path $excelPath -WorksheetName "Pasos Lentos" -AutoSize -TableStyle "Light1" -Append
-        }
-        
-        # Hoja 6: Tests Fallidos
-        if ($failedTests.Count -gt 0) {
-            $failedTests | Export-Excel -Path $excelPath -WorksheetName "Tests Fallidos" -AutoSize -TableStyle "Light1" -Append
-        }
-        
-        # Hoja 7: Distribución de Errores
-        if ($errorDistribution -and $errorDistribution.Count -gt 0) {
-            $errorDistribution | Export-Excel -Path $excelPath -WorksheetName "Distribución Errores" -AutoSize -TableStyle "Medium2" -Append
-        }
-        
-        # Hoja 8: Estadísticas por Batch
-        if ($statsByBatch.Count -gt 0) {
-            $statsByBatch | Export-Excel -Path $excelPath -WorksheetName "Por Batch" -AutoSize -TableStyle "Medium2" -Append
-        }
-        
-        Write-Host "  - Excel generado: $excelPath" -ForegroundColor Green
-        $excelGenerated = $true
-        
-    } catch {
-        Write-Host "  - Excel NO generado (error ImportExcel): $_" -ForegroundColor Yellow
+Write-Host "[INFO] Intentando generar Excel..." -ForegroundColor Cyan
+
+try {
+    # Intentar cargar ImportExcel sin verificaciones previas
+    Import-Module ImportExcel -WarningAction SilentlyContinue -ErrorAction Stop
+    
+    $excelPath = "$outputFolder\${outputFileName}_$timestamp.xlsx"
+    Write-Host "  Generando: $excelPath" -ForegroundColor White
+    
+    # Hoja 1: Resumen General
+    $resumenGeneral | Export-Excel -Path $excelPath -WorksheetName "Resumen General" -AutoSize -TableStyle "Medium2"
+    Write-Host "  OK Hoja 1: Resumen General" -ForegroundColor Green
+    
+    # Hoja 2: Estadísticas por Usuario
+    if ($statsByUser.Count -gt 0) {
+        $statsByUser | Export-Excel -Path $excelPath -WorksheetName "Por Usuario" -AutoSize -TableStyle "Medium2" -Append
+        Write-Host "  OK Hoja 2: Por Usuario ($($statsByUser.Count) usuarios)" -ForegroundColor Green
     }
-} else {
-    Write-Host "  - Excel NO generado (ImportExcel no instalado)" -ForegroundColor Yellow
+    
+    # Hoja 3: Estadísticas por Máquina
+    if ($statsByMachine.Count -gt 0) {
+        $statsByMachine | Export-Excel -Path $excelPath -WorksheetName "Por Maquina" -AutoSize -TableStyle "Medium2" -Append
+        Write-Host "  OK Hoja 3: Por Maquina" -ForegroundColor Green
+    }
+    
+    # Hoja 4: Estadísticas por Test
+    if ($testStats.Count -gt 0) {
+        $testStats | Export-Excel -Path $excelPath -WorksheetName "Estadisticas por Test" -AutoSize -TableStyle "Light1" -Append
+        Write-Host "  OK Hoja 4: Estadisticas por Test" -ForegroundColor Green
+    }
+    
+    # Hoja 5: Detalles de Pasos Completos (paso a paso con elemento, valor, acción)
+    if ($allSteps.Count -gt 0) {
+        $pasosParaMostrar = $allSteps | Select-Object Test, Batch, Maquina, Usuario, Descripcion, Elemento, Valor, Accion, Nivel, "Tiempo (ms)", "Error Type", "Error Message" | Select-Object -First 5000
+        $pasosParaMostrar | Export-Excel -Path $excelPath -WorksheetName "Detalles Paso a Paso" -AutoSize -TableStyle "Light1" -Append
+        Write-Host "  OK Hoja 5: Detalles Paso a Paso (primeros 5000 de $($allSteps.Count))" -ForegroundColor Green
+    }
+    
+    # Hoja 6: Tests Fallidos con Errores
+    if ($failedTests.Count -gt 0) {
+        $failedTestsDetailed = $failedTests | Select-Object Test, Batch, Maquina, Usuario, "Total Pasos", "Pasos Lentos", "Tiempo Total (min)", "Error Type", "Error Message"
+        $failedTestsDetailed | Export-Excel -Path $excelPath -WorksheetName "Tests Fallidos + Errores" -AutoSize -TableStyle "Light1" -Append
+        Write-Host "  OK Hoja 6: Tests Fallidos + Errores ($($failedTests.Count))" -ForegroundColor Green
+    }
+    
+    # Hoja 7: Análisis de Errores Comunes
+    $erroresComunes = @()
+    if ($allSteps.Count -gt 0) {
+        $stepsConError = $allSteps | Where-Object { $_."Error Type" -and $_."Error Type".Trim() -ne "" }
+        
+        if ($stepsConError.Count -gt 0) {
+            # Extraer tipo de error
+            $tiposError = $stepsConError | Group-Object "Error Type" | ForEach-Object {
+                $errorType = $_.Name
+                # Obtener primer mensaje de error como ejemplo
+                $primerMensaje = ($_.Group | Select-Object -First 1 -ExpandProperty "Error Message")
+                $resumenError = if ($primerMensaje) { 
+                    $primerMensaje.Split([Environment]::NewLine)[0].Substring(0, [Math]::Min(100, $primerMensaje.Length)) 
+                } else { 
+                    "Sin detalle" 
+                }
+                
+                [PSCustomObject]@{
+                    "Tipo Error" = $errorType
+                    "Cantidad" = $_.Count
+                    "Porcentaje %" = [math]::Round(($_.Count / $stepsConError.Count) * 100, 2)
+                    "Ejemplo Mensaje" = $resumenError
+                }
+            } | Sort-Object Cantidad -Descending | Select-Object -First 30
+            
+            $erroresComunes = @($tiposError)
+        }
+    }
+    
+    if ($erroresComunes.Count -gt 0) {
+        $erroresComunes | Export-Excel -Path $excelPath -WorksheetName "Errores Comunes" -AutoSize -TableStyle "Light1" -Append
+        Write-Host "  OK Hoja 7: Errores Comunes (Top $($erroresComunes.Count))" -ForegroundColor Green
+    }
+    
+    # Hoja 8: Pasos Lentos (solo top 1000)
+    if ($slowSteps.Count -gt 0) {
+        $slowSteps | Select-Object -First 1000 | Export-Excel -Path $excelPath -WorksheetName "Pasos Lentos (Top 1k)" -AutoSize -TableStyle "Light1" -Append
+        Write-Host "  OK Hoja 8: Pasos Lentos (primeros 1000 de $($slowSteps.Count))" -ForegroundColor Green
+    }
+    
+    $excelFileInfo = Get-Item $excelPath
+    $excelSizeMB = [math]::Round($excelFileInfo.Length / 1MB, 2)
+    Write-Host "  - Excel generado: $excelPath" -ForegroundColor Green
+    Write-Host "    Tamano: $excelSizeMB MB" -ForegroundColor Green
+    $excelGenerated = $true
+    
+} catch {
+    Write-Host "  - Excel NO generado: $_" -ForegroundColor Yellow
 }
 
 Write-Host ""
@@ -291,6 +366,7 @@ Write-Host "ARCHIVOS GENERADOS:" -ForegroundColor Yellow
 Write-Host "  - $csvConsolidatedPath" -ForegroundColor Cyan
 Write-Host "  - $csvStatsPath" -ForegroundColor Cyan
 Write-Host "  - $csvMachinePath" -ForegroundColor Cyan
+Write-Host "  - $csvUserPath" -ForegroundColor Cyan
 if ($excelGenerated) {
     Write-Host "  - $excelPath" -ForegroundColor Cyan
 }
@@ -316,6 +392,121 @@ foreach ($item in $statsByMachine) {
     Write-Host ("  - " + $maq + ": " + $tot + " tests (" + $ok + " OK, " + $fail + " FAIL)") -ForegroundColor $colorMaq
 }
 Write-Host ""
-Write-Host "Presiona cualquier tecla para continuar..." -ForegroundColor Gray
-$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+Write-Host "ESTADISTICAS POR USUARIO:" -ForegroundColor Yellow
+foreach ($item in $statsByUser | Select-Object -First 15) {
+    $usr = $item.Usuario
+    $tot = $item."Total Tests"
+    $ok = $item."Tests Exitosos"
+    $fail = $item."Tests Fallidos"
+    $tasa = $item."Tasa Exito %"
+    $colorUsr = if($fail -eq 0) { "Green" } elseif($tasa -ge 50) { "Yellow" } else { "Red" }
+    Write-Host ("  - " + $usr + ": " + $tot + " tests (" + $ok + " OK, " + $fail + " FAIL) - $tasa%") -ForegroundColor $colorUsr
+}
+if ($statsByUser.Count -gt 15) {
+    Write-Host ("  ... y " + ($statsByUser.Count - 15) + " usuarios mas") -ForegroundColor Gray
+}
+Write-Host ""
+Write-Host "============================================" -ForegroundColor Magenta
+Write-Host "  METRICAS AVANZADAS DEL CONSOLIDADO" -ForegroundColor Magenta
+Write-Host "============================================" -ForegroundColor Magenta
+Write-Host ""
+
+# Analizar tests fallidos por tipo de error
+if ($testStats -and $testStats.Count -gt 0) {
+    Write-Host "TESTS FALLIDOS POR TIPO DE ERROR:" -ForegroundColor Yellow
+    
+    $failedTestsAnalysis = $testStats | Where-Object { $_.Estado -eq "FAILED" } | Group-Object "Error Type" | Sort-Object Count -Descending
+    
+    foreach ($errorGroup in $failedTestsAnalysis) {
+        $errorName = if ([string]::IsNullOrWhiteSpace($errorGroup.Name)) { "(Sin especificar)" } else { $errorGroup.Name }
+        $pct = [math]::Round(($errorGroup.Count / ($testStats | Where-Object { $_.Estado -eq "FAILED" }).Count) * 100, 2)
+        Write-Host "  - $errorName`: $($errorGroup.Count) tests ($pct%)" -ForegroundColor Red
+    }
+    Write-Host ""
+}
+
+# Analizar pasos lentos por descripcion
+if ($allSteps -and $allSteps.Count -gt 0) {
+    Write-Host "TOP 5 PASOS MAS LENTOS (Bottlenecks):" -ForegroundColor Yellow
+    
+    $slowStepsByDesc = $allSteps | 
+        Where-Object { [int]$_."Tiempo (ms)" -gt 5000 } | 
+        Group-Object "Descripcion" | 
+        ForEach-Object {
+            $tiempos = @($_.Group | ForEach-Object { [int]$_."Tiempo (ms)" })
+            [PSCustomObject]@{
+                Descripcion = $_.Name
+                Promedio = [math]::Round(($tiempos | Measure-Object -Average).Average, 0)
+                Maximo = ($tiempos | Measure-Object -Maximum).Maximum
+                Veces = $_.Count
+            }
+        } | 
+        Sort-Object Promedio -Descending | 
+        Select-Object -First 5
+    
+    foreach ($step in $slowStepsByDesc) {
+        $desc = if ($step.Descripcion.Length -gt 50) { $step.Descripcion.Substring(0, 50) + "..." } else { $step.Descripcion }
+        Write-Host "  - $desc" -ForegroundColor Yellow
+        Write-Host "    Promedio: $($step.Promedio)ms, Max: $($step.Maximo)ms, Veces: $($step.Veces)" -ForegroundColor Gray
+    }
+    Write-Host ""
+}
+
+# Analizar distribucion de errores en pasos
+if ($allSteps -and $allSteps.Count -gt 0) {
+    Write-Host "DISTRIBUCION DE PASOS POR ESTADO:" -ForegroundColor Yellow
+    
+    $errorDistribution = $allSteps | Group-Object "Error Type" | Sort-Object Count -Descending
+    
+    foreach ($dist in $errorDistribution) {
+        $pct = [math]::Round(($dist.Count / $allSteps.Count) * 100, 2)
+        $color = if ($dist.Name -eq "ERROR") { "Red" } elseif ($dist.Name -eq "SKIPPED") { "Yellow" } else { "Green" }
+        Write-Host "  - $($dist.Name): $($dist.Count) pasos ($pct%)" -ForegroundColor $color
+    }
+    Write-Host ""
+}
+
+# Analizar rendimiento relativo de maquinas
+if ($statsByMachine -and $statsByMachine.Count -gt 1) {
+    Write-Host "RANKING DE CONFIABILIDAD POR MAQUINA:" -ForegroundColor Yellow
+    
+    $machineRanking = $statsByMachine | Sort-Object "Tasa Exito %" -Descending | Select-Object -First 5
+    
+    $rank = 1
+    foreach ($maq in $machineRanking) {
+        $estado = if ($maq."Tasa Exito %" -ge 75) { "[OK]" } elseif ($maq."Tasa Exito %" -ge 50) { "[?]" } else { "[X]" }
+        $color = if ($maq."Tasa Exito %" -ge 75) { "Green" } elseif ($maq."Tasa Exito %" -ge 50) { "Yellow" } else { "Red" }
+        Write-Host "  $rank. $($maq.Maquina): $($maq.'Tasa Exito %')% $estado" -ForegroundColor $color
+        $rank++
+    }
+    Write-Host ""
+}
+
+# Diagnostico: Es problema de test o herramienta?
+Write-Host "DIAGNOSTICO:" -ForegroundColor Magenta
+if ($totalFailed -gt 0) {
+    $errorTestsPct = if ($totalTests -gt 0) { [math]::Round(($totalFailed / $totalTests) * 100, 2) } else { 0 }
+    
+    if ($errorTestsPct -gt 80) {
+        Write-Host ("  ALERTA: Tasa fallo MUY alta (" + $errorTestsPct + "%)") -ForegroundColor Red
+        Write-Host "  - Posible: Tests mal diseñados O infraestructura inestable" -ForegroundColor Yellow
+    } elseif ($errorTestsPct -gt 50) {
+        Write-Host ("  ALERTA: Tasa fallo significativa (" + $errorTestsPct + "%)") -ForegroundColor Red
+        Write-Host "  - Revisar pasos lentos (bottlenecks)" -ForegroundColor Yellow
+        Write-Host "  - Validar timeouts en configuracion" -ForegroundColor Yellow
+    } else {
+        Write-Host ("  Nivel de fallo moderado (" + $errorTestsPct + "%)") -ForegroundColor Yellow
+        Write-Host "  - Enfocarse en los tests fallidos criticos" -ForegroundColor White
+    }
+} else {
+    Write-Host "  EXCELENTE: Todos los tests pasaron!" -ForegroundColor Green
+}
+
+Write-Host ""
+if (-not $NoWait) {
+    Write-Host "Presiona cualquier tecla para continuar..." -ForegroundColor Gray
+    $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+} else {
+    Write-Host "Script ejecutado en modo automatico (sin pausas)" -ForegroundColor Green
+}
 

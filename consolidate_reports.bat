@@ -1,29 +1,28 @@
 @echo off
 :: ============================================
-:: CONSOLIDADOR DE REPORTES CSV
+:: CONSOLIDADOR DE REPORTES XLSX - AUTOMATICO
 :: ============================================
-:: Este script consolida reportes CSV de múltiples máquinas
+:: Este script consolida reportes XLSX de múltiples máquinas
 :: en un solo reporte unificado
 ::
 :: USO:
-:: 1. Copia los archivos step_details_*.csv de cada máquina
+:: 1. Copia los archivos step_details_*.xlsx de cada máquina
 ::    a la carpeta: .\reports_consolidation\
 :: 2. Ejecuta este archivo .bat
-:: 3. Los reportes consolidados se generarán en la misma carpeta
+:: 3. Los reportes se generarán AUTOMATICAMENTE
+
+setlocal enabledelayedexpansion
 
 echo.
 echo ================================================
-echo   CONSOLIDADOR DE REPORTES - MULTIPLES MAQUINAS
+echo   CONSOLIDADOR DE REPORTES XLSX - MULTIPLES MAQUINAS
 echo ================================================
 echo.
-echo Este script consolidara todos los archivos CSV
-echo de la carpeta: reports_consolidation\
+echo Procesando archivos XLSX...
 echo.
-echo Presiona cualquier tecla para continuar...
-pause >nul
 
-:: Ejecutar el script PowerShell de consolidación
-powershell -ExecutionPolicy Bypass -File "consolidate_reports.ps1"
+:: Ejecutar el script PowerShell de consolidación (sin pausa)
+powershell -ExecutionPolicy Bypass -NoProfile -File "consolidate_reports_xlsx.ps1" -NoWait
 
 echo.
 echo ================================================
@@ -37,6 +36,28 @@ echo Archivos generados:
 echo   - consolidated_report_*.csv (Todos los pasos)
 echo   - consolidated_report_stats_*.csv (Estadisticas por test)
 echo   - consolidated_report_by_machine_*.csv (Por maquina)
-echo   - consolidated_report_*.xlsx (Excel con 8 hojas, si disponible)
+echo   - consolidated_report_by_user_*.csv (Por usuario)
+echo   - consolidated_report_*.xlsx (Excel - 8 hojas)
 echo.
-pause
+
+:: Buscar el archivo Excel mas reciente
+setlocal enabledelayedexpansion
+set LATEST_EXCEL=
+for /f "tokens=*" %%F in ('powershell -Command "Get-ChildItem reports_consolidation\consolidated_report_*.xlsx -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName"') do (
+    set LATEST_EXCEL=%%F
+)
+
+if defined LATEST_EXCEL (
+    echo.
+    echo Abriendo archivo Excel: !LATEST_EXCEL!
+    echo.
+    start "" "!LATEST_EXCEL!"
+    timeout /t 2 >nul
+) else (
+    echo.
+    echo NOTA: No se genero archivo Excel
+    echo.
+)
+
+echo Presiona cualquier tecla para salir...
+pause >nul
