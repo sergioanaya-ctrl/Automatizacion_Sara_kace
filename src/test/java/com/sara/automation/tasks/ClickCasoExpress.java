@@ -174,10 +174,13 @@ public class ClickCasoExpress implements Task {
             );
             System.out.println("  Boton encontrado! Texto: '" + button.getText() + "'");
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
-            Thread.sleep(300);
+            // No esperar después de scrollIntoView - dejar que WebDriverWait del siguiente intento verifique disponibilidad
             button.click();
             System.out.println("  Clic en boton Habilitar exitoso (CSS)");
-            Thread.sleep(2000);
+            // Esperar a que el formulario esté listo (verificar que algún campo esté disponible)
+            new WebDriverWait(driver, Duration.ofSeconds(10)).until(
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector("[data-type='textfield'], input[type='text'], textarea"))
+            );
             return;
         } catch (Exception e1) {
             System.err.println("  CSS click FALLO: " + e1.getMessage());
@@ -193,10 +196,12 @@ public class ClickCasoExpress implements Task {
             );
             System.out.println("  Boton encontrado por texto! Texto: '" + button.getText() + "'");
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
-            Thread.sleep(300);
             button.click();
             System.out.println("  Clic en boton Habilitar exitoso (XPath texto)");
-            Thread.sleep(2000);
+            // Esperar a que el formulario esté listo
+            new WebDriverWait(driver, Duration.ofSeconds(10)).until(
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector("[data-type='textfield'], input[type='text'], textarea"))
+            );
             return;
         } catch (Exception e2) {
             System.err.println("  XPath texto FALLO: " + e2.getMessage());
@@ -212,10 +217,12 @@ public class ClickCasoExpress implements Task {
             );
             System.out.println("  Boton encontrado por clase formio! Texto: '" + button.getText() + "'");
             ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
-            Thread.sleep(300);
             button.click();
             System.out.println("  Clic en boton Habilitar exitoso (clase formio)");
-            Thread.sleep(2000);
+            // Esperar a que el formulario esté listo
+            new WebDriverWait(driver, Duration.ofSeconds(10)).until(
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector("[data-type='textfield'], input[type='text'], textarea"))
+            );
             return;
         } catch (Exception e3) {
             System.err.println("  Clase formio FALLO: " + e3.getMessage());
@@ -238,7 +245,10 @@ public class ClickCasoExpress implements Task {
             );
             System.out.println("  JavaScript resultado: " + result);
             if (result != null && result.toString().startsWith("clicked")) {
-                Thread.sleep(2000);
+                // Esperar a que el formulario esté listo después del click
+                new WebDriverWait(driver, Duration.ofSeconds(10)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.cssSelector("[data-type='textfield'], input[type='text'], textarea"))
+                );
                 return;
             }
             throw new RuntimeException("JavaScript no encontro el boton: " + result);

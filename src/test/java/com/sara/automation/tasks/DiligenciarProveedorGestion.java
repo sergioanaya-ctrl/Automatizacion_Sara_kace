@@ -64,14 +64,16 @@ public class DiligenciarProveedorGestion implements Task {
 
         // Esperar a que la página se recargue completamente después de guardar
         // La página hace reload y vuelve a mostrar los elementos del formulario
+        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            new WebDriverWait(driver, Duration.ofSeconds(5)).until(
+                ExpectedConditions.presenceOfElementLocated(By.id("form_onescript_iframe"))
+            );
+        } catch (Exception e) {
+            System.out.println("  Timeout esperando iframe después de guardar: " + e.getMessage());
         }
 
         // Primero, cerrar el timer overlay si está visible para no bloquear los elementos
-        WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
         try {
             // Buscar el botón de cerrar del timer (×) con múltiples selectores alternativos
             By[] timerCloseSelectors = {
@@ -134,12 +136,18 @@ public class DiligenciarProveedorGestion implements Task {
             WebElement body = driver.findElement(By.tagName("body"));
             for (int i = 0; i < 10; i++) {
                 body.sendKeys(Keys.TAB);
-                Thread.sleep(200);
                 if ((i + 1) % 5 == 0) {
                     System.out.println("  [DiligenciarProveedorGestion] TAB " + (i + 1) + "/10");
                 }
             }
-            Thread.sleep(800);
+            // Esperar a que el campo esté enfocado después de TABs
+            try {
+                new WebDriverWait(driver, Duration.ofSeconds(3)).until(
+                    ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@type='text']"))
+                );
+            } catch (Exception e) {
+                System.out.println("  [DiligenciarProveedorGestion] Timeout esperando campo tras TABs: " + e.getMessage());
+            }
             System.out.println("  [DiligenciarProveedorGestion] 10 TABs completados, campo ahora visible");
         } catch (Exception e) {
             System.out.println("  [DiligenciarProveedorGestion] Error en navegación TAB (continuando): " + e.getMessage());
@@ -152,13 +160,13 @@ public class DiligenciarProveedorGestion implements Task {
             System.out.println("  [DiligenciarProveedorGestion] Paso 2: Haciendo scroll hacia área de tabs...");
             // Scroll hacia el contenedor de tabs
             js.executeScript("window.scrollTo(0, 300);");
-            Thread.sleep(800);
             
             // Intentar hacer scroll específico al contenedor de tabs si está disponible
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
             WebElement tabContainer = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//ul[@role='tablist']")));
             js.executeScript("arguments[0].scrollIntoView({block: 'start', inline: 'nearest'});", tabContainer);
-            Thread.sleep(800);
+            // Esperar a que el tab esté visible después del scroll
+            wait.until(ExpectedConditions.visibilityOf(tabContainer));
             System.out.println("  [DiligenciarProveedorGestion] Scroll completado, área de tabs optimizada");
         } catch (Exception e) {
             System.out.println("  [DiligenciarProveedorGestion] Error en scroll (continuando): " + e.getMessage());
@@ -193,7 +201,14 @@ public class DiligenciarProveedorGestion implements Task {
                     js.executeScript("arguments[0].click();", providerTab);
                     System.out.println("  [DiligenciarProveedorGestion] JS click ejecutado");
                 }
-                Thread.sleep(2000);
+                // Esperar a que el tab se active después del clic
+                try {
+                    new WebDriverWait(driver, Duration.ofSeconds(5)).until(
+                        ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@id, 'gestionDeProveedores')]"))
+                    );
+                } catch (Exception e) {
+                    System.out.println("  [DiligenciarProveedorGestion] Timeout esperando tab activo: " + e.getMessage());
+                }
                 tabEncontrado = true;
                 System.out.println("  [DiligenciarProveedorGestion] ✓ Tab de Gestión de Proveedores activado con clic directo");
             }
@@ -214,13 +229,19 @@ public class DiligenciarProveedorGestion implements Task {
                 WebElement body = driver.findElement(By.tagName("body"));
                 for (int i = 0; i < 6; i++) {
                     body.sendKeys(Keys.TAB);
-                    Thread.sleep(200);
                 }
                 System.out.println("  [DiligenciarProveedorGestion] TABs completados (10+6=16)");
                 
                 // Presionar Enter para activar el tab
                 body.sendKeys(Keys.ENTER);
-                Thread.sleep(2000);
+                // Esperar a que el tab se active después de ENTER
+                try {
+                    new WebDriverWait(driver, Duration.ofSeconds(5)).until(
+                        ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(@id, 'gestionDeProveedores')]"))
+                    );
+                } catch (Exception e) {
+                    System.out.println("  [DiligenciarProveedorGestion] Timeout esperando tab activo tras ENTER: " + e.getMessage());
+                }
                 
                 tabEncontrado = true;
                 System.out.println("  [DiligenciarProveedorGestion] ✓ Navegación por teclado (16 TABs totales) completada");

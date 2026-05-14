@@ -12,6 +12,12 @@ import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.waits.WaitUntil;
 import net.thucydides.core.annotations.Step;
 import org.hamcrest.Matchers;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import java.time.Duration;
 
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
@@ -57,39 +63,28 @@ public class LoginWithCognito implements Task {
     }
 
     private void esperarEnAgentPage(Actor actor) {
-        long startTime = System.currentTimeMillis();
-        long timeout = 8000; // 8 segundos
-
-        while (System.currentTimeMillis() - startTime < timeout) {
-            try {
-                String currentUrl = BrowseTheWeb.as(actor).getDriver().getCurrentUrl();
-                if (currentUrl.contains("/agent")) {
-                    return;
-                }
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+        // Esperar a que la URL contenga "/agent" usando WebDriverWait dinámico
+        WebDriver driver = BrowseTheWeb.as(actor).getDriver();
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(8)).until(
+                d -> d.getCurrentUrl().contains("/agent")
+            );
+            return;
+        } catch (TimeoutException e) {
+            System.out.println("  No se llegó automáticamente a /agent en 8 segundos, forzando navegación...");
         }
 
         // Si no llegó automáticamente a /agent, fuerza la navegación a la URL de Agent.
         actor.attemptsTo(Open.url(AgentPage.URL));
 
-        long retryStart = System.currentTimeMillis();
-        long retryTimeout = 20000; // 20 segundos
-        while (System.currentTimeMillis() - retryStart < retryTimeout) {
-            try {
-                String currentUrl = BrowseTheWeb.as(actor).getDriver().getCurrentUrl();
-                if (currentUrl.contains("/agent")) {
-                    return;
-                }
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+        // Esperar nuevamente a que la URL contenga "/agent"
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(20)).until(
+                d -> d.getCurrentUrl().contains("/agent")
+            );
+            return;
+        } catch (TimeoutException e) {
+            throw new AssertionError("Timeout esperando a llegar a AgentPage. URL actual: " + driver.getCurrentUrl());
         }
-
-        throw new AssertionError("Timeout esperando a llegar a AgentPage. URL actual: " + 
-                BrowseTheWeb.as(actor).getDriver().getCurrentUrl());
     }
 }
