@@ -69,7 +69,14 @@ public class ClickEstadoConcluido implements Interaction {
             System.out.println("  [ClickEstadoConcluido] Paso 3: Clickeando 'Concluido'...");
             ejecutarClickConReintentos(js, estado, "Concluido");
             
-            Thread.sleep(500);
+            // OPTIMIZACIÓN: Esperar proactivamente a que botón Guardar esté disponible
+            System.out.println("  [ClickEstadoConcluido] Esperando a que botón Guardar esté disponible...");
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kaceCustomSubmit")));
+                System.out.println("  [ClickEstadoConcluido] ✓ Botón Guardar detectado, lista para guardado");
+            } catch (Exception e) {
+                System.out.println("  [ClickEstadoConcluido] ⚠ Botón Guardar no inmediato, procediendo...");
+            }
             System.out.println("  [ClickEstadoConcluido] ✓ 'Concluido' seleccionado");
             
             // PASO 4: Buscar y clickear botón de guardado
@@ -95,7 +102,23 @@ public class ClickEstadoConcluido implements Interaction {
             System.out.println("  [ClickEstadoConcluido] Paso 5: Clickeando guardado...");
             ejecutarClickConReintentos(js, guardarButton, "Guardado");
             
-            Thread.sleep(500);
+            // OPTIMIZACIÓN: Esperar a que formulario se recargue (stale element o new form)
+            try {
+                wait.until(ExpectedConditions.stalenessOf(guardarButton));
+                System.out.println("  [ClickEstadoConcluido] ✓ Página recargada después de guardar");
+                
+                // OPTIMIZACIÓN: Detectar que el estado 'Concluido' desapareció (cambio exitoso)
+                System.out.println("  [ClickEstadoConcluido] Detectando si estado cambió exitosamente...");
+                try {
+                    wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                        By.xpath("//button[contains(text(), 'Concluido')]")));
+                    System.out.println("  [ClickEstadoConcluido] ✓ 'Concluido' desapareció - cambio exitoso! Estado listo para siguiente transición");
+                } catch (Exception e) {
+                    System.out.println("  [ClickEstadoConcluido] ⚠ Estado aún visible, puede estar en transición...");
+                }
+            } catch (Exception e) {
+                System.out.println("  [ClickEstadoConcluido] ⚠ Página no recargó inmediatamente, continuando...");
+            }
             System.out.println("  [ClickEstadoConcluido] ✓✓ 'Concluido' guardado exitosamente");
             
             driver.switchTo().defaultContent();

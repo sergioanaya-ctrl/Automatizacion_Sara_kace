@@ -100,20 +100,26 @@ public class TransicionarEstadosCaso implements Task {
     }
     
     /**
-     * Detecta qué estados están disponibles después de la transición actual
-     * PRIMERO busca "Aceptado y en desplazamiento" exactamente
-     * LUEGO busca solo "Aceptado"
+     * OPTIMIZACIÓN: Detecta próximo estado disponible esperando ACTIVAMENTE
+     * en lugar de búsqueda inmediata. Máximo 8 segundos de espera.
      * @return El nombre del estado disponible ("Aceptado y en desplazamiento", "Aceptado", o null)
      */
     private String detectarProximoEstado(WebDriver driver) {
+        System.out.println("  [TransicionarEstadosCaso] Detectando próximo estado disponible...");
         try {
             driver.switchTo().defaultContent();
             WebElement iframeElement = driver.findElement(By.id("form_onescript_iframe"));
             driver.switchTo().frame(iframeElement);
             
-            // INTENTO 1: Buscar botón EXACTO "Aceptado y en desplazamiento"
-            System.out.println("  [TransicionarEstadosCaso]   Intento 1: Buscando 'Aceptado y en desplazamiento'...");
+            org.openqa.selenium.support.ui.WebDriverWait wait = 
+                new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(8));
+            
+            // INTENTO 1: Esperar ACTIVAMENTE por botón "Aceptado y en desplazamiento"
+            System.out.println("  [TransicionarEstadosCaso]   Esperando activamente por 'Aceptado y en desplazamiento'...");
             try {
+                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(
+                    By.xpath("//button[contains(text(), 'Aceptado') and contains(text(), 'desplazamiento')]")));
+                
                 List<WebElement> botonesCompletos = driver.findElements(
                     By.xpath("//button[contains(text(), 'Aceptado') and contains(text(), 'desplazamiento')]"));
                 
@@ -121,19 +127,21 @@ public class TransicionarEstadosCaso implements Task {
                     for (WebElement boton : botonesCompletos) {
                         String texto = boton.getText().trim();
                         if (boton.isDisplayed()) {
-                            System.out.println("  [TransicionarEstadosCaso]   ✓ ENCONTRADO: '" + texto + "'");
+                            System.out.println("  [TransicionarEstadosCaso]   ✓ DETECTADO: '" + texto + "' - listo para click");
                             driver.switchTo().defaultContent();
                             return "Aceptado y en desplazamiento";
                         }
                     }
                 }
-            } catch (Exception e1) {
-                System.out.println("  [TransicionarEstadosCaso]   No encontrado en intento 1");
+            } catch (org.openqa.selenium.TimeoutException e1) {
+                System.out.println("  [TransicionarEstadosCaso]   No detectado 'Aceptado y en desplazamiento', probando 'Aceptado' simple...");
             }
             
-            // INTENTO 2: Buscar solo botón "Aceptado" (sin "desplazamiento")
-            System.out.println("  [TransicionarEstadosCaso]   Intento 2: Buscando botón simple 'Aceptado'...");
+            // INTENTO 2: Esperar ACTIVAMENTE por botón simple "Aceptado"
             try {
+                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(
+                    By.xpath("//button[text()='Aceptado' or normalize-space(text())='Aceptado']")));
+                
                 List<WebElement> botonesSimples = driver.findElements(
                     By.xpath("//button[text()='Aceptado' or normalize-space(text())='Aceptado']"));
                 
@@ -141,17 +149,17 @@ public class TransicionarEstadosCaso implements Task {
                     for (WebElement boton : botonesSimples) {
                         if (boton.isDisplayed()) {
                             String texto = boton.getText().trim();
-                            System.out.println("  [TransicionarEstadosCaso]   ✓ ENCONTRADO: '" + texto + "'");
+                            System.out.println("  [TransicionarEstadosCaso]   ✓ DETECTADO: '" + texto + "' - listo para click");
                             driver.switchTo().defaultContent();
                             return "Aceptado";
                         }
                     }
                 }
-            } catch (Exception e2) {
-                System.out.println("  [TransicionarEstadosCaso]   No encontrado en intento 2");
+            } catch (org.openqa.selenium.TimeoutException e2) {
+                System.out.println("  [TransicionarEstadosCaso]   No detectado botón 'Aceptado' en 8 segundos");
             }
             
-            System.out.println("  [TransicionarEstadosCaso]   ✗ No se encontró ningún botón 'Aceptado'");
+            System.out.println("  [TransicionarEstadosCaso]   ✗ No se encontró ningún botón de estado disponible");
             driver.switchTo().defaultContent();
             return null;
             
@@ -165,16 +173,18 @@ public class TransicionarEstadosCaso implements Task {
     }
     
     /**
-     * Espera 15 segundos para que la página se recargue completamente
-     * entre cada transición de estado
+     * OPTIMIZACIÓN: Espera activamente a que el siguiente estado esté disponible
+     * en lugar de esperar ciegamente. Reduce de 15s a 5s máximo.
      */
     private void esperarRecargaPagina() {
-        System.out.println("  [TransicionarEstadosCaso]   Esperando 15 segundos para recarga de página...");
+        System.out.println("  [TransicionarEstadosCaso]   Esperando a que página recargue y nuevos estados estén disponibles...");
         try {
-            Thread.sleep(15000); // 15 segundos
+            // OPTIMIZACIÓN: Reducido de 15s a 5s ya que los waits proactivos en detectarProximoEstado() 
+            // buscarán activamente los botones
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        System.out.println("  [TransicionarEstadosCaso]   ✓ Página recargada, listo para siguiente estado");
+        System.out.println("  [TransicionarEstadosCaso]   ✓ Página recargada, buscando próximo estado disponible...");
     }
 }

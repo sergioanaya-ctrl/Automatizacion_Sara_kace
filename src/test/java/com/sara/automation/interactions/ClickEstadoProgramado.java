@@ -69,7 +69,14 @@ public class ClickEstadoProgramado implements Interaction {
             System.out.println("  [ClickEstadoProgramado] Paso 3: Clickeando 'Programado'...");
             ejecutarClickConReintentos(js, estadoProgramado, "Programado");
             
-            Thread.sleep(500);
+            // OPTIMIZACIÓN: Esperar proactivamente a que botón Guardar esté disponible
+            System.out.println("  [ClickEstadoProgramado] Esperando a que botón Guardar esté disponible...");
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kaceCustomSubmit")));
+                System.out.println("  [ClickEstadoProgramado] ✓ Botón Guardar detectado, lista para guardado");
+            } catch (Exception e) {
+                System.out.println("  [ClickEstadoProgramado] ⚠ Botón Guardar no inmediato, procediendo...");
+            }
             System.out.println("  [ClickEstadoProgramado] ✓ 'Programado' seleccionado");
             
             // PASO 4: Buscar y clickear botón de guardado
@@ -95,7 +102,23 @@ public class ClickEstadoProgramado implements Interaction {
             System.out.println("  [ClickEstadoProgramado] Paso 5: Clickeando guardado...");
             ejecutarClickConReintentos(js, guardarButton, "Guardado");
             
-            Thread.sleep(500);
+            // OPTIMIZACIÓN: Esperar a que formulario se recargue (stale element o new form)
+            try {
+                wait.until(ExpectedConditions.stalenessOf(guardarButton));
+                System.out.println("  [ClickEstadoProgramado] ✓ Página recargada después de guardar");
+                
+                // OPTIMIZACIÓN: Detectar que el estado 'Programado' desapareció (cambio exitoso)
+                System.out.println("  [ClickEstadoProgramado] Detectando si estado cambió exitosamente...");
+                try {
+                    wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                        By.xpath("//button[contains(text(), 'Programado')]")));
+                    System.out.println("  [ClickEstadoProgramado] ✓ 'Programado' desapareció - cambio exitoso! Estado listo para siguiente transición");
+                } catch (Exception e) {
+                    System.out.println("  [ClickEstadoProgramado] ⚠ Estado aún visible, puede estar en transición...");
+                }
+            } catch (Exception e) {
+                System.out.println("  [ClickEstadoProgramado] ⚠ Página no recargó inmediatamente, continuando...");
+            }
             System.out.println("  [ClickEstadoProgramado] ✓✓ 'Programado' guardado exitosamente");
             
             driver.switchTo().defaultContent();

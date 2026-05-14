@@ -80,7 +80,14 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] Paso 3: Clickeando 'Aceptado'...");
             ejecutarClickConReintentos(js, estadoAceptado, "Aceptado");
             
-            Thread.sleep(500);
+            // OPTIMIZACIÓN: Esperar proactivamente a que botón Guardar esté disponible
+            System.out.println("  [ClickEstadoAceptadoDesplazamiento] Esperando a que botón Guardar esté disponible...");
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kaceCustomSubmit")));
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓ Botón Guardar detectado, lista para guardado");
+            } catch (Exception e) {
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento] ⚠ Botón Guardar no inmediato, procediendo...");
+            }
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓ 'Aceptado' seleccionado");
             
             // PASO 4: Buscar y clickear botón de guardado
@@ -106,7 +113,23 @@ public class ClickEstadoAceptadoDesplazamiento implements Interaction {
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] Paso 5: Clickeando guardado...");
             ejecutarClickConReintentos(js, guardarButton, "Guardado");
             
-            Thread.sleep(500);
+            // OPTIMIZACIÓN: Esperar a que formulario se recargue (stale element o new form)
+            try {
+                wait.until(ExpectedConditions.stalenessOf(guardarButton));
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓ Página recargada después de guardar");
+                
+                // OPTIMIZACIÓN: Detectar que el estado 'Aceptado' desapareció (cambio exitoso)
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento] Detectando si estado cambió exitosamente...");
+                try {
+                    wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                        By.xpath("//button[contains(text(), 'Aceptado')]")));
+                    System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓ 'Aceptado' desapareció - cambio exitoso! Estado listo para siguiente transición");
+                } catch (Exception e) {
+                    System.out.println("  [ClickEstadoAceptadoDesplazamiento] ⚠ Estado aún visible, puede estar en transición...");
+                }
+            } catch (Exception e) {
+                System.out.println("  [ClickEstadoAceptadoDesplazamiento] ⚠ Página no recargó inmediatamente, continuando...");
+            }
             System.out.println("  [ClickEstadoAceptadoDesplazamiento] ✓✓ 'Aceptado' guardado exitosamente");
             
             driver.switchTo().defaultContent();
