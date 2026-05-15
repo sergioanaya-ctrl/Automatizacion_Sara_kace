@@ -4,9 +4,12 @@ import com.sara.automation.ui.CasoCreatePage;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Interaction;
 import net.serenitybdd.screenplay.Performable;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchFrameException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -45,7 +48,16 @@ public class SwitchToOneScriptIframe implements Interaction {
 
         try {
             new WebDriverWait(driver, DEFAULT_TIMEOUT)
-                    .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(CasoCreatePage.Form_OneScript_Iframe_By));
+                    .until(d -> {
+                        try {
+                            d.switchTo().defaultContent();
+                            WebElement iframe = d.findElement(CasoCreatePage.Form_OneScript_Iframe_By);
+                            d.switchTo().frame(iframe);
+                            return true;
+                        } catch (NoSuchElementException | StaleElementReferenceException | NoSuchFrameException e) {
+                            return false;
+                        }
+                    });
         } catch (TimeoutException e) {
             if (required) {
                 throw new RuntimeException("No se encontro el iframe OneScript para continuar con el formulario", e);
