@@ -1,76 +1,45 @@
 # ============================================================
-# SARA3 - DOCKER IMAGE PARA TESTS HEADLESS
-# Multi-stage build para optimizar tamaño
+# SARA3 - DOCKER IMAGE COMPACTA PARA TESTS HEADLESS
+# Multi-stage optimizado - sin capas innecesarias
 # ============================================================
 
 # STAGE 1: Builder
 FROM eclipse-temurin:11-jdk-jammy AS builder
-
-# Instalar dependencias de construcción
-RUN apt-get update && apt-get install -y \
-    chromium-browser \
-    chromium-chromedriver \
-    git \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
-
-# Establecer directorio de trabajo
 WORKDIR /app
-
-# Copiar proyecto
 COPY . .
-
-# Dar permisos de ejecución a scripts
-RUN chmod +x gradlew run-tests-linux.sh
-
-# Descargar dependencias Gradle con reintentos para evitar problemas DNS
-RUN ./gradlew --version && \
-    ./gradlew dependencies --write-locks || true
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium-browser chromium-chromedriver git && \
+    rm -rf /var/lib/apt/lists/* && \
+    chmod +x gradlew run-tests-linux.sh && \
+    ./gradlew --version && ./gradlew dependencies --write-locks 2>&1 || true
 
 # ============================================================
-# STAGE 2: Runtime
-FROM eclipse-temurin:11-jdk-jammy
-
-# Metadatos
-LABEL maintainer="Sara3 Automation"
-LABEL description="Sara3 Serenity BDD Automation Framework - Headless Tests"
-LABEL version="1.0"
-
-# Instalar dependencias runtime
-RUN apt-get update && apt-get install -y \
-    chromium-browser \
-    chromium-chromedriver \
-    curl \
-    wget \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Crear usuario no-root
-RUN useradd -m -s /bin/bash sara3
-
-# Establecer directorio de trabajo
+# STAGE 2: Runtime - ejecutar tests
+FROM eclipse-temurin:11-jre-jammy
 WORKDIR /app
 
-# Copiar proyecto desde builder
-COPY --from=builder --chown=sara3:sara3 /app .
+# Instalar TODAS las dependencias runtime que Chrome necesita (en una sola capa)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium-browser chromium-chromedriver \
+    libnspr4 libnss3 libatk1.0-0 libatk-bridge2.0-0 \
+    libgtk-3-0 libx11-6 libxcomposite1 libxcursor1 libxdamage1 \
+    libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
+    fonts-liberation ca-certificates fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
 
-# Crear directorios necesarios
-RUN mkdir -p logs target/reports && \
-    chown -R sara3:sara3 /app
+# Copiar TODO del builder (más simple, una sola capa)
+COPY --from=builder /app /app
 
-# Cambiar al usuario sara3
-USER sara3
+# Configurar permisos
+RUN chmod +x gradlew run-tests-linux.sh /usr/bin/chromedriver && \
+    mkdir -p logs target/reports
 
 # Variables de entorno
-ENV DISPLAY=""
-ENV QT_QPA_PLATFORM="offscreen"
-ENV JAVA_OPTS="-Xmx2048m -Xms512m"
-ENV CHROME_BIN="/usr/bin/chromium-browser"
+ENV DISPLAY="" \
+    QT_QPA_PLATFORM="offscreen" \
+    JAVA_OPTS="-Xmx2048m -Xms512m" \
+    CHROME_BIN="/usr/bin/chromium-browser" \
+    CHROME_SANDBOX_DISABLE=1
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD java -version || exit 1
-
-# Comando por defecto: ejecutar batch test 8 paralelo
 ENTRYPOINT ["/bin/bash"]
 CMD ["run-tests-linux.sh"]
