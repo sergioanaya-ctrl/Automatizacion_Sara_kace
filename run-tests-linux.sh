@@ -66,8 +66,7 @@ if [ "$IS_LINUX" = true ]; then
     echo "[CONFIG] ✓ ChromeHeadlessConfig.java lo manejará"
 fi
 
-./gradlew clean test --tests "$RUNNER_CLASS" \
-    --info \
+./gradlew test --tests "$RUNNER_CLASS" \
     --continue \
     --no-daemon
 
