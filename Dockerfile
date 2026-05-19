@@ -1,6 +1,5 @@
 # ============================================================
 # SARA3 - DOCKER IMAGE COMPACTA PARA TESTS HEADLESS
-# Multi-stage optimizado - sin capas innecesarias
 # ============================================================
 
 # STAGE 1: Builder
@@ -14,11 +13,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ./gradlew --version && ./gradlew dependencies --write-locks 2>&1 || true
 
 # ============================================================
-# STAGE 2: Runtime - ejecutar tests
-FROM eclipse-temurin:11-jre-jammy
+# STAGE 2: Runtime - ejecutar tests con JDK (no JRE)
+FROM eclipse-temurin:11-jdk-jammy
 WORKDIR /app
 
-# Instalar TODAS las dependencias runtime que Chrome necesita (en una sola capa)
+# Instalar TODAS las dependencias runtime que Chrome necesita
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium-browser chromium-chromedriver \
     libnspr4 libnss3 libatk1.0-0 libatk-bridge2.0-0 \
@@ -27,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-liberation ca-certificates fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
-# Copiar TODO del builder (más simple, una sola capa)
+# Copiar TODO del builder
 COPY --from=builder /app /app
 
 # Configurar permisos
