@@ -6,6 +6,7 @@ import com.sara.automation.tasks.GoToAgentPage;
 import com.sara.automation.tasks.LoginWithCognito;
 import com.sara.automation.tasks.OpenCasesPage;
 import com.sara.automation.tasks.TransicionarEstadosCaso;
+import com.sara.automation.tasks.ValidarEstadoCaso;
 import com.sara.automation.utils.CredentialsReader;
 import com.sara.automation.utils.ApplicationPerformanceMonitor;
 import io.cucumber.datatable.DataTable;
@@ -214,5 +215,18 @@ public class CasesStepDefinitions {
             perfMonitor.captureNetworkTiming("TransicionesEstados");
         }
         System.out.println("[APP-PERF] Transiciones de estados completadas en " + duration + "ms");
+    }
+
+    @Then("Se valida que quede en estado {string}")
+    public void seValidaQueQuedeEnEstado(String estado) {
+        long startTime = System.currentTimeMillis();
+        // Valida que el caso haya finalizado en el estado esperado
+        actor.attemptsTo(ValidarEstadoCaso.conEstado(estado));
+        long duration = System.currentTimeMillis() - startTime;
+        
+        if (perfMonitor != null) {
+            perfMonitor.captureNetworkTiming("ValidarEstado");
+        }
+        System.out.println("[APP-PERF] Validación de estado completada en " + duration + "ms");
     }
 }
