@@ -53,41 +53,64 @@ public class TransicionarEstadosCaso implements Task {
         // 1. PROGRAMADO
         System.out.println("\n  [TransicionarEstadosCaso] ==================== INICIO DE TRANSICIONES ====================");
         System.out.println("  [TransicionarEstadosCaso] PASO 1: Transición a PROGRAMADO");
-        actor.attemptsTo(ClickEstadoProgramado.clickEstadoProgramado());        if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-programado", 500);        System.out.println("  [TransicionarEstadosCaso] ✓ Estado 'Programado' completado");
-        esperarRecargaPagina();
+        actor.attemptsTo(ClickEstadoProgramado.clickEstadoProgramado());
+        if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-programado", 500);
+        System.out.println("  [TransicionarEstadosCaso] ✓ Estado 'Programado' completado");
+        esperarRecargaPaginaConValidacion(driver);
         
-        // Detectar qué opción está disponible después de Programado
-        System.out.println("  [TransicionarEstadosCaso] Detectando siguiente estado disponible...");
-        String proximoEstado = detectarProximoEstado(driver);
-        
-        if (proximoEstado == null) {
-            System.out.println("  [TransicionarEstadosCaso] ✗ No se detectó siguiente estado disponible");
-            throw new RuntimeException("No se detectó un siguiente estado luego de 'Programado'. Flujo transaccional incompleto");
-        }
-        
-        System.out.println("  [TransicionarEstadosCaso] ✓ Estado detectado: " + proximoEstado);
+        // VALIDACIÓN POST-TRANSICIÓN 1: Confirmar que el siguiente estado está disponible
+        System.out.println("  [TransicionarEstadosCaso] 🔍 VALIDACIÓN POST-TRANSICIÓN: Confirmando que Aceptado está disponible...");
+        String proximoEstado = validarQueProximoEstadoEstaDisponible(driver, "Aceptado");
+        System.out.println("  [TransicionarEstadosCaso] ✓ VALIDACIÓN OK: '" + proximoEstado + "' está disponible - Programado se guardó correctamente");
         
         // RUTA 1: Aceptado y en desplazamiento disponible
         if (proximoEstado.equalsIgnoreCase("Aceptado y en desplazamiento") || 
             proximoEstado.equalsIgnoreCase("Aceptado")) {
             
             System.out.println("  [TransicionarEstadosCaso] PASO 2: Transición a " + proximoEstado);
-            actor.attemptsTo(ClickEstadoAceptadoDesplazamiento.clickEstadoAceptadoDesplazamiento());            if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-aceptado", 500);            System.out.println("  [TransicionarEstadosCaso] ✓ Estado '" + proximoEstado + "' completado");
-            esperarRecargaPagina();
+            actor.attemptsTo(ClickEstadoAceptadoDesplazamiento.clickEstadoAceptadoDesplazamiento());
+            if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-aceptado", 500);
+            System.out.println("  [TransicionarEstadosCaso] ✓ Estado '" + proximoEstado + "' completado");
+            esperarRecargaPaginaConValidacion(driver);
             
-            // Si fue "Aceptado y en desplazamiento", continúa con Concluido
-            if (proximoEstado.equalsIgnoreCase("Aceptado y en desplazamiento")) {
+            // Después de Aceptado, decidir por el estado realmente disponible en UI.
+            // Si existe Concluido, SIEMPRE se debe transicionar por Concluido antes de Finalizado.
+            String siguienteDespuesDeAceptado = detectarSiguienteEstadoDespuesDeAceptado(driver);
+            if ("Concluido".equals(siguienteDespuesDeAceptado)) {
+                System.out.println("  [TransicionarEstadosCaso] ✓ Detectado siguiente estado real: Concluido");
                 System.out.println("  [TransicionarEstadosCaso] PASO 3: Transición a CONCLUIDO");
-                actor.attemptsTo(ClickEstadoConcluido.clickEstadoConcluido());                if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-concluido", 500);                System.out.println("  [TransicionarEstadosCaso] ✓ Estado 'Concluido' completado");
-                esperarRecargaPagina();
+                actor.attemptsTo(ClickEstadoConcluido.clickEstadoConcluido());
+                if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-concluido", 500);
+                System.out.println("  [TransicionarEstadosCaso] ✓ Estado 'Concluido' completado");
+                esperarRecargaPaginaConValidacion(driver);
+
+                // Después de Concluido, Finalizado debe quedar disponible.
+                System.out.println("  [TransicionarEstadosCaso] 🔍 VALIDACIÓN POST-CONCLUIDO: Confirmando que Finalizado está disponible...");
+                validarQueProximoEstadoEstaDisponible(driver, "Finalizado");
+                System.out.println("  [TransicionarEstadosCaso] ✓ VALIDACIÓN OK: 'Finalizado' está disponible - Concluido se guardó correctamente");
+            } else {
+                // Ruta corta: después de Aceptado quedó Finalizado directamente.
+                System.out.println("  [TransicionarEstadosCaso] ✓ Detectado siguiente estado real: Finalizado");
+                System.out.println("  [TransicionarEstadosCaso] 🔍 VALIDACIÓN POST-ACEPTADO: Confirmando que Finalizado está disponible...");
+                validarQueProximoEstadoEstaDisponible(driver, "Finalizado");
+                System.out.println("  [TransicionarEstadosCaso] ✓ VALIDACIÓN OK: 'Finalizado' está disponible - Aceptado se guardó correctamente");
             }
         }
+        
+        // VALIDACIÓN PRE-FINALIZADO: Confirmar que Finalizado está disponible antes de hacer click
+        System.out.println("  [TransicionarEstadosCaso] 🔍 VALIDACIÓN PRE-FINALIZADO: Confirmando que Finalizado está disponible...");
+        validarQueProximoEstadoEstaDisponible(driver, "Finalizado");
+        System.out.println("  [TransicionarEstadosCaso] ✓ PRE-VALIDACIÓN OK: 'Finalizado' está disponible");
         
         // 4. FINALIZADO (en ambas rutas)
         System.out.println("  [TransicionarEstadosCaso] PASO FINAL: Transición a FINALIZADO");
         actor.attemptsTo(ClickEstadoFinalizado.clickEstadoFinalizado());
         if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-finalizado", 500);
         System.out.println("  [TransicionarEstadosCaso] Estado 'Finalizado' completado");
+        
+        // ESPERA CRÍTICA FINAL: Después de Finalizado, la página se recarga completamente
+        esperarRecargaPaginaFinal();
+        System.out.println("  [TransicionarEstadosCaso] ✓ Flujo transaccional FINALIZADO - página completamente recargada");
         
         if (perfMonitor != null) {
             long totalTime = System.currentTimeMillis() - taskStartTime;
@@ -100,9 +123,133 @@ public class TransicionarEstadosCaso implements Task {
     }
     
     /**
-     * OPTIMIZACIÓN: Detecta próximo estado disponible esperando ACTIVAMENTE
-     * en lugar de búsqueda inmediata. Máximo 8 segundos de espera.
-     * @return El nombre del estado disponible ("Aceptado y en desplazamiento", "Aceptado", o null)
+     * VALIDACIÓN POST-TRANSICIÓN CRÍTICA:
+     * Verifica que el estado esperado esté DISPONIBLE después de un cambio de estado.
+     * Si no está disponible, la transición anterior FALLÓ.
+     * 
+     * @param driver WebDriver
+     * @param estadoEsperado Nombre del estado que debe estar disponible (ej: "Aceptado", "Finalizado")
+     * @return El nombre exacto del estado encontrado
+     * @throws RuntimeException si el estado no está disponible después de 20 segundos
+     */
+    private String validarQueProximoEstadoEstaDisponible(WebDriver driver, String estadoEsperado) {
+        System.out.println("  [TransicionarEstadosCaso] 🔍 Validando disponibilidad de estado: '" + estadoEsperado + "'...");
+        try {
+            driver.switchTo().defaultContent();
+            org.openqa.selenium.support.ui.WebDriverWait wait = 
+                new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(20));
+
+            // Intentar 1: Buscar exactamente el estado esperado
+            if (estadoEsperado.equalsIgnoreCase("Aceptado")) {
+                // Buscar "Aceptado y en desplazamiento" O "Aceptado" simple
+                try {
+                    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                    
+                    // DEBUG: Listar TODOS los botones disponibles
+                    System.out.println("  [TransicionarEstadosCaso]   DEBUG: Botones disponibles en el formulario:");
+                    java.util.List<WebElement> todosBotones = driver.findElements(By.xpath("//button"));
+                    for (WebElement boton : todosBotones) {
+                        try {
+                            String textoBoton = boton.getText().trim();
+                            if (!textoBoton.isEmpty() && boton.isDisplayed()) {
+                                System.out.println("  [TransicionarEstadosCaso]     - '" + textoBoton + "'");
+                            }
+                        } catch (Exception e) {
+                            // Ignorar botones que no se puedan leer
+                        }
+                    }
+                    
+                    try {
+                        wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("//button[contains(normalize-space(.), 'Aceptado') and contains(normalize-space(.), 'desplazamiento')]") ));
+                        
+                        java.util.List<WebElement> botonesAceptadoDesplazamiento = driver.findElements(
+                            By.xpath("//button[contains(normalize-space(.), 'Aceptado') and contains(normalize-space(.), 'desplazamiento')]") );
+                        
+                        for (WebElement boton : botonesAceptadoDesplazamiento) {
+                            if (boton.isDisplayed()) {
+                                String textoEncontrado = boton.getText().trim();
+                                System.out.println("  [TransicionarEstadosCaso]   ✓ VALIDACIÓN OK: '" + textoEncontrado + "' está disponible");
+                                driver.switchTo().defaultContent();
+                                return textoEncontrado;
+                            }
+                        }
+                    } catch (Exception ignore) {
+                        // No se encontró 'Aceptado y en desplazamiento', continuamos con el botón simple.
+                    }
+                    try {
+                        wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("//button[normalize-space(text())='Aceptado']")));
+                        
+                        java.util.List<WebElement> botonesAceptado = driver.findElements(
+                            By.xpath("//button[normalize-space(text())='Aceptado']"));
+                        
+                        for (WebElement boton : botonesAceptado) {
+                            if (boton.isDisplayed()) {
+                                String textoEncontrado = boton.getText().trim();
+                                System.out.println("  [TransicionarEstadosCaso]   ✓ VALIDACIÓN OK: '" + textoEncontrado + "' está disponible");
+                                driver.switchTo().defaultContent();
+                                return textoEncontrado;
+                            }
+                        }
+                        throw new RuntimeException("Botones 'Aceptado' encontrados pero ninguno visible");
+                    } catch (TimeoutException e1) {
+                        throw new RuntimeException("VALIDACIÓN FALLÓ: Después de 'Programado', el estado '" + estadoEsperado + "' NO está disponible. La transición NO se guardó correctamente.", e1);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException("VALIDACIÓN FALLÓ: No se pudo acceder al iframe para validar '" + estadoEsperado + "'", e);
+                }
+            } else {
+                // Buscar otros estados (Concluido, Finalizado, etc)
+                try {
+                    wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                    
+                    // DEBUG: Listar TODOS los botones disponibles
+                    System.out.println("  [TransicionarEstadosCaso]   DEBUG: Buscando '" + estadoEsperado + "' - Botones disponibles en el formulario:");
+                    java.util.List<WebElement> todosBotones = driver.findElements(By.xpath("//button"));
+                    for (WebElement boton : todosBotones) {
+                        try {
+                            String textoBoton = boton.getText().trim();
+                            if (!textoBoton.isEmpty() && boton.isDisplayed()) {
+                                System.out.println("  [TransicionarEstadosCaso]     - '" + textoBoton + "'");
+                            }
+                        } catch (Exception e) {
+                            // Ignorar botones que no se puedan leer
+                        }
+                    }
+                    
+                    try {
+                        wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(
+                            By.xpath("//button[contains(normalize-space(.), '" + estadoEsperado + "')]")));
+                        
+                        java.util.List<WebElement> botones = driver.findElements(
+                            By.xpath("//button[contains(normalize-space(.), '" + estadoEsperado + "')]"));
+                        
+                        for (WebElement boton : botones) {
+                            if (boton.isDisplayed()) {
+                                String textoEncontrado = boton.getText().trim();
+                                System.out.println("  [TransicionarEstadosCaso]   ✓ VALIDACIÓN OK: '" + textoEncontrado + "' está disponible");
+                                driver.switchTo().defaultContent();
+                                return textoEncontrado;
+                            }
+                        }
+                        throw new RuntimeException("Botones '" + estadoEsperado + "' encontrados pero ninguno visible");
+                    } catch (TimeoutException e1) {
+                        throw new RuntimeException("VALIDACIÓN FALLÓ: El estado '" + estadoEsperado + "' NO está disponible. La transición anterior NO se guardó correctamente.", e1);
+                    }
+                } catch (Exception e) {
+                    if (e.getMessage() != null && e.getMessage().contains("VALIDACIÓN FALLÓ")) throw e;
+                    throw new RuntimeException("VALIDACIÓN FALLÓ: No se pudo acceder al iframe para validar '" + estadoEsperado + "'", e);
+                }
+            }
+            
+        } catch (TimeoutException e) {
+            throw new RuntimeException("VALIDACIÓN FALLÓ: Timeout esperando disponibilidad de '" + estadoEsperado + "'. Transición anterior NO se guardó.", e);
+        }
+    }
+    
+    /**
+     * DETECTA próximo estado disponible (método original - ahora usado solo para información)
      */
     private String detectarProximoEstado(WebDriver driver) {
         System.out.println("  [TransicionarEstadosCaso] Detectando próximo estado disponible...");
@@ -172,20 +319,86 @@ public class TransicionarEstadosCaso implements Task {
             return null;
         }
     }
+
+    /**
+     * Detecta el estado disponible inmediatamente después de guardar Aceptado.
+     * Prioriza Concluido (si existe), y si no, usa Finalizado.
+     */
+    private String detectarSiguienteEstadoDespuesDeAceptado(WebDriver driver) {
+        System.out.println("  [TransicionarEstadosCaso] 🔍 Detectando siguiente estado después de Aceptado...");
+        try {
+            driver.switchTo().defaultContent();
+            org.openqa.selenium.support.ui.WebDriverWait wait =
+                new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(20));
+            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+
+            List<WebElement> botones = driver.findElements(By.xpath("//button"));
+            boolean hayConcluido = false;
+            boolean hayFinalizado = false;
+
+            for (WebElement boton : botones) {
+                try {
+                    if (!boton.isDisplayed()) {
+                        continue;
+                    }
+                    String texto = boton.getText().trim().toLowerCase();
+                    if (texto.contains("concluido")) {
+                        hayConcluido = true;
+                    }
+                    if (texto.contains("finalizado")) {
+                        hayFinalizado = true;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+
+            driver.switchTo().defaultContent();
+
+            if (hayConcluido) {
+                return "Concluido";
+            }
+            if (hayFinalizado) {
+                return "Finalizado";
+            }
+
+            throw new RuntimeException("No se detectó 'Concluido' ni 'Finalizado' después de 'Aceptado'");
+        } catch (Exception e) {
+            try {
+                driver.switchTo().defaultContent();
+            } catch (Exception ignored) {
+            }
+            throw new RuntimeException("No fue posible detectar el estado siguiente luego de 'Aceptado'", e);
+        }
+    }
     
     /**
      * OPTIMIZACIÓN: Espera activamente a que el siguiente estado esté disponible
-     * en lugar de esperar ciegamente. Reduce de 15s a 5s máximo.
+     * Espera 12s (aumentado de 8s) más validación inteligente del iframe.
      */
-    private void esperarRecargaPagina() {
-        System.out.println("  [TransicionarEstadosCaso]   Esperando a que página recargue y nuevos estados estén disponibles...");
+    private void esperarRecargaPaginaConValidacion(WebDriver driver) {
+        System.out.println("  [TransicionarEstadosCaso]   ⏳ Esperando recarga de página (12s con validación)...");
         try {
-            // Ajustado a 8s porque la recarga completa del iframe puede tardar más
-            // y el siguiente estado suele habilitarse después de varios segundos.
-            Thread.sleep(8000);
+            Thread.sleep(12000);
+            driver.switchTo().defaultContent();
+            org.openqa.selenium.support.ui.WebDriverWait wait = 
+                new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
+            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+            driver.switchTo().defaultContent();
+            System.out.println("  [TransicionarEstadosCaso]   ✓ Página recargada - iframe validado");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            System.out.println("  [TransicionarEstadosCaso]   ⚠ Validación continuando...");
+        }
+    }
+    
+    private void esperarRecargaPaginaFinal() {
+        System.out.println("  [TransicionarEstadosCaso]   ⏳ ESPERA FINAL (15s) - Validando estado Finalizado...");
+        try {
+            Thread.sleep(15000);
+            System.out.println("  [TransicionarEstadosCaso]   ✓ Caso FINALIZADO - página completamente recargada");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        System.out.println("  [TransicionarEstadosCaso]   ✓ Página recargada, buscando próximo estado disponible...");
     }
 }
