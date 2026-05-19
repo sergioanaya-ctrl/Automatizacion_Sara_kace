@@ -331,34 +331,6 @@ validate_reports() {
 }
 
 # ============================================================
-# ENVIAR NOTIFICACIÓN (OPCIONAL)
-# ============================================================
-send_notification() {
-    log_info "Verificando notificaciones..."
-    
-    # Enviar por email si está configurado
-    if command -v mail &> /dev/null && [ -n "$NOTIFICATION_EMAIL" ]; then
-        log_info "Enviando notificación a: $NOTIFICATION_EMAIL"
-        
-        local subject="SARA3 Batch Test Completed - $(date '+%Y-%m-%d %H:%M')"
-        local body="Los tests batch de SARA3 se completaron.\n\nVerifica los reportes en:\n$REPORT_DIR\n\nLog completo:\n$LOG_FILE"
-        
-        echo -e "$body" | mail -s "$subject" "$NOTIFICATION_EMAIL" 2>/dev/null || {
-            log_warning "No se pudo enviar email de notificación"
-        }
-    fi
-    
-    # Webhook (opcional)
-    if [ -n "$WEBHOOK_URL" ]; then
-        log_info "Enviando webhook..."
-        curl -s -X POST "$WEBHOOK_URL" \
-            -H "Content-Type: application/json" \
-            -d "{\"status\": \"completed\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
-            2>/dev/null || log_warning "Webhook fallido"
-    fi
-}
-
-# ============================================================
 # CLEANUP Y FINALIZACIÓN
 # ============================================================
 cleanup() {
@@ -404,7 +376,6 @@ main() {
     generate_csv_reports
     generate_summary
     validate_reports
-    send_notification
     cleanup
     
     log_success "=================================================="
