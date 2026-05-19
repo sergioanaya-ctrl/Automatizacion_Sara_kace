@@ -4,7 +4,7 @@
 # ============================================================
 
 # STAGE 1: Builder
-FROM openjdk:11-jdk-slim AS builder
+FROM eclipse-temurin:11-jdk-jammy AS builder
 
 # Instalar dependencias de construcción
 RUN apt-get update && apt-get install -y \
@@ -28,7 +28,7 @@ RUN ./gradlew compileTestJava -q
 
 # ============================================================
 # STAGE 2: Runtime
-FROM openjdk:11-jdk-slim
+FROM eclipse-temurin:11-jdk-jammy
 
 # Metadatos
 LABEL maintainer="Sara3 Automation"
