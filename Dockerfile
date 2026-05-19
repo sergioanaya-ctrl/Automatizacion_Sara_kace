@@ -4,7 +4,7 @@
 # ============================================================
 
 # STAGE 1: Builder
-FROM openjdk:8-jdk-slim as builder
+FROM openjdk:11-jdk-slim AS builder
 
 # Instalar dependencias de construcción
 RUN apt-get update && apt-get install -y \
@@ -28,7 +28,7 @@ RUN ./gradlew compileTestJava -q
 
 # ============================================================
 # STAGE 2: Runtime
-FROM openjdk:8-jdk-slim
+FROM openjdk:11-jdk-slim
 
 # Metadatos
 LABEL maintainer="Sara3 Automation"
