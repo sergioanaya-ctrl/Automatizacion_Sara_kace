@@ -21,10 +21,11 @@ WORKDIR /app
 COPY . .
 
 # Dar permisos de ejecución a scripts
-RUN chmod +x gradlew run_tests.sh batch_test_8p.sh setup_linux.sh
+RUN chmod +x gradlew run-tests-linux.sh
 
-# Compilar proyecto (cachear dependencias)
-RUN ./gradlew compileTestJava -q
+# Descargar dependencias Gradle con reintentos para evitar problemas DNS
+RUN ./gradlew --version && \
+    ./gradlew dependencies --write-locks || true
 
 # ============================================================
 # STAGE 2: Runtime
@@ -72,4 +73,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Comando por defecto: ejecutar batch test 8 paralelo
 ENTRYPOINT ["/bin/bash"]
-CMD ["batch_test_8p.sh"]
+CMD ["run-tests-linux.sh"]

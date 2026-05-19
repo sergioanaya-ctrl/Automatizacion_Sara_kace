@@ -43,9 +43,8 @@ __pycache__/
 venv/
 
 # Gradle
-.gradle/
 gradlew.bat
-gradle/
+
 
 # Temporal
 *.tmp
@@ -74,5 +73,5 @@ history/
 .last_*
 
 # Scripts de setup (no son necesarios en la imagen final compilada)
-setup_linux.sh
+
 setup.ps1
