@@ -12,6 +12,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
     And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
 
   @batch2
   Scenario: Test Usuario 02 - BOGOTA - BOGOTA - AUTOS - ABOGADO EN SITIO

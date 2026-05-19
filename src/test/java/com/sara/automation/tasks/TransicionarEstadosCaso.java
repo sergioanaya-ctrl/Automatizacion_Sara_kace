@@ -56,7 +56,7 @@ public class TransicionarEstadosCaso implements Task {
         actor.attemptsTo(ClickEstadoProgramado.clickEstadoProgramado());
         if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-programado", 500);
         System.out.println("  [TransicionarEstadosCaso] ✓ Estado 'Programado' completado");
-        esperarRecargaPaginaConValidacion(driver);
+        esperarRecargaPaginaConValidacion(driver, "Aceptado", "Aceptado y en desplazamiento");
         
         // VALIDACIÓN POST-TRANSICIÓN 1: Confirmar que el siguiente estado está disponible
         System.out.println("  [TransicionarEstadosCaso] 🔍 VALIDACIÓN POST-TRANSICIÓN: Confirmando que Aceptado está disponible...");
@@ -71,7 +71,7 @@ public class TransicionarEstadosCaso implements Task {
             actor.attemptsTo(ClickEstadoAceptadoDesplazamiento.clickEstadoAceptadoDesplazamiento());
             if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-aceptado", 500);
             System.out.println("  [TransicionarEstadosCaso] ✓ Estado '" + proximoEstado + "' completado");
-            esperarRecargaPaginaConValidacion(driver);
+            esperarRecargaPaginaConValidacion(driver, "Concluido", "Finalizado");
             
             // Después de Aceptado, decidir por el estado realmente disponible en UI.
             // Si existe Concluido, SIEMPRE se debe transicionar por Concluido antes de Finalizado.
@@ -82,7 +82,7 @@ public class TransicionarEstadosCaso implements Task {
                 actor.attemptsTo(ClickEstadoConcluido.clickEstadoConcluido());
                 if (perfMonitor != null) perfMonitor.captureAPIResponseTime("POST /transicion-concluido", 500);
                 System.out.println("  [TransicionarEstadosCaso] ✓ Estado 'Concluido' completado");
-                esperarRecargaPaginaConValidacion(driver);
+                esperarRecargaPaginaConValidacion(driver, "Finalizado");
 
                 // Después de Concluido, Finalizado debe quedar disponible.
                 System.out.println("  [TransicionarEstadosCaso] 🔍 VALIDACIÓN POST-CONCLUIDO: Confirmando que Finalizado está disponible...");
@@ -372,23 +372,61 @@ public class TransicionarEstadosCaso implements Task {
     }
     
     /**
-     * OPTIMIZACIÓN: Espera activamente a que el siguiente estado esté disponible
-     * Espera 12s (aumentado de 8s) más validación inteligente del iframe.
+     * Espera dinamica usando until hasta que el iframe este disponible y aparezca
+     * al menos uno de los estados esperados. Evita esperas fijas largas.
      */
-    private void esperarRecargaPaginaConValidacion(WebDriver driver) {
-        System.out.println("  [TransicionarEstadosCaso]   ⏳ Esperando recarga de página (12s con validación)...");
+    private void esperarRecargaPaginaConValidacion(WebDriver driver, String... estadosEsperados) {
+        System.out.println("  [TransicionarEstadosCaso]   Esperando recarga de pagina con until...");
+        long inicio = System.currentTimeMillis();
         try {
-            Thread.sleep(12000);
             driver.switchTo().defaultContent();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+            org.openqa.selenium.support.ui.WebDriverWait wait =
+                new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(40));
+            wait.pollingEvery(java.time.Duration.ofMillis(750));
+            wait.ignoring(org.openqa.selenium.NoSuchElementException.class);
+            wait.ignoring(org.openqa.selenium.StaleElementReferenceException.class);
+            wait.ignoring(org.openqa.selenium.NoSuchFrameException.class);
+
+            wait.until(d -> {
+                d.switchTo().defaultContent();
+                d.switchTo().frame(d.findElement(By.id("form_onescript_iframe")));
+
+                List<WebElement> botones = d.findElements(By.xpath("//button"));
+                if (botones.isEmpty()) {
+                    return false;
+                }
+
+                if (estadosEsperados == null || estadosEsperados.length == 0) {
+                    return true;
+                }
+
+                for (WebElement boton : botones) {
+                    if (!boton.isDisplayed()) {
+                        continue;
+                    }
+                    String texto = boton.getText();
+                    if (texto == null) {
+                        continue;
+                    }
+                    String normalizado = texto.trim().toLowerCase();
+                    for (String esperado : estadosEsperados) {
+                        if (esperado != null && normalizado.contains(esperado.toLowerCase())) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            });
+
             driver.switchTo().defaultContent();
-            System.out.println("  [TransicionarEstadosCaso]   ✓ Página recargada - iframe validado");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            long duracion = System.currentTimeMillis() - inicio;
+            System.out.println("  [TransicionarEstadosCaso]   Pagina recargada y estado disponible en " + duracion + "ms");
         } catch (Exception e) {
-            System.out.println("  [TransicionarEstadosCaso]   ⚠ Validación continuando...");
+            try {
+                driver.switchTo().defaultContent();
+            } catch (Exception ignored) {
+            }
+            throw new RuntimeException("No fue posible esperar el siguiente estado con until", e);
         }
     }
     
