@@ -293,7 +293,7 @@ public class DiligenciarProveedorGestion implements Task {
         sleep(500);
 
         if (!clickGeneralSaveIfPresent(driver, actor)) {
-            System.out.println("  [DiligenciarProveedorGestion] Guardado general no visible después de cerrar proveedor; continuando sin fallo.");
+            throw new RuntimeException("Falló el guardado general del proveedor - el formulario no se guardó correctamente");
         }
         
         // ESPERA CRÍTICA: La página se recarga completamente después de guardar
@@ -358,7 +358,7 @@ public class DiligenciarProveedorGestion implements Task {
                     .until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'formio-dialog')]")));
             System.out.println("  [DiligenciarProveedorGestion] Proveedor dialog cerrado OK");
         } catch (Exception e) {
-            System.out.println("  [DiligenciarProveedorGestion] El dialogo de proveedor no se cerró en el tiempo esperado: " + e.getMessage());
+            throw new RuntimeException("El diálogo de proveedor no se cerró después del guardado - transacción incompleta", e);
         }
     }    
     

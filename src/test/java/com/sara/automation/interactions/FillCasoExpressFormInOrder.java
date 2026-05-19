@@ -691,12 +691,17 @@ public class FillCasoExpressFormInOrder implements Interaction {
             // La página hace reload dentro del iframe, necesitamos dar tiempo para que termine
             Thread.sleep(500);
         } catch (Throwable e) {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Formulario_FALLBACK, isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Formulario_FALLBACK));
+            System.out.println("  [FillCasoExpressFormInOrder] Intento 1 de guardado falló, intentando fallback...");
             try {
-                Thread.sleep(500);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
+                actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Formulario_FALLBACK, isVisible()).forNoMoreThan(10).seconds());
+                actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Formulario_FALLBACK));
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            } catch (Throwable fallbackError) {
+                throw new RuntimeException("Falló el guardado del formulario - ni botón principal ni fallback estuvieron disponibles", fallbackError);
             }
         }
     }

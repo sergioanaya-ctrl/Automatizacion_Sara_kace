@@ -126,12 +126,14 @@ public class ClickEstadoProgramado implements Interaction {
                 WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
                 driver.switchTo().defaultContent();
             } catch (Exception ignored) {}
+            throw new RuntimeException("Fallo la transicion a 'Programado' por timeout", e);
         } catch (Exception e) {
             System.out.println("  [ClickEstadoProgramado] ✗ Error: " + e.getMessage());
             try {
                 WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
                 driver.switchTo().defaultContent();
             } catch (Exception ignored) {}
+            throw new RuntimeException("Fallo la transicion a 'Programado'", e);
         }
     }
     

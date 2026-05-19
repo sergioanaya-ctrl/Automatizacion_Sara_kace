@@ -62,7 +62,7 @@ public class TransicionarEstadosCaso implements Task {
         
         if (proximoEstado == null) {
             System.out.println("  [TransicionarEstadosCaso] ✗ No se detectó siguiente estado disponible");
-            return;
+            throw new RuntimeException("No se detectó un siguiente estado luego de 'Programado'. Flujo transaccional incompleto");
         }
         
         System.out.println("  [TransicionarEstadosCaso] ✓ Estado detectado: " + proximoEstado);

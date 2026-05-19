@@ -126,12 +126,14 @@ public class ClickEstadoConcluido implements Interaction {
                 WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
                 driver.switchTo().defaultContent();
             } catch (Exception ignored) {}
+            throw new RuntimeException("Fallo la transicion a 'Concluido' por timeout", e);
         } catch (Exception e) {
             System.out.println("  [ClickEstadoConcluido] ✗ Error: " + e.getMessage());
             try {
                 WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
                 driver.switchTo().defaultContent();
             } catch (Exception ignored) {}
+            throw new RuntimeException("Fallo la transicion a 'Concluido'", e);
         }
     }
     
