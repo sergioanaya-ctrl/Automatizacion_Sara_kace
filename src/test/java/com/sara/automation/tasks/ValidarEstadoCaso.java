@@ -101,13 +101,20 @@ public class ValidarEstadoCaso implements Task {
      * Por defecto intenta usar el estado literal primero.
      */
     private String mapearEstadoABotón(String estado) {
-        return switch (estado.toLowerCase()) {
-            case "abierto" -> "Abierto";          // Estado final después de Finalizado
-            case "programado" -> "Programado";
-            case "aceptado" -> "Aceptado y en desplazamiento";
-            case "concluido" -> "Concluido";
-            case "finalizado" -> "Finalizado";
-            default -> estado; // Si no mapea, usa el estado tal cual
-        };
+        String estadoNormalizado = estado.toLowerCase();
+        switch (estadoNormalizado) {
+            case "abierto":
+                return "Abierto";          // Estado final después de Finalizado
+            case "programado":
+                return "Programado";
+            case "aceptado":
+                return "Aceptado y en desplazamiento";
+            case "concluido":
+                return "Concluido";
+            case "finalizado":
+                return "Finalizado";
+            default:
+                return estado; // Si no mapea, usa el estado tal cual
+        }
     }
 }
