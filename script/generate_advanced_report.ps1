@@ -4,7 +4,7 @@
 # ========================================================
 
 # Importar funciones de utilidad
-. ".\report_utilities.ps1"
+. "$PSScriptRoot\\report_utilities.ps1"
 
 # Configuracion
 $testResultsPath = "build\test-results\test"
@@ -528,7 +528,7 @@ Write-Host "[OK] CSV generado: $csvOutput" -ForegroundColor Green
 Write-Host ""
 Write-Host "Generando Excel desde CSV..." -ForegroundColor Cyan
 
-. ".\generate_excel_from_csv.ps1"
+. "$PSScriptRoot\\generate_excel_from_csv.ps1"
 $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput -outputPath $reportFolder -worksheetName "Test Timings"
 
 if ($excelSuccess) {
@@ -543,3 +543,6 @@ Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host "REPORTES GENERADOS EXITOSAMENTE!" -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Cyan
+
+
+

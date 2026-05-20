@@ -560,3 +560,6 @@ docker system prune -a
 - **Volúmenes**: Para reportes y logs persistentes
 - **Health Checks**: Monitoreo de contenedores
 
+
+
+

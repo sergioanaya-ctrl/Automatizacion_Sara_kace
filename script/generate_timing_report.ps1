@@ -162,7 +162,7 @@ $statsSummary = @(
 Write-Host ""
 Write-Host "Generando Excel desde CSV..." -ForegroundColor Cyan
 
-. ".\generate_excel_from_csv.ps1"
+. "$PSScriptRoot\\generate_excel_from_csv.ps1"
 $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput -outputPath $reportFolder -worksheetName "Test Timings"
 
 if ($excelSuccess) {
@@ -187,3 +187,6 @@ Write-Host "REPORTES GENERADOS EXITOSAMENTE!" -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Green
 Write-Host "   CSV: $csvOutput" -ForegroundColor Gray
 Write-Host ""
+
+
+

@@ -16,10 +16,10 @@
     Número de test específico a ejecutar (1-50)
     
 .EXAMPLE
-    .\run-docker-tests.ps1                    # Ejecutar todos los tests
-    .\run-docker-tests.ps1 -BuildImage        # Reconstruir imagen + ejecutar
-    .\run-docker-tests.ps1 -Interactive       # Terminal interactiva
-    .\run-docker-tests.ps1 -Test 15           # Solo test CasesRunner15
+    .\\script\\run-docker-tests.ps1                    # Ejecutar todos los tests
+    .\\script\\run-docker-tests.ps1 -BuildImage        # Reconstruir imagen + ejecutar
+    .\\script\\run-docker-tests.ps1 -Interactive       # Terminal interactiva
+    .\\script\\run-docker-tests.ps1 -Test 15           # Solo test CasesRunner15
 #>
 
 param(
@@ -140,3 +140,6 @@ Write-Log "║  📁 Reportes: .\target\site\serenity\index.html" "Blue"
 Write-Log "╚════════════════════════════════════════════════════════╝" "Blue"
 
 exit $ExitCode
+
+
+

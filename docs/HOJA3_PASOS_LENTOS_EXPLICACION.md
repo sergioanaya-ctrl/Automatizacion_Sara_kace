@@ -78,7 +78,7 @@ Ejemplo:
 
 ## 🔍 Por qué se ve así:
 
-**El Script (generate_step_details_excel_report.ps1) hace esto:**
+**El Script (script/generate_step_details_excel_report_CLEAN.ps1) hace esto:**
 
 ```powershell
 # Paso 1: Recibe TODOS los 41 pasos
@@ -155,3 +155,6 @@ Pero eso sería **ineficiente** porque:
 | **Uso** | Ver todo el flujo | Analizar cuellos botella |
 
 **✨ El diseño es intencional y correcto. No hay nada que ajustar.** ✨
+
+
+

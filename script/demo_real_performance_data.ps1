@@ -97,8 +97,11 @@ Write-Host "========================================================" -Foregroun
 Write-Host ""
 
 Write-Host "Ejecuta:" -ForegroundColor Yellow
-Write-Host "  .\generate_app_performance_report.ps1" -ForegroundColor Cyan
+Write-Host "  .\\script\\generate_app_performance_report.ps1" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Esto creara reportes en:" -ForegroundColor Gray
 Write-Host "  target/reports/app_performance/" -ForegroundColor Yellow
 Write-Host ""
+
+
+

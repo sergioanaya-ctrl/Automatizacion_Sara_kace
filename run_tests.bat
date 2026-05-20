@@ -98,7 +98,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -116,7 +116,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -134,7 +134,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -152,7 +152,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -170,7 +170,7 @@ echo [INFO] Ejecucion completada. Los tests fallidos NO detienen la ejecucion.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -191,7 +191,7 @@ echo [INFO] Ejecucion completada. Los 50 tests se ejecutaron (fallen o no).
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -218,7 +218,7 @@ echo [INFO] Ejecucion completada del runner individual.
 echo.
 echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
 timeout /t 2 >nul
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -241,7 +241,7 @@ goto menu
 echo.
 echo Generando reporte de tiempos...
 if exist "build\test-results\test" (
-    powershell -ExecutionPolicy Bypass -File "generate_timing_report.ps1"
+    powershell -ExecutionPolicy Bypass -File "script\\generate_timing_report.ps1"
     if exist "target\reports\test_timings_report.csv" (
         echo [OK] Reporte generado: target\reports\test_timings_report.csv
         timeout /t 2
@@ -261,8 +261,8 @@ goto menu
 echo.
 echo Generando REPORTE AVANZADO...
 if exist "build\test-results\test" (
-    powershell -ExecutionPolicy Bypass -File "generate_advanced_report.ps1"
-    powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+    powershell -ExecutionPolicy Bypass -File "script\\generate_advanced_report.ps1"
+    powershell -ExecutionPolicy Bypass -File "script\\generate_app_performance_report.ps1"
     echo.
     timeout /t 2
     if exist "target\reports\test_timings_report.xlsx" (
@@ -335,7 +335,7 @@ for /l %%i in (1,1,50) do (
         echo.
         echo [INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...
         timeout /t 2 >nul
-        powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+        powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
         echo.
         echo [INFO] Reportes generados en: target\reports\
         echo        - step_details_*.xlsx (Excel)
@@ -357,7 +357,7 @@ echo ========================================================
 echo    GENERAR REPORTE DE RENDIMIENTO DE LA APLICACION
 echo ========================================================
 echo.
-powershell -ExecutionPolicy Bypass -File "generate_app_performance_report.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_app_performance_report.ps1"
 echo.
 echo [INFO] Reportes generados en target\reports\app_performance\
 echo.
@@ -382,7 +382,7 @@ echo ========================================================
 echo     GENERAR REPORTES DE PASOS DETALLADOS DE LOS TESTS
 echo ========================================================
 echo.
-powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1"
+powershell -ExecutionPolicy Bypass -File "script\\generate_step_details_excel_report_CLEAN.ps1"
 echo.
 echo [INFO] Reportes generados en: target\reports\
 echo        - step_details_*.xlsx (Excel)
@@ -416,3 +416,5 @@ goto menu
 
 :end
 exit /b 0
+
+

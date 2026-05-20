@@ -235,3 +235,6 @@ Hoja 3: ~850 pasos >5s (AHORA con todos los detalles)
 | **Análisis posible** | Básico | Profundo |
 
 **✨ Hoja 3 ahora es tan detallada como Hoja 2, pero filtrada a pasos >5s ✨**
+
+
+

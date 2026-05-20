@@ -208,9 +208,9 @@ generate_csv_reports() {
     
     # Usar PowerShell si está disponible para generar reportes avanzados
     if command -v pwsh &> /dev/null; then
-        if [ -f "generate_step_details_excel_report_CLEAN.ps1" ]; then
+        if [ -f "script/generate_step_details_excel_report_CLEAN.ps1" ]; then
             log_info "Ejecutando script PowerShell de reportes..."
-            pwsh -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1" 2>/dev/null || {
+            pwsh -ExecutionPolicy Bypass -File "script/generate_step_details_excel_report_CLEAN.ps1" 2>/dev/null || {
                 log_warning "Script PowerShell ejecutado pero puede haber advertencias"
             }
         fi
@@ -387,3 +387,5 @@ main() {
 
 # Ejecutar
 main
+
+

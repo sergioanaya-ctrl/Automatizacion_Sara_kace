@@ -148,7 +148,7 @@ org.gradle.internal.worker.socket.timeout=120000  # 2 minutos timeout de socket
 Si aun sospechas de procesos colgados, puedes ejecutar el monitor:
 
 ```bash
-powershell -ExecutionPolicy Bypass -File monitor_java_processes.ps1
+powershell -ExecutionPolicy Bypass -File script/monitor_java_processes.ps1
 ```
 
 **Caracteristicas:**
@@ -195,7 +195,7 @@ powershell -ExecutionPolicy Bypass -File monitor_java_processes.ps1
    ```
 
 5. **Monitorear la primera ejecucion:**
-   - Abre monitor_java_processes.ps1 en otra ventana
+   - Abre script/monitor_java_processes.ps1 en otra ventana
    - Verifica que no haya procesos colgados
 
 ---
@@ -278,8 +278,8 @@ Solucion:
 ## 8. ARCHIVOS NUEVOS/MODIFICADOS
 
 ### Nuevos archivos:
-- `generate_timing_report.ps1` - Genera reportes de tiempos
-- `monitor_java_processes.ps1` - Monitorea procesos colgados
+- `script/generate_timing_report.ps1` - Genera reportes de tiempos
+- `script/monitor_java_processes.ps1` - Monitorea procesos colgados
 
 ### Modificados:
 - `run_tests.bat` - Agregadas opciones 9 y 10, limpieza automatica
@@ -313,3 +313,6 @@ Preguntas? Revisa los logs en:
 - `build/test-results/test/*.xml` - Resultados detallados
 
 ¡Listo! Ahora tienes reportes limpios, medicion de tiempos y proteccion contra cuelgues infinitos. 🚀
+
+
+

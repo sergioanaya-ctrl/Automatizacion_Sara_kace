@@ -9,7 +9,7 @@ Este sistema permite **consolidar reportes CSV de múltiples máquinas** en un �
 ```
 Sara3/
 ├── consolidate_reports.bat          # Script ejecutable independiente
-├── consolidate_reports.ps1          # Script PowerShell de consolidación
+├── script/consolidate_reports.ps1          # Script PowerShell de consolidación
 └── reports_consolidation/           # Carpeta para CSV de entrada/salida
     ├── step_details_20260511_*.csv  # Archivos CSV de Máquina 1
     ├── step_details_20260511_*.csv  # Archivos CSV de Máquina 2
@@ -156,3 +156,6 @@ consolidated_report_20260511_150000.csv
 Para más información consulta:
 - `README_PRINCIPAL.md` - Documentación general del proyecto
 - `README_COMO_EJECUTAR.md` - Guía de ejecución de tests
+
+
+

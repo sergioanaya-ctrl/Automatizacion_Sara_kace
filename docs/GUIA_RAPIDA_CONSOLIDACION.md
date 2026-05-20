@@ -108,7 +108,7 @@ PROMEDIO      | 41          | 17           | 2,5 min      | 41.5%
 ### Opción 3: Generar Manual
 ```
 1. Abre PowerShell en carpeta raíz
-2. Ejecuta: powershell -ExecutionPolicy Bypass -File "generate_step_details_excel_report.ps1"
+2. Ejecuta: powershell -ExecutionPolicy Bypass -File "script/generate_step_details_excel_report_CLEAN.ps1"
 3. Se genera consolidando todos los JSON disponibles en target\site\serenity\
 ```
 
@@ -206,7 +206,7 @@ Raíz Proyecto (E:\Proyectos\Reto_Siigo\Siigo_Front\Sara3\)
 │  └─ reports/                ← ARCHIVOS GENERADOS (salida)
 │     └─ step_details_YYYYMMDD_HHMMSS.xlsx ← TU REPORTE
 │
-└─ generate_step_details_excel_report.ps1 ← Script que lo hace
+└─ script/generate_step_details_excel_report_CLEAN.ps1 ← Script que lo hace
 ```
 
 ---
@@ -229,3 +229,6 @@ Archivos creados para referencia:
 - `GUIA_RAPIDA_CONSOLIDACION.md` - Este archivo
 
 ¡Listo para consolidar y analizar! 🎯
+
+
+

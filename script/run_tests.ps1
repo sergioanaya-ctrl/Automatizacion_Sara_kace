@@ -134,13 +134,16 @@ try {
             Show-Banner
             Write-Host "Uso:" -ForegroundColor Yellow
             Write-Host ""
-            Write-Host "  .\run_tests.ps1                       # Menú interactivo" -ForegroundColor Gray
-            Write-Host "  .\run_tests.ps1 -TestMode all        # Todos los tests" -ForegroundColor Gray
-            Write-Host "  .\run_tests.ps1 -TestMode test -TestNumber 15   # Test específico" -ForegroundColor Gray
-            Write-Host "  .\run_tests.ps1 -TestMode range -StartRange 10 -EndRange 20  # Rango" -ForegroundColor Gray
+            Write-Host "  .\\script\\run_tests.ps1                       # Menú interactivo" -ForegroundColor Gray
+            Write-Host "  .\\script\\run_tests.ps1 -TestMode all        # Todos los tests" -ForegroundColor Gray
+            Write-Host "  .\\script\\run_tests.ps1 -TestMode test -TestNumber 15   # Test específico" -ForegroundColor Gray
+            Write-Host "  .\\script\\run_tests.ps1 -TestMode range -StartRange 10 -EndRange 20  # Rango" -ForegroundColor Gray
         }
     }
 } catch {
     Write-Host "❌ Error: $_" -ForegroundColor Red
     exit 1
 }
+
+
+

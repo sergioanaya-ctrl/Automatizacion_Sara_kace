@@ -190,8 +190,8 @@ generate_reports() {
     echo -e "${BLUE}[INFO] Generando reportes en 3 formatos: Excel, CSV e HTML...${NC}"
     sleep 2
     
-    if [ -f "generate_step_details_excel_report_CLEAN.ps1" ]; then
-        pwsh -ExecutionPolicy Bypass -File "generate_step_details_excel_report_CLEAN.ps1" 2>/dev/null || true
+    if [ -f "script/generate_step_details_excel_report_CLEAN.ps1" ]; then
+        pwsh -ExecutionPolicy Bypass -File "script/generate_step_details_excel_report_CLEAN.ps1" 2>/dev/null || true
     fi
     
     echo ""
@@ -265,3 +265,5 @@ main() {
 
 # Ejecutar programa principal
 main
+
+

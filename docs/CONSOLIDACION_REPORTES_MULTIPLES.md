@@ -2,7 +2,7 @@
 
 ## Cómo Funciona la Consolidación
 
-El script `generate_step_details_excel_report.ps1` consolida automáticamente los datos de **todos los tests ejecutados** en un solo archivo Excel. Aquí explicamos cómo:
+El script `script/generate_step_details_excel_report_CLEAN.ps1` consolida automáticamente los datos de **todos los tests ejecutados** en un solo archivo Excel. Aquí explicamos cómo:
 
 ---
 
@@ -250,3 +250,7 @@ CasesRunner50 | 41          | 2            | 2,501 ms     | 4.9%
 - Alertas si un paso excede threshold
 - Exportación a CSV para análisis externo
 - Dashboard interactivo con Power BI
+
+
+
+

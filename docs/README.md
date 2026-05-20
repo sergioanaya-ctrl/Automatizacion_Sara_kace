@@ -277,3 +277,6 @@ Para problemas o preguntas:
 ---
 
 **¡Listo! Solo ejecuta `run_tests.bat` y disfruta de pruebas paralelas automáticas.** 🚀
+
+
+

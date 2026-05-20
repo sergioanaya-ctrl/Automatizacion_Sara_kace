@@ -74,4 +74,6 @@ history/
 
 # Scripts de setup (no son necesarios en la imagen final compilada)
 
-setup.ps1
+script/setup.ps1
+
+

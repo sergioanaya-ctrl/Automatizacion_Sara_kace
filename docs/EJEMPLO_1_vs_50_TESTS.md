@@ -234,3 +234,6 @@ Cuando ejecutes 50 tests:
 ```
 
 ¡Listo para analizar 50 tests consolidados en un solo archivo! 🎉
+
+
+

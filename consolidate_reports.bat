@@ -22,7 +22,7 @@ echo Procesando archivos XLSX...
 echo.
 
 :: Ejecutar el script PowerShell de consolidación (sin pausa)
-powershell -ExecutionPolicy Bypass -NoProfile -File "consolidate_reports_xlsx.ps1" -NoWait
+powershell -ExecutionPolicy Bypass -NoProfile -File "script\\consolidate_reports_xlsx.ps1" -NoWait
 
 echo.
 echo ================================================
@@ -61,3 +61,5 @@ if defined LATEST_EXCEL (
 
 echo Presiona cualquier tecla para salir...
 pause >nul
+
+

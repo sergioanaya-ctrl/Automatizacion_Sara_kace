@@ -87,7 +87,7 @@ TOTAL,Test Duration,N/A,8500,1715420010000
 
 ---
 
-### 2. **generate_app_performance_report.ps1**
+### 2. **script/generate_app_performance_report.ps1**
 Script PowerShell que **agrega datos de 40 tests** y genera Excel con **5 hojas**:
 
 **Hoja 1: App Performance Summary**
@@ -116,7 +116,7 @@ Script PowerShell que **agrega datos de 40 tests** y genera Excel con **5 hojas*
 
 **Uso:**
 ```powershell
-.\generate_app_performance_report.ps1 -appPerfLogsPath "target/app_performance_logs"
+.\script/generate_app_performance_report.ps1 -appPerfLogsPath "target/app_performance_logs"
 # Output: target\reports\app_performance_report_20260511_143022.xlsx
 ```
 
@@ -183,7 +183,7 @@ Después de que terminan los tests (N×M paralelos):
 
 ```powershell
 # 1. Generar reporte agregado (en máquina central o local)
-.\generate_app_performance_report.ps1 -appPerfLogsPath "target/app_performance_logs"
+.\script/generate_app_performance_report.ps1 -appPerfLogsPath "target/app_performance_logs"
 
 # Output: target\reports\app_performance_report_20260511_143022.xlsx
 ```
@@ -305,7 +305,7 @@ Síntoma: Scalability = 45% (velocidad se reduce 55% con 40x carga)
 ### **Integración Inmediata:**
 1. ✅ Copiar `ApplicationPerformanceMonitor.java` al proyecto
 2. ✅ Integrar en tus test runners (CasesRunner01-50)
-3. ✅ Ejecutar `generate_app_performance_report.ps1` después de tests
+3. ✅ Ejecutar `script/generate_app_performance_report.ps1` después de tests
 4. ✅ Revisar Excel de 5 hojas para identificar bottlenecks
 
 ### **Implementación en Tests:**
@@ -360,7 +360,7 @@ A: SÍ - Cada ejecución de los 40 tests genera un CSV. Luego los agrega en Exce
 | Archivo | Propósito |
 |---------|-----------|
 | `ApplicationPerformanceMonitor.java` | Captura de Web Vitals, Network Timing, API responses |
-| `generate_app_performance_report.ps1` | Agregación de 40 tests → Excel de 5 hojas |
+| `script/generate_app_performance_report.ps1` | Agregación de 40 tests → Excel de 5 hojas |
 | `PERFORMANCE_TESTING_STRATEGY.json` | Documento técnico de 5 layers |
 | `PERFORMANCE_TESTING_README.md` | Esta guía |
 
@@ -371,19 +371,22 @@ A: SÍ - Cada ejecución de los 40 tests genera un CSV. Luego los agrega en Exce
 ```bash
 # Opción 1: Prueba pequeña (2 máquinas × 2 tests = 4 paralelos)
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2" -DmaxParallelForks=2
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 
 # Opción 2: Prueba mediana (5 máquinas × 4 tests = 20 paralelos)
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2 or @batch3 or @batch4" -DmaxParallelForks=4
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 
 # Opción 3: Prueba grande (10 máquinas × 5 tests = 50 paralelos)
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2 or @batch3 or @batch4 or @batch5" -DmaxParallelForks=5
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 
 # 3. Abrir Excel con resultados
 start target\reports\app_performance_report_*.xlsx
 ```
 
 **Analiza las 5 hojas y ajusta tu app basado en los hallazgos!**
+
+
+
 

@@ -1,5 +1,5 @@
 # Script para agregar y analizar performance de 10 máquinas
-# Uso: .\generate_performance_report.ps1 -machineLogsPath "\\network\shared\performance_logs"
+# Uso: .\\script\\generate_performance_report.ps1 -machineLogsPath "\\network\shared\performance_logs"
 
 param(
     [string]$machineLogsPath = "target/performance_logs",
@@ -280,3 +280,6 @@ Write-Host "  - Performance Summary (10 machines aggregated)"
 Write-Host "  - Step-by-Step Analysis (Frontend rendering)"
 Write-Host "  - Report Generation Metrics"
 Write-Host "  - Optimization Recommendations"
+
+
+

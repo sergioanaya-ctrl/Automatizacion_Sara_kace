@@ -144,3 +144,6 @@ Para más información consulta:
 - `DOCKER_GUIDE.md` - Guía completa de Docker
 - `DOCKER_QUICKSTART.md` - Inicio rápido
 - `run_tests.bat` - Versión Windows con menú similar
+
+
+

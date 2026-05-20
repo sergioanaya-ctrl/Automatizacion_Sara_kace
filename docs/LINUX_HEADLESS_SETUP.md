@@ -399,3 +399,6 @@ Si encuentras problemas:
 3. Ejecuta con `--debug` para ver logs completos
 4. Verifica que `serenity.properties` tiene `--headless` en `chrome.switches`
 
+
+
+

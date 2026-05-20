@@ -1,4 +1,4 @@
-. ".\report_utilities.ps1"
+. "$PSScriptRoot\\report_utilities.ps1"
 
 # ============================================
 # SCRIPT: Generar Excel con Detalles de Pasos
@@ -229,3 +229,6 @@ if ($slowestSteps.Count -gt 0) {
 
 Write-Host ""
 Write-Host "====== REPORTE COMPLETADO ======"
+
+
+

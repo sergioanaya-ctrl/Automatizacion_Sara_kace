@@ -10,7 +10,7 @@
 ```batch
 REM Minimal parallel testing - fast, small sample
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2" -DmaxParallelForks=2
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 echo "✓ Minimal test completed - check target\reports\app_performance_report_*.xlsx"
 ```
 
@@ -26,7 +26,7 @@ echo "✓ Minimal test completed - check target\reports\app_performance_report_*
 ```batch
 REM Small load test - quick validation
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2 or @batch3" -DmaxParallelForks=3
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 echo "✓ Small load test completed - check target\reports\app_performance_report_*.xlsx"
 ```
 
@@ -42,7 +42,7 @@ echo "✓ Small load test completed - check target\reports\app_performance_repor
 ```batch
 REM Medium load test - balanced coverage
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2 or @batch3 or @batch4" -DmaxParallelForks=4
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 echo "✓ Medium load test completed - check target\reports\app_performance_report_*.xlsx"
 ```
 
@@ -58,7 +58,7 @@ echo "✓ Medium load test completed - check target\reports\app_performance_repo
 ```batch
 REM Large load test - significant stress
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2 or @batch3 or @batch4" -DmaxParallelForks=4
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 echo "✓ Large load test completed - check target\reports\app_performance_report_*.xlsx"
 ```
 
@@ -74,7 +74,7 @@ echo "✓ Large load test completed - check target\reports\app_performance_repor
 ```batch
 REM Heavy load test - maximum stress
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2 or @batch3 or @batch4 or @batch5" -DmaxParallelForks=5
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 echo "✓ Heavy load test completed - check target\reports\app_performance_report_*.xlsx"
 ```
 
@@ -96,7 +96,7 @@ echo "✓ Heavy load test completed - check target\reports\app_performance_repor
 gradle test -Dcucumber.filter.tags="@batch1 or @batch2 or ... or @batchM" -DmaxParallelForks=M
 
 # Luego: generar reporte
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 ```
 
 **Ejemplos:**
@@ -197,7 +197,7 @@ Comparar entre configuraciones:
 .\execute_config.ps1 -config "medium"  # Ejecutar config Medium (20 paralelos)
 
 # Generate report
-.\generate_app_performance_report.ps1 -appPerfLogsPath "target/app_performance_logs"
+.\script/generate_app_performance_report.ps1 -appPerfLogsPath "target/app_performance_logs"
 
 # Compare two runs
 .\compare_performance_runs.ps1 -run1 "app_performance_report_20260511_143022.xlsx" -run2 "app_performance_report_20260512_153022.xlsx"
@@ -205,3 +205,6 @@ Comparar entre configuraciones:
 # Clean old reports
 .\clean_reports.bat
 ```
+
+
+

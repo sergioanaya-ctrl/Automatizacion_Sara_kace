@@ -305,3 +305,6 @@ La automatización SARA3 ahora es:
 
 **Puedes clonar el proyecto en cualquier servidor Linux sin GUI y ejecutar los tests exactamente igual que en Windows.**
 
+
+
+

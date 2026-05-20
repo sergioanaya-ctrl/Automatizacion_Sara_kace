@@ -49,7 +49,7 @@ Este documento describe cómo Sara3 captura **datos REALES** de rendimiento de l
 │  REPORT GENERATION (PowerShell)                                 │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  generate_app_performance_report.ps1                           │
+│  script/generate_app_performance_report.ps1                           │
 │  ├─ Load-RealPerformanceData()                                 │
 │  │  ├─ Lee: target/app_performance_logs/*.csv                 │
 │  │  ├─ Parsea: Tipo,Métrica,Endpoint,Tiempo_ms               │
@@ -203,7 +203,7 @@ TOTAL,Test Duration,N/A,45000,1715400906600
 
 ## 2. FASE 2: Generación de Reportes (PowerShell)
 
-### Archivo: `generate_app_performance_report.ps1`
+### Archivo: `script/generate_app_performance_report.ps1`
 
 **Flujo de Lectura de Datos Reales:**
 
@@ -290,7 +290,7 @@ run_tests.bat
 ### Opción 3: Ejecutar Script Directamente
 
 ```powershell
-.\generate_app_performance_report.ps1
+.\script/generate_app_performance_report.ps1
 ```
 
 ---
@@ -391,7 +391,7 @@ PowerShell consolida TODOS los CSVs automáticamente.
 |-----------|-----------|---------|
 | **ApplicationPerformanceMonitor** | `src/test/java/.../utils/` | Captura datos REALES en tests |
 | **CasesStepDefinitions** | `src/test/java/.../stepdefinitions/` | Integra monitor en pasos |
-| **generate_app_performance_report.ps1** | Raíz del proyecto | Lee CSVs y genera reportes |
+| **script/generate_app_performance_report.ps1** | Raíz del proyecto | Lee CSVs y genera reportes |
 | **CSV input** | `target/app_performance_logs/` | Datos REALES de tests |
 | **CSV output** | `target/reports/app_performance/` | 5 reportes consolidados |
 | **Excel output** | `target/reports/app_performance/` | Dashboard formateado |
@@ -400,3 +400,6 @@ PowerShell consolida TODOS los CSVs automáticamente.
 ---
 
 **Hecho con ❤️ para medir RENDIMIENTO DE LA APLICACION (no de máquinas)**
+
+
+

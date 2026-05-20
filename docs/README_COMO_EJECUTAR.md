@@ -267,3 +267,6 @@ Luego simplemente ejecuta `run_tests.bat` nuevamente.
 - **Credenciales:** `src/test/resources/credentials.properties`
 
 ¡Listo! 🚀
+
+
+

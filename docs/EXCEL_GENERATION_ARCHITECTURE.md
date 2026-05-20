@@ -10,11 +10,11 @@
 
 ## Archivos de Implementación
 
-### 1. `generate_excel_from_csv.ps1` ⭐ FUNCIÓN REUTILIZABLE
+### 1. `script/generate_excel_from_csv.ps1` ⭐ FUNCIÓN REUTILIZABLE
 Función central que convierte CSV → Excel sin Office:
 
 ```powershell
-. ".\generate_excel_from_csv.ps1"
+. ".\script/generate_excel_from_csv.ps1"
 Convert-CsvToExcel -csvPath "path/to/file.csv" `
                   -outputPath "target/reports" `
                   -worksheetName "Performance"
@@ -30,7 +30,7 @@ Convert-CsvToExcel -csvPath "path/to/file.csv" `
 
 ## Integración en Informes
 
-### 2. `generate_app_performance_report.ps1`
+### 2. `script/generate_app_performance_report.ps1`
 **Genera:** CSV + HTML + EXCEL
 
 ```powershell
@@ -44,7 +44,7 @@ $csvReportPath = "target/reports/app_performance/app_performance_consolidated_$t
 # ... código HTML ...
 
 # 🎯 GENERAR EXCEL
-. ".\generate_excel_from_csv.ps1"
+. ".\script/generate_excel_from_csv.ps1"
 $excelSuccess = Convert-CsvToExcel -csvPath $csvReportPath `
                                    -outputPath $outputPath `
                                    -worksheetName "Performance"
@@ -57,7 +57,7 @@ $excelSuccess = Convert-CsvToExcel -csvPath $csvReportPath `
 
 ---
 
-### 3. `generate_advanced_report.ps1`
+### 3. `script/generate_advanced_report.ps1`
 **Genera:** HTML + CSV + EXCEL
 
 ```powershell
@@ -72,7 +72,7 @@ $csvOutput = "$reportFolder\test_timings_report.csv"
 $testData | Export-Csv -Path $csvOutput -Encoding UTF8 -NoTypeInformation -Force
 
 # 🎯 GENERAR EXCEL DESDE CSV
-. ".\generate_excel_from_csv.ps1"
+. ".\script/generate_excel_from_csv.ps1"
 $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput `
                                    -outputPath $reportFolder `
                                    -worksheetName "Test Timings"
@@ -85,7 +85,7 @@ $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput `
 
 ---
 
-### 4. `generate_timing_report.ps1`
+### 4. `script/generate_timing_report.ps1`
 **Genera:** CSV + EXCEL
 
 ```powershell
@@ -96,7 +96,7 @@ $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput `
 $testData | Export-Csv -Path $csvOutput -Encoding UTF8 -NoTypeInformation -Force
 
 # 🎯 GENERAR EXCEL
-. ".\generate_excel_from_csv.ps1"
+. ".\script/generate_excel_from_csv.ps1"
 $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput `
                                    -outputPath $reportFolder `
                                    -worksheetName "Test Timings"
@@ -108,7 +108,7 @@ $excelSuccess = Convert-CsvToExcel -csvPath $csvOutput `
 
 ---
 
-### 5. `generate_performance_report.ps1`
+### 5. `script/generate_performance_report.ps1`
 **Genera:** EXCEL (con Excel COM como fallback)
 
 Este script mantiene Excel COM para compatibilidad, pero incluye try/catch para fallar gracefully si Office no está instalado.
@@ -185,7 +185,7 @@ gradle test (ejecuciones paralelas)
     ↓
 ApplicationPerformanceMonitor → CSV
     ↓
-generate_app_performance_report.ps1
+script/generate_app_performance_report.ps1
     ├─→ CSV consolidado ✓
     ├─→ HTML dashboard ✓
     └─→ EXCEL (ImportExcel o ZIP) ✓
@@ -199,9 +199,9 @@ gradle test
     ├─→ ApplicationPerformanceMonitor → CSV
     └─→ JUnit XMLs
     ↓
-generate_app_performance_report.ps1 → EXCEL ✓
-generate_timing_report.ps1 → EXCEL ✓
-generate_advanced_report.ps1 → EXCEL ✓
+script/generate_app_performance_report.ps1 → EXCEL ✓
+script/generate_timing_report.ps1 → EXCEL ✓
+script/generate_advanced_report.ps1 → EXCEL ✓
 ```
 
 ---
@@ -277,7 +277,7 @@ Script sigue funcionando con método ZIP+XML fallback.
 
 ### "CSV no se encuentra"
 **Verificar:**
-1. ¿Se ejecutó generate_app_performance_report.ps1?
+1. ¿Se ejecutó script/generate_app_performance_report.ps1?
 2. ¿Los tests generaron datos?
 3. ¿`target/app_performance_logs/` tiene archivos?
 
@@ -303,3 +303,6 @@ Todos los archivos `.xlsx` se habrán generado exitosamente sin dependencia de O
 **Fecha de implementación:** Mayo 2026
 **Estado:** ✅ Producción
 **Compatibilidad:** Windows 7+ con PowerShell 5.1+
+
+
+

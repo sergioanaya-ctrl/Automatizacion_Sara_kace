@@ -254,7 +254,7 @@
 
       "post_testing": [
         "Copiar target/performance_logs/* de las 10 máquinas a ubicación central",
-        "Ejecutar: generate_performance_report.ps1 -machineLogsPath '\\\\central\\performance_logs'",
+        "Ejecutar: script/generate_performance_report.ps1 -machineLogsPath '\\\\central\\performance_logs'",
         "Output: target/reports/performance_report_yyyyMMdd_HHmmss.xlsx",
         "Analizar: Identificar cuellos de botella"
       ]
@@ -313,3 +313,6 @@
     }
   }
 }
+
+
+

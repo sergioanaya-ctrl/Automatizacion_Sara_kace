@@ -8,7 +8,7 @@ param(
 )
 
 # Importar funciones de utilidad
-. ".\report_utilities.ps1"
+. "$PSScriptRoot\\report_utilities.ps1"
 
 # Normalizar rutas y convertir a absolutas
 $appPerfLogsPath = $appPerfLogsPath -replace "/", "\"
@@ -404,3 +404,6 @@ if (Get-Module -ListAvailable -Name ImportExcel) {
 Write-Host ""
 Write-Host "Fecha: $dateFormatted" -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Green
+
+
+
