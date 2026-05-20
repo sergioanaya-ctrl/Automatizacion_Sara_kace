@@ -33,9 +33,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copiar TODO del builder
 COPY --from=builder /app /app
 
-# Copiar script de entrada
+# Copiar scripts de entrada y menú
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY docker-menu.sh /app/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh /app/docker-menu.sh
 
 # Configurar permisos
 RUN chmod +x gradlew run-tests-linux.sh && \

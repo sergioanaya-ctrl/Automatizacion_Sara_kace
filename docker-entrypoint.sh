@@ -46,20 +46,28 @@ fi
 
 echo "🎬 DISPLAY configurado: $DISPLAY"
 echo "╔════════════════════════════════════════════════════════╗"
-echo "║  🚀 EJECUTANDO TESTS                                  ║"
+echo "║  🚀 MENU INTERACTIVO                                  ║"
 echo "╚════════════════════════════════════════════════════════╝"
 echo ""
 
-# Ejecutar los tests
-bash /app/run-tests-linux.sh
-EXIT_CODE=$?
+# Verificar si se pasó un comando específico, sino mostrar menú
+if [ $# -eq 0 ]; then
+    # Modo interactivo - mostrar menú
+    bash /app/docker-menu.sh
+    EXIT_CODE=$?
+else
+    # Modo comando directo - ejecutar lo que se pasó como argumento
+    echo "Ejecutando comando: $@"
+    bash -c "$@"
+    EXIT_CODE=$?
+fi
 
 echo ""
 echo "╔════════════════════════════════════════════════════════╗"
 if [ $EXIT_CODE -eq 0 ]; then
-    echo "║  ✅ TESTS COMPLETADOS EXITOSAMENTE                   ║"
+    echo "║  ✅ COMPLETADO EXITOSAMENTE                          ║"
 else
-    echo "║  ⚠️  TESTS FINALIZARON CON CÓDIGO: $EXIT_CODE       ║"
+    echo "║  ⚠️  FINALIZADO CON CÓDIGO: $EXIT_CODE              ║"
 fi
 echo "╚════════════════════════════════════════════════════════╝"
 
