@@ -26,13 +26,14 @@ run_tests() {
     echo -e "${BLUE}========================================${NC}"
     echo ""
     
+    set +e
     if [ -z "$test_class" ]; then
         ./gradlew test $parallel_flag --continue --no-daemon
     else
         ./gradlew test --tests "$test_class" $parallel_flag --continue --no-daemon
     fi
-    
     TEST_RESULT=$?
+    set -e
     
     echo ""
     if [ $TEST_RESULT -eq 0 ]; then

@@ -60,6 +60,13 @@ else
     echo "Ejecutando comando: $@"
     bash -c "$@"
     EXIT_CODE=$?
+    if [ $EXIT_CODE -ne 0 ]; then
+        echo ""
+        echo "⚠️ El comando falló con código $EXIT_CODE. Regresando al menú principal..."
+        echo ""
+        bash /app/docker-menu.sh
+        EXIT_CODE=$?
+    fi
 fi
 
 echo ""
