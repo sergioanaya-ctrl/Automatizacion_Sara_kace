@@ -4,13 +4,25 @@ import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
 
 public class CasoCreatePage {
-    // Localizador principal: busca el botón o enlace que contiene el texto "Caso Express"
-    public static final Target Caso_Express = Target.the("Boton Caso Express")
-            .located(By.xpath("//button[contains(normalize-space(.), 'Caso Express')] | //a[contains(normalize-space(.), 'Caso Express')]"));
+    // Localizador principal: busca en AMBOS idiomas (Express Case o Caso Express)
+    public static final Target Caso_Express = Target.the("Boton Caso Express / Express Case")
+            .located(By.xpath("//button[contains(normalize-space(.), 'Express Case') or contains(normalize-space(.), 'Caso Express')] | " +
+                             "//a[contains(normalize-space(.), 'Express Case') or contains(normalize-space(.), 'Caso Express')]"));
 
-    // Fallback más flexible para casos donde el elemento es un enlace del menú lateral.
-    public static final Target Caso_Express_FALLBACK = Target.the("Boton Caso Express (fallback)")
-            .located(By.xpath("//button[contains(normalize-space(.), 'Caso Express')] | //a[contains(normalize-space(.), 'Caso Express')]"));
+    // Fallback 1: sin normalize-space (a veces falla en headless)
+    public static final Target Caso_Express_FALLBACK = Target.the("Boton Express Case / Caso Express (fallback)")
+            .located(By.xpath("//button[contains(., 'Express Case') or contains(., 'Caso Express')] | " +
+                             "//a[contains(., 'Express Case') or contains(., 'Caso Express')] | " +
+                             "//*[contains(@class, 'menu-item') and (contains(., 'Express Case') or contains(., 'Caso Express'))]"));
+
+    // Fallback 2: por data-testid o id específico
+    public static final Target Caso_Express_FALLBACK2 = Target.the("Boton Express Case por testid")
+            .located(By.xpath("//button[contains(@data-testid, 'express') or contains(@data-testid, 'caso') or contains(@id, 'express') or contains(@id, 'caso')] | " +
+                             "//*[@role='tab' and (contains(., 'Express') or contains(., 'Caso'))]"));
+
+    // Fallback 3: búsqueda flexible por contenido
+    public static final Target Caso_Express_FALLBACK3 = Target.the("Boton por contenido flexible")
+            .located(By.xpath("//div[@role='menuitem' or @class='menu-item']//span[contains(., 'Express') or contains(., 'Caso')]/ancestor::*[self::button or self::a or self::div[@role='menuitem' or @role='tab']]"));
 
     // Nuevo: item de menú que aparece al abrir Caso Express
     public static final Target Formulario_Creacion_ASISTENCIA = Target.the("Formulario Creación de Casos (ASISTENCIA)")
