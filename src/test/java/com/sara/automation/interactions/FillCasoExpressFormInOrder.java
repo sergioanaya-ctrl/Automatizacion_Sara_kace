@@ -705,11 +705,35 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private <T extends Actor> void llenarCampo(T actor, Target target, String valor) {
-        // Reingresar al iframe antes de interactuar con el campo.
-        ensureIframeContext(actor);
-        actor.attemptsTo(Scroll.to(target));
-        actor.attemptsTo(WaitUntil.the(target, isVisible()).forNoMoreThan(20).seconds());
-        actor.attemptsTo(Enter.theValue(valor).into(target));
+        // Form.io re-renderiza el formulario tras seleccionar combos condicionales
+        // (p.ej. municipio). Esto provoca que un campo pase la verificacion isVisible
+        // pero desaparezca (NoSuchElement) o quede stale justo antes de escribir.
+        // Reintentamos todo el ciclo localizar+escribir para tolerar ese re-render.
+        int maxIntentos = 3;
+        for (int intento = 1; intento <= maxIntentos; intento++) {
+            // Reingresar al iframe antes de interactuar con el campo.
+            ensureIframeContext(actor);
+            try {
+                actor.attemptsTo(Scroll.to(target));
+                actor.attemptsTo(WaitUntil.the(target, isVisible()).forNoMoreThan(20).seconds());
+                actor.attemptsTo(Enter.theValue(valor).into(target));
+                return;
+            } catch (org.openqa.selenium.NoSuchElementException
+                    | org.openqa.selenium.StaleElementReferenceException e) {
+                System.out.println("  [llenarCampo] Campo '" + target + "' no disponible (intento "
+                        + intento + "/" + maxIntentos + "): el formulario pudo re-renderizarse. "
+                        + e.getMessage());
+                if (intento == maxIntentos) {
+                    throw e;
+                }
+                try {
+                    // Dar tiempo a que Form.io termine de reconstruir el campo.
+                    Thread.sleep(1000);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
     }
 
     private <T extends Actor> void ensureIframeContext(T actor) {
