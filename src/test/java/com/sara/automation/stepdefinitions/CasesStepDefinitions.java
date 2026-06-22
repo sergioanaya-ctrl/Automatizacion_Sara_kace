@@ -1,5 +1,6 @@
 package com.sara.automation.stepdefinitions;
 
+import com.sara.automation.tasks.BuscarExpediente;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.DiligenciarProveedorGestion;
 import com.sara.automation.tasks.GoToAgentPage;
@@ -196,7 +197,14 @@ public class CasesStepDefinitions {
         String user = CredentialsReader.getUsuarioProveedor();
         String pass = CredentialsReader.getContrasenaProveedor();
         actor.attemptsTo(LoginWithCognito.with(user, pass));
-        actor.attemptsTo(GoToAgentPage.now());
+        // Módulo de proveedor: NO tiene botón "Caso Express", así que no lo esperamos.
+        actor.attemptsTo(GoToAgentPage.sinEsperarCasoExpress());
+    }
+
+    @When("buscamos el expediente guardado y abrimos su edicion")
+    public void buscamosElExpedienteGuardadoYAbrimosSuEdicion() {
+        // Búsqueda avanzada -> filtra por el expediente guardado -> abre su edición.
+        actor.attemptsTo(BuscarExpediente.now());
     }
 
     @Then("Se valida que quede en estado {string}")
