@@ -51,7 +51,9 @@ public class GestionConceptosProveedor implements Task {
     private static final String TEXTO_PRUEBA = "Prueba automatica";
     // Campos forzados a numéricos aunque no declaren inputmode/pattern (match por fragmento en name).
     private static final String[] NUMERICOS_POR_NOMBRE = {"convenio"};
-    private static final int MAX_ITERACIONES = 8;
+    // Pasadas de llenado. En 1 = una sola pasada (más rápido, sin estabilización).
+    // Subir a 3 si los campos en cascada no alcanzan a llenarse en una sola pasada.
+    private static final int MAX_ITERACIONES = 1;
 
     private static final Random RANDOM = new Random();
 
