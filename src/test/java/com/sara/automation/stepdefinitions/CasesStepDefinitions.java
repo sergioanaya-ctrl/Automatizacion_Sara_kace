@@ -3,6 +3,7 @@ package com.sara.automation.stepdefinitions;
 import com.sara.automation.tasks.BuscarExpediente;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.DiligenciarProveedorGestion;
+import com.sara.automation.tasks.GestionConceptosProveedor;
 import com.sara.automation.tasks.GoToAgentPage;
 import com.sara.automation.tasks.LoginWithCognito;
 import com.sara.automation.tasks.LogoutFromUserMenu;
@@ -205,6 +206,12 @@ public class CasesStepDefinitions {
     public void buscamosElExpedienteGuardadoYAbrimosSuEdicion() {
         // Búsqueda avanzada -> filtra por el expediente guardado -> abre su edición.
         actor.attemptsTo(BuscarExpediente.now());
+    }
+
+    @When("gestionamos los conceptos del proveedor")
+    public void gestionamosLosConceptosDelProveedor() {
+        // Marca 'no acepta conceptos', llena los campos numéricos habilitados y guarda.
+        actor.attemptsTo(GestionConceptosProveedor.now());
     }
 
     @Then("Se valida que quede en estado {string}")

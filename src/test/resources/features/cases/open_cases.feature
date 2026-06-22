@@ -15,6 +15,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And cerramos sesion del usuario
     And reingresamos como proveedor PRUEBAS50
     And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
 
   @batch2
   Scenario: Test Usuario 02 - BOGOTA - BOGOTA - AUTOS - ABOGADO EN SITIO
