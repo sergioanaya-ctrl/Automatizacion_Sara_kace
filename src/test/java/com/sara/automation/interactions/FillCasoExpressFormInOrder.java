@@ -1,6 +1,7 @@
 package com.sara.automation.interactions;
 
 import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.utils.ExpedienteContext;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Interaction;
 import net.serenitybdd.screenplay.Performable;
@@ -122,6 +123,8 @@ public class FillCasoExpressFormInOrder implements Interaction {
 
     private <T extends Actor> void llenarDatosBasicosEnOrden(T actor) throws Exception {
         String numeroExpediente = generarNumeroExpediente15();
+        // Guardamos el expediente generado para reutilizarlo más adelante (búsqueda tras re-login).
+        ExpedienteContext.setExpediente(numeroExpediente);
         String nombreSolicitante = generarNombreSolicitanteReal();
         String cedulaSolicitante = randomDigitos(10);
         String telefono1 = "3" + randomDigitos(9);

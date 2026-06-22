@@ -10,9 +10,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS | PASO DE GASOLINA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
-    And transicionamos los estados del caso
-    And Se valida que quede en estado "Abierto"
+      | PRUEBAS50 PRUEBAS50    | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como proveedor PRUEBAS50
 
   @batch2
   Scenario: Test Usuario 02 - BOGOTA - BOGOTA - AUTOS - ABOGADO EN SITIO

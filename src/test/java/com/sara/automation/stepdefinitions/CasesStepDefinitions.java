@@ -4,6 +4,7 @@ import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.DiligenciarProveedorGestion;
 import com.sara.automation.tasks.GoToAgentPage;
 import com.sara.automation.tasks.LoginWithCognito;
+import com.sara.automation.tasks.LogoutFromUserMenu;
 import com.sara.automation.tasks.OpenCasesPage;
 import com.sara.automation.tasks.TransicionarEstadosCaso;
 import com.sara.automation.tasks.ValidarEstadoCaso;
@@ -175,6 +176,27 @@ public class CasesStepDefinitions {
     public void transicionamosLosEstadosDelCaso() {
         // Transiciona el caso a través de: Programado -> Aceptado y en desplazamiento -> Concluido -> Finalizado
         actor.attemptsTo(TransicionarEstadosCaso.completarSecuencia());
+    }
+
+    @When("transicionamos los estados del caso hasta concluido")
+    public void transicionamosLosEstadosDelCasoHastaConcluido() {
+        // Transiciona hasta 'Concluido' y se detiene (no ejecuta 'Finalizado').
+        actor.attemptsTo(TransicionarEstadosCaso.hastaConcluido());
+    }
+
+    @When("cerramos sesion del usuario")
+    public void cerramosSesionDelUsuario() {
+        actor.attemptsTo(LogoutFromUserMenu.now());
+    }
+
+    @When("reingresamos como proveedor PRUEBAS50")
+    public void reingresamosComoProveedor() {
+        // Vuelve a la URL de login (Cognito) e ingresa con el usuario proveedor (PRUEBAS50),
+        // luego navega a la página de agent, dejando la sesión lista para los siguientes pasos.
+        String user = CredentialsReader.getUsuarioProveedor();
+        String pass = CredentialsReader.getContrasenaProveedor();
+        actor.attemptsTo(LoginWithCognito.with(user, pass));
+        actor.attemptsTo(GoToAgentPage.now());
     }
 
     @Then("Se valida que quede en estado {string}")
