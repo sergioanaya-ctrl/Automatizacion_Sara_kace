@@ -28,9 +28,12 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOGOTA D.C.                | BOGOTA D.C.             | NO                   | NO                  | AUTOS | ABOGADO EN SITIO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
-    And transicionamos los estados del caso
-    And Se valida que quede en estado "Abierto"
+      | PRUEBAS50 PRUEBAS50    | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como proveedor PRUEBAS50
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
 
   @batch3
   Scenario: Test Usuario 03 - VALLE DEL CAUCA - BAJO CALIMA - AUTOS - MECANICA BASICA
@@ -43,7 +46,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VALLE DEL CAUCA       | BAJO CALIMA        | NO                   | NO                  | AUTOS | MECANICA BASICA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS50 PRUEBAS50    | TOMA SERVICIO |
     And transicionamos los estados del caso
     And Se valida que quede en estado "Abierto"
 
@@ -58,7 +61,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ATLANTICO             | BARANOA            | NO                   | NO                  | AUTOS | FRENOS   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS50 PRUEBAS50    | TOMA SERVICIO |
     And transicionamos los estados del caso
     And Se valida que quede en estado "Abierto"
 

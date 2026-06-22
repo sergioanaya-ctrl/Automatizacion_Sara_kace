@@ -46,6 +46,10 @@ public class GestionConceptosProveedor implements Task {
     private static final By SELECTS = By.cssSelector("select[name^='data[']");
     private static final By CHECKBOXES = By.cssSelector("input[type='checkbox'][name^='data[']");
     private static final By MULTISELECTS = By.cssSelector(".formio-component-custom-multiselect");
+    // Dropdown custom del proyecto (no <select> nativo): se abre con .custom-dropdown-control
+    // y las opciones aparecen en ul.custom-dropdown-list li (solo las del abierto quedan visibles).
+    private static final By CUSTOM_DROPDOWN_CONTROL = By.cssSelector(".custom-dropdown-control");
+    private static final By CUSTOM_DROPDOWN_OPCIONES = By.cssSelector("ul.custom-dropdown-list li");
     private static final By BTN_GUARDAR = By.cssSelector("button[name='data[kaceCustomSubmit]']");
 
     private static final String TEXTO_PRUEBA = "Prueba automatica";
@@ -53,7 +57,7 @@ public class GestionConceptosProveedor implements Task {
     private static final String[] NUMERICOS_POR_NOMBRE = {"convenio"};
     // Pasadas de llenado. En 1 = una sola pasada (más rápido, sin estabilización).
     // Subir a 3 si los campos en cascada no alcanzan a llenarse en una sola pasada.
-    private static final int MAX_ITERACIONES = 1;
+    private static final int MAX_ITERACIONES = 2;
 
     private static final Random RANDOM = new Random();
 
@@ -87,7 +91,11 @@ public class GestionConceptosProveedor implements Task {
         reportarRequeridosVacios(driver);
 
         // 5. Guardar.
-        WebElement guardar = wait.until(ExpectedConditions.elementToBeClickable(BTN_GUARDAR));
+        // Usamos presencia + click JS en vez de elementToBeClickable: tras los últimos 'change',
+        // Form.io recalcula y deja el botón "no clickable" por varios segundos, lo que hacía que
+        // Selenium hiciera polling (~20s). El click JS no requiere ese estado.
+        WebElement guardar = wait.until(ExpectedConditions.presenceOfElementLocated(BTN_GUARDAR));
+        js.executeScript("arguments[0].scrollIntoView({block:'center'});", guardar);
         clickResiliente(js, guardar);
         System.out.println("  [GestionConceptosProveedor] ✓ Click en 'Guardar'");
 
@@ -143,6 +151,7 @@ public class GestionConceptosProveedor implements Task {
             int antes = gestionados.size();
             llenarTextos(driver, js, gestionados);
             llenarSelects(driver, gestionados);
+            llenarCustomDropdowns(driver, js, gestionados);
             marcarCheckboxes(driver, js, gestionados);
             llenarMultiselects(driver, js, gestionados);
 
@@ -186,18 +195,20 @@ public class GestionConceptosProveedor implements Task {
                 }
                 gestionados.add(clave);
                 Select select = new Select(sel);
-                // Elegir la primera opción con value no vacío (evita placeholders tipo "Seleccione...").
-                WebElement elegida = null;
+                // Recolectar las opciones con value no vacío (descarta placeholders tipo "Elige una opción").
+                List<WebElement> validas = new java.util.ArrayList<>();
                 for (WebElement opt : select.getOptions()) {
                     String val = opt.getAttribute("value");
                     if (val != null && !val.trim().isEmpty()) {
-                        elegida = opt;
-                        break;
+                        validas.add(opt);
                     }
                 }
-                if (elegida != null) {
+                if (!validas.isEmpty()) {
+                    // Elegir una al azar entre las opciones válidas.
+                    WebElement elegida = validas.get(RANDOM.nextInt(validas.size()));
                     select.selectByValue(elegida.getAttribute("value"));
-                    System.out.println("  [GestionConceptosProveedor]   [select] " + clave + " = " + elegida.getText().trim());
+                    System.out.println("  [GestionConceptosProveedor]   [select] " + clave + " = " + elegida.getText().trim()
+                            + " (al azar entre " + validas.size() + ")");
                 } else {
                     System.out.println("  [GestionConceptosProveedor]   [select] " + clave + " sin opciones válidas");
                 }
@@ -205,6 +216,72 @@ public class GestionConceptosProveedor implements Task {
             } catch (Exception e) {
                 System.out.println("  [GestionConceptosProveedor]   ⚠ select no manejado: " + e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Maneja los dropdowns custom del proyecto (.custom-dropdown-control). Abre cada uno y
+     * elige una opción AL AZAR entre las visibles (las del dropdown abierto). Mismo widget
+     * que usa el formulario de creación/búsqueda.
+     */
+    private void llenarCustomDropdowns(WebDriver driver, JavascriptExecutor js, Set<String> gestionados) {
+        for (WebElement control : driver.findElements(CUSTOM_DROPDOWN_CONTROL)) {
+            try {
+                if (!control.isDisplayed()) {
+                    continue;
+                }
+                String clave = claveCustomDropdown(js, control);
+                if (clave == null || gestionados.contains(clave)) {
+                    continue;
+                }
+                gestionados.add(clave);
+
+                // Abrir el dropdown.
+                js.executeScript("arguments[0].scrollIntoView({block:'center'});", control);
+                clickResiliente(js, control);
+                esperar(400);
+
+                // Opciones visibles = las del dropdown recién abierto.
+                List<WebElement> opciones = new java.util.ArrayList<>();
+                for (WebElement li : driver.findElements(CUSTOM_DROPDOWN_OPCIONES)) {
+                    try {
+                        if (li.isDisplayed() && !li.getText().trim().isEmpty()) {
+                            opciones.add(li);
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+
+                if (!opciones.isEmpty()) {
+                    WebElement elegida = opciones.get(RANDOM.nextInt(opciones.size()));
+                    String texto = elegida.getText().trim();
+                    clickResiliente(js, elegida);
+                    System.out.println("  [GestionConceptosProveedor]   [dropdown] " + clave + " = " + texto
+                            + " (al azar entre " + opciones.size() + ")");
+                } else {
+                    System.out.println("  [GestionConceptosProveedor]   [dropdown] " + clave + " sin opciones visibles");
+                    // Cerrar el dropdown para no dejarlo abierto sobre otros controles.
+                    clickResiliente(js, control);
+                }
+                esperar(200);
+            } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
+            } catch (Exception e) {
+                System.out.println("  [GestionConceptosProveedor]   ⚠ dropdown no manejado: " + e.getMessage());
+            }
+        }
+    }
+
+    /** Clave estable para un custom-dropdown: id (o className) del .formio-component contenedor. */
+    private String claveCustomDropdown(JavascriptExecutor js, WebElement control) {
+        try {
+            Object key = js.executeScript(
+                    "var c = arguments[0].closest('.formio-component');"
+                  + "if (!c) return null;"
+                  + "return (c.id && c.id.length) ? c.id : c.className;",
+                    control);
+            return key == null ? null : "dropdown:" + key;
+        } catch (Exception e) {
+            return null;
         }
     }
 
