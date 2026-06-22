@@ -10,11 +10,14 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
@@ -23,18 +26,32 @@ import static net.serenitybdd.screenplay.Tasks.instrumented;
  *   1. Espera y entra al iframe del formulario.
  *   2. Marca el check "no acepta conceptos" (data[no_acepta_conceptos_check]),
  *      que habilita los demás campos.
- *   3. Llena los campos NUMÉRICOS habilitados (inputmode='decimal' o pattern numérico)
- *      con un número de máximo 2 dígitos (limpia antes). Cubre los que se vayan habilitando.
- *   4. Click en Guardar (data[kaceCustomSubmit]) y espera.
+ *   3. Llena AUTOMÁTICAMENTE todos los controles habilitados del formulario,
+ *      repitiendo pasadas hasta que no aparezcan nuevos (cascadas profundas):
+ *        - input texto / textarea: número (2 dígitos) si es numérico, si no, texto de prueba.
+ *        - select nativos: primera opción válida.
+ *        - checkboxes: se marcan (excepto el de control).
+ *        - multiselect formio (best-effort): abre y elige la primera opción.
+ *   4. Reporta en log los campos requeridos que quedaron vacíos.
+ *   5. Click en Guardar (data[kaceCustomSubmit]) y espera.
+ *
+ * Todos los selectores se acotan a name="data[...]" / contenedores del formulario para no
+ * tocar controles ajenos (p. ej. el select de paginación de la tabla de resultados).
  */
 public class GestionConceptosProveedor implements Task {
 
     private static final By CHECK_NO_ACEPTA = By.cssSelector("input[name='data[no_acepta_conceptos_check]']");
-    // Inputs numéricos habilitados del formulario (excluye deshabilitados/readonly más abajo).
-    private static final By INPUTS_NUMERICOS = By.cssSelector(
-            "input.form-control[type='text'][name^='data['][inputmode='decimal'],"
-          + "input.form-control[type='text'][name^='data['][pattern='[0-9.]*']");
+    private static final By CAMPOS_TEXTO = By.cssSelector(
+            "input.form-control[type='text'][name^='data['], textarea[name^='data[']");
+    private static final By SELECTS = By.cssSelector("select[name^='data[']");
+    private static final By CHECKBOXES = By.cssSelector("input[type='checkbox'][name^='data[']");
+    private static final By MULTISELECTS = By.cssSelector(".formio-component-custom-multiselect");
     private static final By BTN_GUARDAR = By.cssSelector("button[name='data[kaceCustomSubmit]']");
+
+    private static final String TEXTO_PRUEBA = "Prueba automatica";
+    // Campos forzados a numéricos aunque no declaren inputmode/pattern (match por fragmento en name).
+    private static final String[] NUMERICOS_POR_NOMBRE = {"convenio"};
+    private static final int MAX_ITERACIONES = 8;
 
     private static final Random RANDOM = new Random();
 
@@ -43,7 +60,7 @@ public class GestionConceptosProveedor implements Task {
     }
 
     @Override
-    @Step("Gestionar los conceptos del proveedor (marcar check y llenar campos numéricos)")
+    @Step("Gestionar los conceptos del proveedor (marcar check y llenar todos los campos habilitados)")
     public <T extends Actor> void performAs(T actor) {
         WebDriver driver = BrowseTheWeb.as(actor).getDriver();
         JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -51,29 +68,27 @@ public class GestionConceptosProveedor implements Task {
 
         System.out.println("\n  [GestionConceptosProveedor] ==================== GESTIÓN DE CONCEPTOS ====================");
 
-        // 1. Entrar al iframe que contiene el formulario (esperando a que cargue).
+        // 1. Entrar al iframe que contiene el formulario.
         entrarAlFrameDelFormulario(driver, wait);
 
-        // 2. Marcar el check "no acepta conceptos" (baja con JS hasta él y lo clickea).
-        WebElement check = wait.until(ExpectedConditions.presenceOfElementLocated(CHECK_NO_ACEPTA));
-        js.executeScript("arguments[0].scrollIntoView({block:'center'});", check);
-        if (!check.isSelected()) {
-            clickResiliente(js, check);
-        }
-        // Disparar change para que Form.io habilite los campos dependientes.
-        js.executeScript("arguments[0].dispatchEvent(new Event('change', {bubbles:true}));", check);
+        // 2. Marcar el check "no acepta conceptos".
+        // OJO: al clickearlo, Form.io re-renderiza y la referencia previa queda stale; por eso
+        // re-localizamos el elemento fresco antes de disparar 'change' y reintentamos ante staleness.
+        marcarCheckNoAcepta(driver, js, wait);
         System.out.println("  [GestionConceptosProveedor] ✓ Check 'no acepta conceptos' marcado");
 
-        // 3. Esperar a que se habiliten campos numéricos y llenarlos.
-        int llenados = llenarCamposNumericosHabilitados(driver, js, wait);
-        System.out.println("  [GestionConceptosProveedor] ✓ Campos numéricos llenados: " + llenados);
+        // 3. Llenar todos los controles, repitiendo hasta estabilizar.
+        int total = llenarFormularioHastaEstabilizar(driver, js, wait);
+        System.out.println("  [GestionConceptosProveedor] ✓ Total de controles gestionados: " + total);
 
-        // 4. Guardar.
+        // 4. Reportar requeridos vacíos (no falla, solo avisa).
+        reportarRequeridosVacios(driver);
+
+        // 5. Guardar.
         WebElement guardar = wait.until(ExpectedConditions.elementToBeClickable(BTN_GUARDAR));
         clickResiliente(js, guardar);
         System.out.println("  [GestionConceptosProveedor] ✓ Click en 'Guardar'");
 
-        // Espera de asentado tras guardar.
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
@@ -83,48 +98,209 @@ public class GestionConceptosProveedor implements Task {
     }
 
     /**
-     * Llena cada input numérico visible y habilitado con un número de máx. 2 dígitos.
-     * Reintenta una vez para capturar campos que Form.io habilita tras el re-render.
-     * @return número de campos llenados.
+     * Marca el check de control re-localizándolo fresco tras el click (Form.io re-renderiza y
+     * deja stale la referencia) y reintentando ante StaleElementReferenceException.
      */
-    private int llenarCamposNumericosHabilitados(WebDriver driver, JavascriptExecutor js, WebDriverWait wait) {
-        // Esperar a que aparezca al menos un campo numérico habilitado.
+    private void marcarCheckNoAcepta(WebDriver driver, JavascriptExecutor js, WebDriverWait wait) {
+        for (int intento = 1; intento <= 3; intento++) {
+            try {
+                WebElement check = wait.until(ExpectedConditions.presenceOfElementLocated(CHECK_NO_ACEPTA));
+                js.executeScript("arguments[0].scrollIntoView({block:'center'});", check);
+                if (!check.isSelected()) {
+                    clickResiliente(js, check);
+                }
+                // Re-localizar fresco para evitar stale tras el re-render del click.
+                WebElement fresco = driver.findElement(CHECK_NO_ACEPTA);
+                js.executeScript("arguments[0].dispatchEvent(new Event('change', {bubbles:true}));", fresco);
+                return;
+            } catch (org.openqa.selenium.StaleElementReferenceException e) {
+                System.out.println("  [GestionConceptosProveedor]   (check stale, reintento " + intento + ")");
+                esperar(500);
+            }
+        }
+        throw new AssertionError("No fue posible marcar el check 'no acepta conceptos' (stale tras varios intentos).");
+    }
+
+    /**
+     * Repite pasadas de llenado (texto, selects, checkboxes, multiselects) hasta que una
+     * pasada completa no gestione ningún control nuevo, o hasta MAX_ITERACIONES.
+     * Cada control se gestiona una sola vez (dedupe por clave estable name/id).
+     * @return total de controles gestionados.
+     */
+    private int llenarFormularioHastaEstabilizar(WebDriver driver, JavascriptExecutor js, WebDriverWait wait) {
+        // Esperar a que haya al menos un control habilitado tras marcar el check.
         try {
-            wait.until(d -> d.findElements(INPUTS_NUMERICOS).stream()
-                    .anyMatch(el -> el.isDisplayed() && el.isEnabled()));
+            wait.until(d -> d.findElements(CAMPOS_TEXTO).stream().anyMatch(WebElement::isDisplayed)
+                    || d.findElements(SELECTS).stream().anyMatch(WebElement::isDisplayed));
         } catch (Exception e) {
-            System.out.println("  [GestionConceptosProveedor] ⚠ No se detectaron campos numéricos habilitados tras el check.");
+            System.out.println("  [GestionConceptosProveedor] ⚠ No se detectaron controles habilitados tras el check.");
         }
 
-        int total = 0;
-        // Dos pasadas: la segunda recoge campos que se habilitaron tras llenar los primeros.
-        for (int pasada = 1; pasada <= 2; pasada++) {
-            List<WebElement> campos = driver.findElements(INPUTS_NUMERICOS);
-            for (WebElement campo : campos) {
-                try {
-                    if (!campo.isDisplayed() || !campo.isEnabled()) {
-                        continue;
-                    }
-                    String readonly = campo.getAttribute("readonly");
-                    if (readonly != null && !readonly.equals("false")) {
-                        continue;
-                    }
-                    String name = campo.getAttribute("name");
-                    String valor = String.valueOf(RANDOM.nextInt(99) + 1); // 1..99 (máx 2 dígitos)
-                    escribirEnFormio(js, campo, valor);
-                    System.out.println("  [GestionConceptosProveedor]   - " + name + " = " + valor);
-                    total++;
-                } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
-                    // El formulario se re-renderizó; la siguiente pasada lo recoge.
-                }
+        Set<String> gestionados = new HashSet<>();
+        for (int iteracion = 1; iteracion <= MAX_ITERACIONES; iteracion++) {
+            int antes = gestionados.size();
+            llenarTextos(driver, js, gestionados);
+            llenarSelects(driver, gestionados);
+            marcarCheckboxes(driver, js, gestionados);
+            llenarMultiselects(driver, js, gestionados);
+
+            if (gestionados.size() == antes) {
+                System.out.println("  [GestionConceptosProveedor] ✓ Formulario estable tras " + iteracion + " iteración(es)");
+                break;
             }
+            esperar(300);
+        }
+        return gestionados.size();
+    }
+
+    private void llenarTextos(WebDriver driver, JavascriptExecutor js, Set<String> gestionados) {
+        for (WebElement campo : driver.findElements(CAMPOS_TEXTO)) {
             try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                String clave = clave(campo, "text");
+                if (clave == null || gestionados.contains(clave)) {
+                    continue; // ya gestionado: salto barato, sin más round-trips
+                }
+                if (!editable(campo)) {
+                    continue; // aún no editable: se reintenta en la próxima iteración
+                }
+                gestionados.add(clave);
+                String valor = esNumerico(campo) ? numero2Digitos() : TEXTO_PRUEBA;
+                escribirEnFormio(js, campo, valor);
+                System.out.println("  [GestionConceptosProveedor]   [texto] " + clave + " = " + valor);
+            } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
             }
         }
-        return total;
+    }
+
+    private void llenarSelects(WebDriver driver, Set<String> gestionados) {
+        for (WebElement sel : driver.findElements(SELECTS)) {
+            try {
+                String clave = clave(sel, "select");
+                if (clave == null || gestionados.contains(clave)) {
+                    continue;
+                }
+                if (!editable(sel)) {
+                    continue;
+                }
+                gestionados.add(clave);
+                Select select = new Select(sel);
+                // Elegir la primera opción con value no vacío (evita placeholders tipo "Seleccione...").
+                WebElement elegida = null;
+                for (WebElement opt : select.getOptions()) {
+                    String val = opt.getAttribute("value");
+                    if (val != null && !val.trim().isEmpty()) {
+                        elegida = opt;
+                        break;
+                    }
+                }
+                if (elegida != null) {
+                    select.selectByValue(elegida.getAttribute("value"));
+                    System.out.println("  [GestionConceptosProveedor]   [select] " + clave + " = " + elegida.getText().trim());
+                } else {
+                    System.out.println("  [GestionConceptosProveedor]   [select] " + clave + " sin opciones válidas");
+                }
+            } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
+            } catch (Exception e) {
+                System.out.println("  [GestionConceptosProveedor]   ⚠ select no manejado: " + e.getMessage());
+            }
+        }
+    }
+
+    private void marcarCheckboxes(WebDriver driver, JavascriptExecutor js, Set<String> gestionados) {
+        for (WebElement chk : driver.findElements(CHECKBOXES)) {
+            try {
+                String clave = clave(chk, "check");
+                if (clave == null || gestionados.contains(clave)) {
+                    continue;
+                }
+                // No tocar el check de control (re-togglearlo desactivaría los campos).
+                if (clave.contains("no_acepta_conceptos_check")) {
+                    continue;
+                }
+                if (!editable(chk)) {
+                    continue;
+                }
+                gestionados.add(clave);
+                if (!chk.isSelected()) {
+                    clickResiliente(js, chk);
+                    js.executeScript("arguments[0].dispatchEvent(new Event('change', {bubbles:true}));", chk);
+                }
+                System.out.println("  [GestionConceptosProveedor]   [check] " + clave + " marcado");
+            } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
+            } catch (Exception e) {
+                System.out.println("  [GestionConceptosProveedor]   ⚠ checkbox no manejado: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Best-effort para multiselects formio (.formio-component-custom-multiselect):
+     * abre el control y elige la primera opción de la lista. Si no logra interactuar,
+     * lo registra y continúa (no rompe el flujo).
+     */
+    private void llenarMultiselects(WebDriver driver, JavascriptExecutor js, Set<String> gestionados) {
+        for (WebElement ms : driver.findElements(MULTISELECTS)) {
+            try {
+                String clave = clave(ms, "multiselect");
+                if (clave == null || gestionados.contains(clave)) {
+                    continue;
+                }
+                if (!ms.isDisplayed()) {
+                    continue;
+                }
+                gestionados.add(clave);
+                List<WebElement> input = ms.findElements(By.cssSelector(".multi-select-input, .multi-select-container"));
+                if (input.isEmpty()) {
+                    System.out.println("  [GestionConceptosProveedor]   [multiselect] " + clave + " sin control de apertura");
+                    continue;
+                }
+                clickResiliente(js, input.get(0));
+                esperar(400);
+                // Buscar opciones de la lista desplegada (varias variantes posibles del widget).
+                List<WebElement> opciones = ms.findElements(By.cssSelector(
+                        ".multi-select-options li, .multi-select-dropdown li, ul li, [role='option']"));
+                WebElement primera = opciones.stream().filter(WebElement::isDisplayed).findFirst().orElse(null);
+                if (primera != null) {
+                    clickResiliente(js, primera);
+                    System.out.println("  [GestionConceptosProveedor]   [multiselect] " + clave + " = " + primera.getText().trim());
+                } else {
+                    System.out.println("  [GestionConceptosProveedor]   [multiselect] " + clave + " sin opciones visibles (revisar manualmente)");
+                }
+            } catch (org.openqa.selenium.StaleElementReferenceException ignored) {
+            } catch (Exception e) {
+                System.out.println("  [GestionConceptosProveedor]   ⚠ multiselect no manejado: " + e.getMessage());
+            }
+        }
+    }
+
+    /** Avisa en log de controles requeridos (aria-required='true') que quedaron vacíos. */
+    private void reportarRequeridosVacios(WebDriver driver) {
+        try {
+            List<WebElement> requeridos = driver.findElements(By.cssSelector("[aria-required='true'][name^='data[']"));
+            int vacios = 0;
+            for (WebElement campo : requeridos) {
+                try {
+                    if (!campo.isDisplayed()) {
+                        continue;
+                    }
+                    String val = campo.getAttribute("value");
+                    boolean vacio = (val == null || val.trim().isEmpty());
+                    if ("checkbox".equals(campo.getAttribute("type"))) {
+                        vacio = !campo.isSelected();
+                    }
+                    if (vacio) {
+                        System.out.println("  [GestionConceptosProveedor]   ⚠ REQUERIDO VACÍO: " + campo.getAttribute("name"));
+                        vacios++;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            if (vacios == 0) {
+                System.out.println("  [GestionConceptosProveedor] ✓ No quedaron campos requeridos vacíos (detectables).");
+            }
+        } catch (Exception e) {
+            System.out.println("  [GestionConceptosProveedor]   ⚠ No fue posible verificar requeridos: " + e.getMessage());
+        }
     }
 
     private void entrarAlFrameDelFormulario(WebDriver driver, WebDriverWait wait) {
@@ -163,6 +339,51 @@ public class GestionConceptosProveedor implements Task {
         System.out.println("  [GestionConceptosProveedor] ✓ Formulario de conceptos localizado");
     }
 
+    /** Clave estable para dedupe: prefijo de tipo + name (o id si no hay name). */
+    private String clave(WebElement el, String tipo) {
+        String name = el.getAttribute("name");
+        if (name != null && !name.trim().isEmpty()) {
+            return tipo + ":" + name;
+        }
+        String id = el.getAttribute("id");
+        if (id != null && !id.trim().isEmpty()) {
+            return tipo + "#" + id;
+        }
+        return null;
+    }
+
+    /** Visible, habilitado y no readonly. */
+    private boolean editable(WebElement el) {
+        if (!el.isDisplayed() || !el.isEnabled()) {
+            return false;
+        }
+        String readonly = el.getAttribute("readonly");
+        return readonly == null || readonly.equals("false");
+    }
+
+    /** Un campo es numérico si declara inputmode='decimal', pattern numérico, o su name está forzado. */
+    private boolean esNumerico(WebElement campo) {
+        String inputmode = campo.getAttribute("inputmode");
+        String pattern = campo.getAttribute("pattern");
+        if ("decimal".equalsIgnoreCase(inputmode) || (pattern != null && pattern.contains("0-9"))) {
+            return true;
+        }
+        String name = campo.getAttribute("name");
+        if (name != null) {
+            String nameLower = name.toLowerCase();
+            for (String token : NUMERICOS_POR_NOMBRE) {
+                if (nameLower.contains(token)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String numero2Digitos() {
+        return String.valueOf(RANDOM.nextInt(99) + 1); // 1..99
+    }
+
     private void escribirEnFormio(JavascriptExecutor js, WebElement input, String valor) {
         try {
             input.clear();
@@ -196,6 +417,14 @@ public class GestionConceptosProveedor implements Task {
                       + "arguments[0].dispatchEvent(evt);",
                         elemento);
             }
+        }
+    }
+
+    private void esperar(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }
