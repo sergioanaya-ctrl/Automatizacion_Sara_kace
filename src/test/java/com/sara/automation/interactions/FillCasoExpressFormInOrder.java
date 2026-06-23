@@ -237,14 +237,26 @@ public class FillCasoExpressFormInOrder implements Interaction {
         int maxIntentos = 4;
         for (int intento = 1; intento <= maxIntentos; intento++) {
             try {
-                // Asegurar contexto del iframe en cada intento.
-                driver.switchTo().defaultContent();
-                new WebDriverWait(driver, Duration.ofSeconds(20))
-                        .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                long t0 = System.currentTimeMillis();
+                // Solo re-entrar al iframe si el control NO es visible en el contexto actual.
+                // Si ya estamos dentro del iframe correcto (lo normal viniendo del paso anterior),
+                // evitamos el salir/entrar redundante (y la posible espera si el iframe se está
+                // re-renderizando). El re-switch queda como red de seguridad por si una operación
+                // previa (acción Screenplay o re-render de formio) reseteó el contexto al documento
+                // principal: sin él, los findElements del combo buscarían fuera del iframe.
+                if (driver.findElements(controlBy).isEmpty()) {
+                    driver.switchTo().defaultContent();
+                    new WebDriverWait(driver, Duration.ofSeconds(20))
+                            .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                }
+                long tFrame = System.currentTimeMillis();
 
                 // 1) Esperar habilitación (cascada lista) y presencia del control.
                 new WebDriverWait(driver, Duration.ofSeconds(40)).until(d ->
                         !d.findElements(controlBy).isEmpty() && d.findElements(deshabilitadoBy).isEmpty());
+                long tEnabled = System.currentTimeMillis();
+                System.out.println("  [TIMING " + componentClass + "] iframe=" + (tFrame - t0)
+                        + "ms | habilitacion=" + (tEnabled - tFrame) + "ms");
 
                 // Idempotente: si ya está en el valor, no hacer nada.
                 if (norm(textoControl(driver, controlBy)).equals(norm(objetivo))) {
@@ -255,9 +267,13 @@ public class FillCasoExpressFormInOrder implements Interaction {
                 // 2) Selección con la técnica probada (la misma de los dropdowns del proveedor).
                 System.out.println("  [combo " + componentClass + "] intento " + intento + ": seleccionando '" + objetivo + "'...");
                 OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, componentClass, objetivo);
+                long tSelect = System.currentTimeMillis();
 
                 // 3) VERIFICAR que el control quedó con un valor real (no placeholder/vacío).
                 new WebDriverWait(driver, Duration.ofSeconds(10)).until(d -> !esPlaceholder(textoControl(d, controlBy)));
+                long tVerify = System.currentTimeMillis();
+                System.out.println("  [TIMING " + componentClass + "] seleccion=" + (tSelect - tEnabled)
+                        + "ms | verificacion=" + (tVerify - tSelect) + "ms");
                 System.out.println("  [combo " + componentClass + "] ✓ seleccionado: '" + textoControl(driver, controlBy) + "'");
                 return;
 
