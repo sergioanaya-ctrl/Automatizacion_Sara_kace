@@ -52,10 +52,6 @@ public class FillCasoExpressFormInOrder implements Interaction {
             "Belén", "La Soledad", "Normandía", "El Prado", "El Poblado", "Granada",
             "Los Ángeles", "El Campestre", "Bosque Popular", "Santa María", "Normandía"
     };
-    private static final String[] MARCAS_VEHICULO = {
-            "Renault", "Chevrolet", "Mazda", "Nissan", "Toyota", "Kia", "Hyundai",
-            "Volkswagen", "Ford", "Suzuki", "Mitsubishi", "Peugeot", "Fiat", "Honda"
-    };
 
     private final String departamento;
     private final String municipio;
@@ -583,14 +579,15 @@ public class FillCasoExpressFormInOrder implements Interaction {
         String direccionDestino = generarDireccionColombiana(false);
         String detalleDireccionServicio = "Barrio " + BARRIOS[RANDOM.nextInt(BARRIOS.length)] + ", Torre " + (char) ('A' + RANDOM.nextInt(6));
         String detalleDireccionDestino = "Barrio " + BARRIOS[RANDOM.nextInt(BARRIOS.length)] + ", Apt. " + (1 + RANDOM.nextInt(90));
-        String marcaVehiculo = MARCAS_VEHICULO[RANDOM.nextInt(MARCAS_VEHICULO.length)];
 
         // Bloque de direcciones respetando la vista del formulario.
         llenarCampo(actor, CasoCreatePage.Direccion_Servicio, direccionServicio);
         llenarCampo(actor, CasoCreatePage.Direccion_Destino, direccionDestino);
         llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Destino, detalleDireccionDestino);
         llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Servicio, detalleDireccionServicio);
-        llenarCampo(actor, CasoCreatePage.Marca_Vehiculo, marcaVehiculo);
+        // NO llenamos "Marca de vehículo": al diligenciarla se habilita el campo requerido
+        // 'data[clase_vehiculo]', que quedaría vacío y bloquearía el guardado. Marca es opcional,
+        // así que se omite para no disparar esa dependencia.
         llenarCampo(actor, CasoCreatePage.Ubicacion_Servicio, UBICACION_SERVICIO_DEFAULT);
     }
 

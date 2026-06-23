@@ -11,14 +11,19 @@ import com.sara.automation.tasks.OpenCasesPage;
 import com.sara.automation.tasks.TransicionarEstadosCaso;
 import com.sara.automation.tasks.ValidarEstadoCaso;
 import com.sara.automation.utils.CredentialsReader;
+import com.sara.automation.utils.ExpedienteContext;
+import com.sara.automation.utils.ProveedorContext;
+import com.sara.automation.utils.ProveedorPoolManager;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.After;
+import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actors.OnStage;
@@ -27,6 +32,12 @@ import net.thucydides.core.annotations.Managed;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.WebDriver;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -60,16 +71,44 @@ public class CasesStepDefinitions {
     WebDriver browser;
 
     private Actor actor;
+    private String nombreEscenario;
 
     @Before
-    public void prepararEscenario() {
+    public void prepararEscenario(Scenario scenario) {
         OnStage.setTheStage(new OnlineCast());
         actor = OnStage.theActorCalled("Sara");
+        nombreEscenario = scenario.getName();
     }
 
     @After
     public void finalizarEscenario() {
-        // Limpieza de escenario
+        // Registrar en un archivo resumen qué proveedor quedó asignado a este escenario
+        // (útil para revisar toda la corrida de carga de un vistazo).
+        ProveedorPoolManager.Proveedor proveedor = ProveedorContext.getOrNull();
+        if (proveedor != null) {
+            registrarProveedorAsignado(nombreEscenario, proveedor);
+        }
+
+        // Liberar contextos ThreadLocal para que el siguiente escenario reciba
+        // un proveedor/expediente nuevos.
+        ProveedorContext.clear();
+        ExpedienteContext.clear();
+    }
+
+    /** Anexa "escenario -> proveedor" a target/proveedores_asignados.txt (thread-safe). */
+    private void registrarProveedorAsignado(String escenario, ProveedorPoolManager.Proveedor proveedor) {
+        String linea = escenario + " -> " + proveedor.getUsuario() + " (" + proveedor.getNombreFormulario() + ")"
+                + System.lineSeparator();
+        synchronized (CasesStepDefinitions.class) {
+            try {
+                Path archivo = Paths.get("target", "proveedores_asignados.txt");
+                Files.createDirectories(archivo.getParent());
+                Files.write(archivo, linea.getBytes(StandardCharsets.UTF_8),
+                        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                System.out.println("[CasesStepDefinitions] ⚠ No se pudo escribir el resumen de proveedor: " + e.getMessage());
+            }
+        }
     }
 
     @Given("el actor tiene un navegador disponible")
@@ -146,8 +185,18 @@ public class CasesStepDefinitions {
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         Map<String, String> row = rows.get(0);
 
+        // TABLA MANDA: el NOMBRE del proveedor lo decide el feature (p.ej. 'PRUEBAS40 PRUEBAS40').
+        // Derivamos su login + contraseña del pool y lo guardamos en el contexto para reloguear
+        // con el MISMO proveedor (un proveedor solo gestiona sus propios expedientes).
         String nombreProveedor = requiredAnyKey(row, "Nombre del proveedor", "nombre del proveedor", "proveedor", "Nombre");
         String servicio = requiredAnyKey(row, "Servicio", "servicio", "Respuesta", "respuesta de proveedor");
+
+        ProveedorPoolManager.Proveedor proveedor = ProveedorPoolManager.getByNombreFormulario(nombreProveedor);
+        ProveedorContext.set(proveedor);
+        // Dejar trazado el proveedor asignado en el reporte Serenity de ESTE escenario.
+        Serenity.recordReportData()
+                .withTitle("Proveedor asignado")
+                .andContents(proveedor.getUsuario() + " (" + nombreProveedor + ")");
 
         actor.attemptsTo(DiligenciarProveedorGestion.conDatos(nombreProveedor, servicio));
     }
@@ -191,13 +240,13 @@ public class CasesStepDefinitions {
         actor.attemptsTo(LogoutFromUserMenu.now());
     }
 
+    @When("reingresamos como el proveedor asignado")
     @When("reingresamos como proveedor PRUEBAS50")
     public void reingresamosComoProveedor() {
-        // Vuelve a la URL de login (Cognito) e ingresa con el usuario proveedor (PRUEBAS50),
-        // luego navega a la página de agent, dejando la sesión lista para los siguientes pasos.
-        String user = CredentialsReader.getUsuarioProveedor();
-        String pass = CredentialsReader.getContrasenaProveedor();
-        actor.attemptsTo(LoginWithCognito.with(user, pass));
+        // Vuelve a la URL de login (Cognito) e ingresa con el MISMO proveedor que se asignó
+        // al diligenciar (ProveedorContext), luego navega a agent dejando la sesión lista.
+        ProveedorPoolManager.Proveedor proveedor = ProveedorContext.get();
+        actor.attemptsTo(LoginWithCognito.with(proveedor.getUsuario(), proveedor.getContrasena()));
         // Módulo de proveedor: NO tiene botón "Caso Express", así que no lo esperamos.
         actor.attemptsTo(GoToAgentPage.sinEsperarCasoExpress());
     }

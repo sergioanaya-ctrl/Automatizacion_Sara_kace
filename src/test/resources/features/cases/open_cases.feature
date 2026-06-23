@@ -10,10 +10,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS | PASO DE GASOLINA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PRUEBAS50 PRUEBAS50    | TOMA SERVICIO |
+      | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -28,10 +28,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOGOTA D.C.                | BOGOTA D.C.             | NO                   | NO                  | AUTOS | ABOGADO EN SITIO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PRUEBAS50 PRUEBAS50    | TOMA SERVICIO |
+      | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -46,10 +46,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VALLE DEL CAUCA       | BAJO CALIMA        | NO                   | NO                  | AUTOS | MECANICA BASICA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PRUEBAS50 PRUEBAS50    | TOMA SERVICIO |
+      | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -64,10 +64,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ATLANTICO             | BARANOA            | NO                   | NO                  | AUTOS | FRENOS   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PRUEBAS50 PRUEBAS50    | TOMA SERVICIO |
+      | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -82,10 +82,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CUNDINAMARCA          | SOACHA             | NO                   | NO                  | AUTOS | AMBULANCIA   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -100,10 +100,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | SANTANDER             | BUCARAMANGA        | NO                   | NO                  | AUTOS | GRUA     |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -118,10 +118,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER    | CUCUTA             | NO                   | NO                  | AUTOS | CAMBIO LLANTAS  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -136,10 +136,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | MAGDALENA             | SANTA MARTA        | NO                   | NO                  | AUTOS | CERRAJERO AUTOS COMPLEJIDAD BAJA    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -154,10 +154,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOLIVAR               | CARTAGENA LAGUNA CLUB | NO                   | NO                  | AUTOS | DESPLAZAMIENTO POR HORAS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -172,10 +172,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NARIÑO                | PASTO              | NO                   | NO                  | AUTOS | FACILITADOR VIRTUAL   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -190,10 +190,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CAUCA                 | ALMAGUER           | NO                   | NO                  | AUTOS | ABOGADO VIRTUAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
   @batch12
@@ -207,10 +207,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | QUINDIO               | ARMENIA            | NO                   | NO                  | AUTOS | ORIENTACION JURIDICA TELEFONICA AUTOS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -225,10 +225,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | RISARALDA             | PEREIRA            | NO                   | NO                  | AUTOS | CONDUCTOR PROFESIONAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -243,10 +243,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | TOLIMA                | IBAGUE             | NO                   | NO                  | AUTOS | CONDUCTOR FAMILIAR  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -261,10 +261,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | META                  | VILLAVICENCIO      | NO                   | NO                  | AUTOS | ESTANCIA CONDUCTOR POR HURTO    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -279,10 +279,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | SUCRE                 | SINCELEJO          | NO                   | NO                  | AUTOS | DESPLAZAMIENTO VIAJERO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -297,10 +297,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CORDOBA               | ABROJAL            | NO                   | NO                  | AUTOS | HOSPEDAJE VIAJERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -315,10 +315,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CESAR                 | VALLEDUPAR         | NO                   | NO                  | AUTOS | TRASLADO VEHICULO DE REEMPLAZO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -333,10 +333,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | GUAJIRA               | RIOHACHA           | NO                   | NO                  | AUTOS | RESCATE PARQUEADERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -351,10 +351,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ARAUCA                | PANAMA DE ARAUCA   | NO                   | NO                  | AUTOS | PARQUEADERO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -369,10 +369,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CASANARE              | CARIBAYONA         | NO                   | NO                  | AUTOS | DIAGNOSTICO VEHICULO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -387,10 +387,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE BATERIA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -405,10 +405,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE DISPOSITIVO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -423,10 +423,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VAUPES                | MITU               | NO                   | NO                  | AUTOS | INSTALACION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -441,10 +441,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | AMAZONAS              | ARARA              | NO                   | NO                  | AUTOS | MANTENIMIENTO PREVENTIVO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
   @batch26
@@ -458,10 +458,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | ATENCION VIRTUAL HOGAR    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -476,10 +476,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | ABOGADO EN SITIO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -494,10 +494,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA                | ENVIGADO             | NO                   | NO                  | HOGARES | ELECTRICISTA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -512,10 +512,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VALLE DEL CAUCA       | CACHIMBAL          | NO                   | NO                  | HOGARES | PLOMERO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -530,10 +530,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ATLANTICO             | AGUADA DE PABLO    | NO                   | NO                  | HOGARES | CERRAJERO HO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -548,10 +548,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | VIDRIERO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -566,10 +566,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER | ARBOLEDAS      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS     |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -584,10 +584,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | DESAGUE POR INUNDACION      |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -602,10 +602,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | MAGDALENA             | CIENAGA            | NO                   | NO                  | HOGARES | ASESORIA JURIDICA PRESENCIAL    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -620,10 +620,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION DIGITAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -638,10 +638,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | FACILITADOR VIRTUAL   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -656,10 +656,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | HOGARES | VIGILANTE  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
   @batch38
@@ -673,10 +673,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VAUPES                | MITU               | NO                   | NO                  | HOGARES | VIGILANTE SP |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -691,10 +691,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | AMAZONAS              | ARARA              | NO                   | NO                  | HOGARES | HOSPEDAJE VIAJERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
   @batch40
@@ -708,10 +708,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | TRASLADO DE BIENES  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -726,10 +726,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | SECADO DE ALFOMBRAS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -744,10 +744,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | SERVICIOS EXEQUIAL |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -762,10 +762,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VALLE DEL CAUCA       | CACHIMBAL          | NO                   | NO                  | HOGARES | GASTOS DE MUDANZA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -780,10 +780,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ATLANTICO             | AGUADA DE PABLO    | NO                   | NO                  | HOGARES | SEGUIMIENTO A LA REPARACION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -798,10 +798,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | REVISION Y REDACCION DE CONTRATOS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -816,10 +816,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER | ARBOLEDAS        | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -834,10 +834,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -852,10 +852,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | MAGDALENA             | CIENAGA            | NO                   | NO                  | HOGARES | ORIENTACION JURIDICA TELEFONICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -870,10 +870,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION MEDICA TELEFONICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
@@ -888,10 +888,10 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | PLAN DE ACCION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
-      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+      | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
-    And reingresamos como proveedor PRUEBAS50
+    And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 

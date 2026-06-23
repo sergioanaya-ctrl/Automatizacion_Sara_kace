@@ -48,21 +48,6 @@ public class CredentialsReader {
         }
     }
 
-    /**
-     * Usuario del proveedor (PRUEBAS50) usado para reingresar tras cerrar sesión.
-     * Se define en credentials.properties con la clave 'usuario_proveedor'.
-     */
-    public static String getUsuarioProveedor() {
-        return bundle.getString("usuario_proveedor");
-    }
-
-    /**
-     * Contraseña del proveedor (PRUEBAS50). Se define en credentials.properties
-     * con la clave 'contrasena_proveedor'. Nunca se imprime en logs.
-     */
-    public static String getContrasenaProveedor() {
-        return bundle.getString("contrasena_proveedor");
-    }
 }
 
 
