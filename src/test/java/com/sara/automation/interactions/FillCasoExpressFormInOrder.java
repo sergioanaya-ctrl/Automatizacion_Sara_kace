@@ -593,42 +593,24 @@ public class FillCasoExpressFormInOrder implements Interaction {
     }
 
     private <T extends Actor> void llenarServiciosEspecialesYAsignacionEnOrden(T actor) {
-        // Servicios especiales deshabilitado - saltamos directo a Línea y Servicio
-        
-        // Obtener el driver y asegurar contexto del iframe
+        // Servicios especiales deshabilitado - vamos directo a Línea y Servicio.
+        // Línea y Servicio usan el MISMO método robusto/verificado que departamento/municipio:
+        // espera presencia del control y deja que findOptionByText sea el gate real (Servicio
+        // depende de Línea por cascada; espera solo hasta que su opción aparezca, sin bloqueo fijo).
         WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
-        
-        // Asegurar que estamos en el iframe antes de cualquier scroll
-        driver.switchTo().defaultContent();
-        new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
-        System.out.println("  [llenarServiciosEspecialesYAsignacionEnOrden] Contexto del iframe OK");
-        
-        // Hacer scroll dentro del iframe usando JavaScriptExecutor
-        try {
-            String scrollScript = "var linea = document.evaluate(\"//label[normalize-space()='Línea *' or normalize-space()='Línea']\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue; " +
-                                  "if (linea) { linea.scrollIntoView(true); }";
-            ((JavascriptExecutor) driver).executeScript(scrollScript);
-            Thread.sleep(500);
-            System.out.println("  [llenarServiciosEspecialesYAsignacionEnOrden] Scroll a Línea OK");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        
-        // Línea y Servicio usan custom dropdowns - usar selectores basados en clases, NO en IDs dinámicos
-        seleccionarComboLineaWebDriver(driver, "//div[contains(@class,'formio-component-linea')]//div[contains(@class,'custom-dropdown-control')]", linea);
-        // Asegurarse de que el dropdown de Línea se cerró antes de abrir Servicio
-        ((JavascriptExecutor) driver).executeScript("document.activeElement.blur();");
-        esperarServicioHabilitado(driver);
-        // Usar selector específico que busca por el label "Servicio" (no "Servicio Especial")
-        seleccionarComboServicioWebDriver(driver, "//div[contains(@class,'formio-component-servicio') and .//label[normalize-space()='Servicio' and not(contains(., 'Especial'))]]//div[contains(@class,'custom-dropdown-control')]", servicio);
+        seleccionarComboCustomVerificado(driver, "formio-component-linea", linea);
+        seleccionarComboCustomVerificado(driver, "formio-component-servicio", servicio);
     }
 
     private <T extends Actor> void llenarObservacionFinal(T actor) {
         // Último campo editable del formulario antes de accionar Guardar.
+        long t0 = System.currentTimeMillis();
         actor.attemptsTo(Scroll.to(CasoCreatePage.Observacion_Final));
+        long tScroll = System.currentTimeMillis();
         String observacion = this.observacionFinal != null ? this.observacionFinal : generarObservacionAleatoria();
         llenarCampo(actor, CasoCreatePage.Observacion_Final, observacion);
+        long tFill = System.currentTimeMillis();
+        System.out.println("  [TIMING observacion] scroll=" + (tScroll - t0) + "ms | llenado=" + (tFill - tScroll) + "ms");
     }
 
     private String generarObservacionAleatoria() {
