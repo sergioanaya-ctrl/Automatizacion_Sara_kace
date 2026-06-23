@@ -231,7 +231,6 @@ public class FillCasoExpressFormInOrder implements Interaction {
      */
     private void seleccionarComboCustomVerificado(WebDriver driver, String componentClass, String valor) {
         By controlBy = By.cssSelector("." + componentClass + " .custom-dropdown-control");
-        By deshabilitadoBy = By.cssSelector("." + componentClass + " .custom-dropdown.kace-component--disabled");
         String objetivo = valor == null ? "" : valor.trim();
 
         int maxIntentos = 4;
@@ -251,12 +250,15 @@ public class FillCasoExpressFormInOrder implements Interaction {
                 }
                 long tFrame = System.currentTimeMillis();
 
-                // 1) Esperar habilitación (cascada lista) y presencia del control.
+                // 1) Esperar solo a que el control EXISTA (no a la clase 'disabled', que la app
+                //    mantiene ~10s aunque el combo ya es usable). El verdadero gate es
+                //    findOptionByText dentro de la selección: espera hasta que la opción aparezca
+                //    (instantáneo para departamento; lo que tarde la cascada para municipio).
                 new WebDriverWait(driver, Duration.ofSeconds(40)).until(d ->
-                        !d.findElements(controlBy).isEmpty() && d.findElements(deshabilitadoBy).isEmpty());
+                        !d.findElements(controlBy).isEmpty());
                 long tEnabled = System.currentTimeMillis();
                 System.out.println("  [TIMING " + componentClass + "] iframe=" + (tFrame - t0)
-                        + "ms | habilitacion=" + (tEnabled - tFrame) + "ms");
+                        + "ms | espera_control=" + (tEnabled - tFrame) + "ms");
 
                 // Idempotente: si ya está en el valor, no hacer nada.
                 if (norm(textoControl(driver, controlBy)).equals(norm(objetivo))) {
