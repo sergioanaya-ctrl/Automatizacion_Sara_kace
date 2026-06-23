@@ -54,9 +54,11 @@ public final class OneScriptDynamicElements {
         }
 
         clickWithJs(driver, control);
-        sleep(150); // breve, solo para que el dropdown empiece a abrir
 
-        WebElement search = getSearchInput(driver, componentClass);
+        // Espera ACTIVA del campo de búsqueda (en vez de un sleep fijo): retorna apenas aparece
+        // (rápido si el dropdown abre rápido) y tolera hasta 5s si bajo carga abre lento,
+        // garantizando que el filtrado se aplique.
+        WebElement search = waitForSearchInput(driver, componentClass, Duration.ofSeconds(5));
         if (search != null) {
             setInputValue(driver, search, value);
             // Sin sleep fijo: findOptionByText espera activamente a que aparezca la opción filtrada.
@@ -85,6 +87,26 @@ public final class OneScriptDynamicElements {
                 componentClass
         );
         return element instanceof WebElement ? (WebElement) element : null;
+    }
+
+    /**
+     * Espera activa del campo de búsqueda del dropdown: reintenta {@link #getSearchInput} hasta
+     * que aparezca o se agote el timeout. Devuelve null si no apareció (el llamador continúa:
+     * findOptionByText buscará entre las opciones visibles sin filtrar).
+     */
+    private static WebElement waitForSearchInput(WebDriver driver, String componentClass, Duration timeout) {
+        long deadline = System.currentTimeMillis() + timeout.toMillis();
+        WebElement search = getSearchInput(driver, componentClass);
+        while (search == null && System.currentTimeMillis() < deadline) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+            search = getSearchInput(driver, componentClass);
+        }
+        return search;
     }
 
     private static WebElement getSearchInput(WebDriver driver, String componentClass) {

@@ -648,6 +648,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
         // pero desaparezca (NoSuchElement) o quede stale justo antes de escribir.
         // Reintentamos todo el ciclo localizar+escribir para tolerar ese re-render.
         int maxIntentos = 3;
+        long t0 = System.currentTimeMillis();
         for (int intento = 1; intento <= maxIntentos; intento++) {
             // Reingresar al iframe antes de interactuar con el campo.
             ensureIframeContext(actor);
@@ -655,6 +656,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
                 actor.attemptsTo(Scroll.to(target));
                 actor.attemptsTo(WaitUntil.the(target, isVisible()).forNoMoreThan(20).seconds());
                 actor.attemptsTo(Enter.theValue(valor).into(target));
+                System.out.println("  [TIMING campo] '" + target + "' = " + (System.currentTimeMillis() - t0) + "ms");
                 return;
             } catch (org.openqa.selenium.NoSuchElementException
                     | org.openqa.selenium.StaleElementReferenceException e) {
