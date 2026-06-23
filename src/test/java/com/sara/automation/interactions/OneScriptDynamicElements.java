@@ -54,12 +54,12 @@ public final class OneScriptDynamicElements {
         }
 
         clickWithJs(driver, control);
-        sleep(400);
+        sleep(150); // breve, solo para que el dropdown empiece a abrir
 
         WebElement search = getSearchInput(driver, componentClass);
         if (search != null) {
             setInputValue(driver, search, value);
-            sleep(400);
+            // Sin sleep fijo: findOptionByText espera activamente a que aparezca la opción filtrada.
         }
 
         WebElement option = findOptionByText(driver, value);
@@ -68,7 +68,7 @@ public final class OneScriptDynamicElements {
         }
 
         clickWithJs(driver, option);
-        sleep(350);
+        sleep(150); // breve, para que la selección asiente antes de continuar
     }
 
     private static WebElement getDropdownControl(WebDriver driver, String componentClass) {
