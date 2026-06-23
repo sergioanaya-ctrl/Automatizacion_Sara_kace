@@ -10,12 +10,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS | PASO DE GASOLINA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch2
   Scenario: Test Usuario 02 - BOGOTA - BOGOTA - AUTOS - ABOGADO EN SITIO
@@ -28,12 +34,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOGOTA D.C.                | BOGOTA D.C.             | NO                   | NO                  | AUTOS | ABOGADO EN SITIO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch3
   Scenario: Test Usuario 03 - VALLE DEL CAUCA - BAJO CALIMA - AUTOS - MECANICA BASICA
@@ -46,12 +58,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VALLE DEL CAUCA       | BAJO CALIMA        | NO                   | NO                  | AUTOS | MECANICA BASICA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch4
   Scenario: Test Usuario 04 - ATLANTICO - BARANOA - AUTOS - FRENOS
@@ -64,12 +82,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ATLANTICO             | BARANOA            | NO                   | NO                  | AUTOS | FRENOS   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch5
   Scenario: Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA
@@ -82,12 +106,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CUNDINAMARCA          | SOACHA             | NO                   | NO                  | AUTOS | AMBULANCIA   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch6
   Scenario: Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA
@@ -100,12 +130,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | SANTANDER             | BUCARAMANGA        | NO                   | NO                  | AUTOS | GRUA     |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch7
   Scenario: Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS
@@ -118,12 +154,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER    | CUCUTA             | NO                   | NO                  | AUTOS | CAMBIO LLANTAS  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch8
   Scenario: Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA
@@ -136,12 +178,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | MAGDALENA             | SANTA MARTA        | NO                   | NO                  | AUTOS | CERRAJERO AUTOS COMPLEJIDAD BAJA    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch9
   Scenario: Test Usuario 09 - BOLIVAR - CARTAGENA LAGUNA CLUB - AUTOS - DESPLAZAMIENTO POR HORAS
@@ -154,12 +202,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOLIVAR               | CARTAGENA LAGUNA CLUB | NO                   | NO                  | AUTOS | DESPLAZAMIENTO POR HORAS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch10
   Scenario: Test Usuario 10 - NARIÑO - PASTO - AUTOS - FACILITADOR VIRTUAL
@@ -172,12 +226,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NARIÑO                | PASTO              | NO                   | NO                  | AUTOS | FACILITADOR VIRTUAL   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch11
   Scenario: Test Usuario 11 - CAUCA - ALMAGUER - AUTOS - ABOGADO VIRTUAL
@@ -190,12 +250,19 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CAUCA                 | ALMAGUER           | NO                   | NO                  | AUTOS | ABOGADO VIRTUAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
   @batch12
   Scenario: Test Usuario 12 - QUINDIO - ARMENIA - AUTOS - ORIENTACION JURIDICA TELEFONICA AUTOS
     Given el actor tiene un navegador disponible
@@ -207,12 +274,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | QUINDIO               | ARMENIA            | NO                   | NO                  | AUTOS | ORIENTACION JURIDICA TELEFONICA AUTOS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch13
   Scenario: Test Usuario 13 - RISARALDA - PEREIRA - AUTOS - CONDUCTOR PROFESIONAL
@@ -225,12 +298,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | RISARALDA             | PEREIRA            | NO                   | NO                  | AUTOS | CONDUCTOR PROFESIONAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch14
   Scenario: Test Usuario 14 - TOLIMA - IBAGUE - AUTOS - CONDUCTOR FAMILIAR
@@ -243,12 +322,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | TOLIMA                | IBAGUE             | NO                   | NO                  | AUTOS | CONDUCTOR FAMILIAR  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch15
   Scenario: Test Usuario 15 - META - VILLAVICENCIO - AUTOS - ESTANCIA CONDUCTOR POR HURTO
@@ -261,12 +346,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | META                  | VILLAVICENCIO      | NO                   | NO                  | AUTOS | ESTANCIA CONDUCTOR POR HURTO    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch16
   Scenario: Test Usuario 16 - SUCRE - SINCELEJO - AUTOS - DESPLAZAMIENTO VIAJERO
@@ -279,12 +370,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | SUCRE                 | SINCELEJO          | NO                   | NO                  | AUTOS | DESPLAZAMIENTO VIAJERO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch17
   Scenario: Test Usuario 17 - CORDOBA - ABROJAL - AUTOS - HOSPEDAJE VIAJERO
@@ -297,12 +394,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CORDOBA               | ABROJAL            | NO                   | NO                  | AUTOS | HOSPEDAJE VIAJERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch18
   Scenario: Test Usuario 18 - CESAR - VALLEDUPAR - AUTOS - TRASLADO VEHICULO DE REEMPLAZO
@@ -315,12 +418,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CESAR                 | VALLEDUPAR         | NO                   | NO                  | AUTOS | TRASLADO VEHICULO DE REEMPLAZO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch19
   Scenario: Test Usuario 19 - GUAJIRA - RIOHACHA - AUTOS - RESCATE PARQUEADERO
@@ -333,12 +442,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | GUAJIRA               | RIOHACHA           | NO                   | NO                  | AUTOS | RESCATE PARQUEADERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch20
   Scenario: Test Usuario 20 - ARAUCA - PANAMA DE ARAUCA - AUTOS - PARQUEADERO
@@ -351,12 +466,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ARAUCA                | PANAMA DE ARAUCA   | NO                   | NO                  | AUTOS | PARQUEADERO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch21
   Scenario: Test Usuario 21 - CASANARE - CARIBAYONA - AUTOS - DIAGNOSTICO VEHICULO
@@ -369,12 +490,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CASANARE              | CARIBAYONA         | NO                   | NO                  | AUTOS | DIAGNOSTICO VEHICULO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch22
   Scenario: Test Usuario 22 - VICHADA - PUERTO CARREÑO - AUTOS - CAMBIO DE BATERIA
@@ -387,12 +514,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE BATERIA  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch23
   Scenario: Test Usuario 23 - VICHADA - PUERTO CARREÑO  - AUTOS - CAMBIO DE DISPOSITIVO
@@ -405,12 +538,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE DISPOSITIVO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch24
   Scenario: Test Usuario 24 - VAUPÉS - MITÚ - AUTOS - INSTALACION
@@ -423,12 +562,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VAUPES                | MITU               | NO                   | NO                  | AUTOS | INSTALACION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch25
   Scenario: Test Usuario 25 - AMAZONAS - ARARA - AUTOS - MANTENIMIENTO PREVENTIVO
@@ -441,12 +586,19 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | AMAZONAS              | ARARA              | NO                   | NO                  | AUTOS | MANTENIMIENTO PREVENTIVO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
   @batch26
   Scenario: Test Usuario 26 - PUTUMAYO - MOCOA - HOGARES - ATENCION VIRTUAL HOGAR
     Given el actor tiene un navegador disponible
@@ -458,12 +610,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | ATENCION VIRTUAL HOGAR    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch27
   Scenario: Test Usuario 27 - ANTIOQUIA - ENVIGADO - HOGARES - ABOGADO EN SITIO
@@ -476,12 +634,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | ABOGADO EN SITIO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch28
   Scenario: Test Usuario 28 - ANTIOQUIA - ENVIGADO - HOGARES - ELECTRICISTA
@@ -494,12 +658,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA                | ENVIGADO             | NO                   | NO                  | HOGARES | ELECTRICISTA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch29
   Scenario: Test Usuario 29 - VALLE DEL CAUCA - CACHIMBAL - HOGARES - PLOMERO
@@ -512,12 +682,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VALLE DEL CAUCA       | CACHIMBAL          | NO                   | NO                  | HOGARES | PLOMERO  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch30
   Scenario: Test Usuario 30 - ATLANTICO - AGUADA DE PABLO - HOGARES - CERRAJERO HO
@@ -530,12 +706,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ATLANTICO             | AGUADA DE PABLO    | NO                   | NO                  | HOGARES | CERRAJERO HO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch31
   Scenario: Test Usuario 31 - CUNDINAMARCA - ZIPAQUIRA - HOGARES - VIDRIERO
@@ -548,12 +730,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | VIDRIERO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch32
   Scenario: Test Usuario 32 - SANTANORTE DE SANTANDER  - ARBOLEDAS - HOGARES - RETIRO DE ESCOMBROS
@@ -566,12 +754,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER | ARBOLEDAS      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS     |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch33
   Scenario: Test Usuario 33 - NORTE DE SANTANDER - OCAÑA - HOGARES - DESAGUE POR INUNDACION
@@ -584,12 +778,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | DESAGUE POR INUNDACION      |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch34
   Scenario: Test Usuario 34 - MAGDALENA - CIÉNAGA - HOGARES - ASESORIA JURIDICA PRESENCIAL
@@ -602,12 +802,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | MAGDALENA             | CIENAGA            | NO                   | NO                  | HOGARES | ASESORIA JURIDICA PRESENCIAL    |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch35
   Scenario: Test Usuario 35 - BOLIVAR - TURBACO - HOGARES - ORIENTACION DIGITAL
@@ -620,12 +826,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION DIGITAL  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch36
   Scenario: Test Usuario 36 - NARIÑO - IPIALES - HOGARES - FACILITADOR VIRTUAL
@@ -638,12 +850,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | FACILITADOR VIRTUAL   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch37
   Scenario: Test Usuario 37 - VICHADA - PUERTO CARREÑO - HOGARES - VIGILANTE
@@ -656,12 +874,19 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | HOGARES | VIGILANTE  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
   @batch38
   Scenario: Test Usuario 38 - VAUPES - MITU - HOGARES - VIGILANTE SP
     Given el actor tiene un navegador disponible
@@ -673,12 +898,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VAUPES                | MITU               | NO                   | NO                  | HOGARES | VIGILANTE SP |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch39
   Scenario: Test Usuario 39 - AMAZONAS - ARARA - HOGARES - HOSPEDAJE VIAJERO
@@ -691,12 +922,19 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | AMAZONAS              | ARARA              | NO                   | NO                  | HOGARES | HOSPEDAJE VIAJERO   |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
   @batch40
   Scenario: Test Usuario 40 - PUTUMAYO - MOCOA - HOGARES - TRASLADO DE BIENES
     Given el actor tiene un navegador disponible
@@ -708,12 +946,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | TRASLADO DE BIENES  |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch41
   Scenario: Test Usuario 41 - ANTIOQUIA - ENVIGADO - HOGARES - SECADO DE ALFOMBRAS
@@ -726,12 +970,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | SECADO DE ALFOMBRAS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch42
   Scenario: Test Usuario 42 - ANTIOQUIA - ENVIGADO - HOGARES - SERVICIOS EXEQUIAL
@@ -744,12 +994,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | SERVICIOS EXEQUIAL |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
   And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch43
   Scenario: Test Usuario 43 - VALLE DEL CAUCA - CACHIMBAL - HOGARES - GASTOS DE MUDANZA
@@ -762,12 +1018,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | VALLE DEL CAUCA       | CACHIMBAL          | NO                   | NO                  | HOGARES | GASTOS DE MUDANZA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch44
   Scenario: Test Usuario 44 - ATLANTICO - AGUADA DE PABLO - HOGARES - SEGUIMIENTO A LA REPARACION
@@ -780,12 +1042,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ATLANTICO             | AGUADA DE PABLO    | NO                   | NO                  | HOGARES | SEGUIMIENTO A LA REPARACION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch45
   Scenario: Test Usuario 45 - CUNDINAMARCA - ZIPAQUIRA - HOGARES - REVISION Y REDACCION DE CONTRATOS
@@ -798,12 +1066,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | REVISION Y REDACCION DE CONTRATOS |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch46
   Scenario: Test Usuario 46 - NORTE DE SANTANDER - ARBOLEDAS - HOGARES - ASESORIA PSICOLOGICA
@@ -816,12 +1090,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER | ARBOLEDAS        | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch47
   Scenario: Test Usuario 47 - NORTE DE SANTANDER - OCAÑA - HOGARES - CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO
@@ -834,12 +1114,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch48
   Scenario: Test Usuario 48 - MAGDALENA - CIENAGA - HOGARES - ORIENTACION JURIDICA TELEFONICA
@@ -852,12 +1138,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | MAGDALENA             | CIENAGA            | NO                   | NO                  | HOGARES | ORIENTACION JURIDICA TELEFONICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
       And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch49
   Scenario: Test Usuario 49 - BOLIVAR - TURBACO - HOGARES - ORIENTACION MEDICA TELEFONICA
@@ -870,12 +1162,18 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION MEDICA TELEFONICA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
      And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
   @batch50
   Scenario: Test Usuario 50 - NARIÑO - IPIALES - HOGARES - PLAN DE ACCION
@@ -888,10 +1186,16 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | PLAN DE ACCION |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
+<<<<<<< HEAD
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+=======
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And transicionamos los estados del caso
+    And Se valida que quede en estado "Abierto"
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 

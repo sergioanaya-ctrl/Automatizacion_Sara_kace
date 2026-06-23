@@ -1,7 +1,10 @@
 package com.sara.automation.interactions;
 
 import com.sara.automation.ui.CasoCreatePage;
+<<<<<<< HEAD
 import com.sara.automation.utils.ExpedienteContext;
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Interaction;
 import net.serenitybdd.screenplay.Performable;
@@ -52,6 +55,13 @@ public class FillCasoExpressFormInOrder implements Interaction {
             "Belén", "La Soledad", "Normandía", "El Prado", "El Poblado", "Granada",
             "Los Ángeles", "El Campestre", "Bosque Popular", "Santa María", "Normandía"
     };
+<<<<<<< HEAD
+=======
+    private static final String[] MARCAS_VEHICULO = {
+            "Renault", "Chevrolet", "Mazda", "Nissan", "Toyota", "Kia", "Hyundai",
+            "Volkswagen", "Ford", "Suzuki", "Mitsubishi", "Peugeot", "Fiat", "Honda"
+    };
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
     private final String departamento;
     private final String municipio;
@@ -119,8 +129,11 @@ public class FillCasoExpressFormInOrder implements Interaction {
 
     private <T extends Actor> void llenarDatosBasicosEnOrden(T actor) throws Exception {
         String numeroExpediente = generarNumeroExpediente15();
+<<<<<<< HEAD
         // Guardamos el expediente generado para reutilizarlo más adelante (búsqueda tras re-login).
         ExpedienteContext.setExpediente(numeroExpediente);
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
         String nombreSolicitante = generarNombreSolicitanteReal();
         String cedulaSolicitante = randomDigitos(10);
         String telefono1 = "3" + randomDigitos(9);
@@ -579,15 +592,23 @@ public class FillCasoExpressFormInOrder implements Interaction {
         String direccionDestino = generarDireccionColombiana(false);
         String detalleDireccionServicio = "Barrio " + BARRIOS[RANDOM.nextInt(BARRIOS.length)] + ", Torre " + (char) ('A' + RANDOM.nextInt(6));
         String detalleDireccionDestino = "Barrio " + BARRIOS[RANDOM.nextInt(BARRIOS.length)] + ", Apt. " + (1 + RANDOM.nextInt(90));
+<<<<<<< HEAD
+=======
+        String marcaVehiculo = MARCAS_VEHICULO[RANDOM.nextInt(MARCAS_VEHICULO.length)];
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 
         // Bloque de direcciones respetando la vista del formulario.
         llenarCampo(actor, CasoCreatePage.Direccion_Servicio, direccionServicio);
         llenarCampo(actor, CasoCreatePage.Direccion_Destino, direccionDestino);
         llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Destino, detalleDireccionDestino);
         llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Servicio, detalleDireccionServicio);
+<<<<<<< HEAD
         // NO llenamos "Marca de vehículo": al diligenciarla se habilita el campo requerido
         // 'data[clase_vehiculo]', que quedaría vacío y bloquearía el guardado. Marca es opcional,
         // así que se omite para no disparar esa dependencia.
+=======
+        llenarCampo(actor, CasoCreatePage.Marca_Vehiculo, marcaVehiculo);
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
         llenarCampo(actor, CasoCreatePage.Ubicacion_Servicio, UBICACION_SERVICIO_DEFAULT);
     }
 

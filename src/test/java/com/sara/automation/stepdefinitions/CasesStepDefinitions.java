@@ -1,5 +1,6 @@
 package com.sara.automation.stepdefinitions;
 
+<<<<<<< HEAD
 import com.sara.automation.tasks.BuscarExpediente;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.DiligenciarProveedorGestion;
@@ -7,23 +8,38 @@ import com.sara.automation.tasks.GestionConceptosProveedor;
 import com.sara.automation.tasks.GoToAgentPage;
 import com.sara.automation.tasks.LoginWithCognito;
 import com.sara.automation.tasks.LogoutFromUserMenu;
+=======
+import com.sara.automation.tasks.ClickCasoExpress;
+import com.sara.automation.tasks.DiligenciarProveedorGestion;
+import com.sara.automation.tasks.GoToAgentPage;
+import com.sara.automation.tasks.LoginWithCognito;
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 import com.sara.automation.tasks.OpenCasesPage;
 import com.sara.automation.tasks.TransicionarEstadosCaso;
 import com.sara.automation.tasks.ValidarEstadoCaso;
 import com.sara.automation.utils.CredentialsReader;
+<<<<<<< HEAD
 import com.sara.automation.utils.ExpedienteContext;
 import com.sara.automation.utils.ProveedorContext;
 import com.sara.automation.utils.ProveedorPoolManager;
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.After;
+<<<<<<< HEAD
 import io.cucumber.java.Scenario;
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+<<<<<<< HEAD
 import net.serenitybdd.core.Serenity;
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actors.OnStage;
@@ -32,12 +48,15 @@ import net.thucydides.core.annotations.Managed;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.WebDriver;
 
+<<<<<<< HEAD
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +90,7 @@ public class CasesStepDefinitions {
     WebDriver browser;
 
     private Actor actor;
+<<<<<<< HEAD
     private String nombreEscenario;
 
     @Before
@@ -78,10 +98,18 @@ public class CasesStepDefinitions {
         OnStage.setTheStage(new OnlineCast());
         actor = OnStage.theActorCalled("Sara");
         nombreEscenario = scenario.getName();
+=======
+
+    @Before
+    public void prepararEscenario() {
+        OnStage.setTheStage(new OnlineCast());
+        actor = OnStage.theActorCalled("Sara");
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
     }
 
     @After
     public void finalizarEscenario() {
+<<<<<<< HEAD
         // Registrar en un archivo resumen qué proveedor quedó asignado a este escenario
         // (útil para revisar toda la corrida de carga de un vistazo).
         ProveedorPoolManager.Proveedor proveedor = ProveedorContext.getOrNull();
@@ -109,6 +137,9 @@ public class CasesStepDefinitions {
                 System.out.println("[CasesStepDefinitions] ⚠ No se pudo escribir el resumen de proveedor: " + e.getMessage());
             }
         }
+=======
+        // Limpieza de escenario
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
     }
 
     @Given("el actor tiene un navegador disponible")
@@ -185,6 +216,7 @@ public class CasesStepDefinitions {
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         Map<String, String> row = rows.get(0);
 
+<<<<<<< HEAD
         // TABLA MANDA: el NOMBRE del proveedor lo decide el feature (p.ej. 'PRUEBAS40 PRUEBAS40').
         // Derivamos su login + contraseña del pool y lo guardamos en el contexto para reloguear
         // con el MISMO proveedor (un proveedor solo gestiona sus propios expedientes).
@@ -198,6 +230,11 @@ public class CasesStepDefinitions {
                 .withTitle("Proveedor asignado")
                 .andContents(proveedor.getUsuario() + " (" + nombreProveedor + ")");
 
+=======
+        String nombreProveedor = requiredAnyKey(row, "Nombre del proveedor", "nombre del proveedor", "proveedor", "Nombre");
+        String servicio = requiredAnyKey(row, "Servicio", "servicio", "Respuesta", "respuesta de proveedor");
+
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
         actor.attemptsTo(DiligenciarProveedorGestion.conDatos(nombreProveedor, servicio));
     }
 
@@ -229,6 +266,7 @@ public class CasesStepDefinitions {
         actor.attemptsTo(TransicionarEstadosCaso.completarSecuencia());
     }
 
+<<<<<<< HEAD
     @When("transicionamos los estados del caso hasta concluido")
     public void transicionamosLosEstadosDelCasoHastaConcluido() {
         // Transiciona hasta 'Concluido' y se detiene (no ejecuta 'Finalizado').
@@ -263,6 +301,8 @@ public class CasesStepDefinitions {
         actor.attemptsTo(GestionConceptosProveedor.now());
     }
 
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
     @Then("Se valida que quede en estado {string}")
     public void seValidaQueQuedeEnEstado(String estado) {
         // Valida que el caso haya finalizado en el estado esperado

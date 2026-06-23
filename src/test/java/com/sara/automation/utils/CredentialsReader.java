@@ -47,7 +47,10 @@ public class CredentialsReader {
             return bundle.getString("contrasena");
         }
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
 }
 
 

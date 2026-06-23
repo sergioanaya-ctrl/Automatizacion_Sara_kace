@@ -23,6 +23,7 @@ import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisi
 
 public class GoToAgentPage implements Task {
 
+<<<<<<< HEAD
     /**
      * Si es true, además de navegar y esperar la carga, espera a que el botón
      * "Caso Express" sea visible (necesario para el flujo de creación de casos).
@@ -38,15 +39,20 @@ public class GoToAgentPage implements Task {
         this.esperarCasoExpress = esperarCasoExpress;
     }
 
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
     public static Performable now() {
         return instrumented(GoToAgentPage.class);
     }
 
+<<<<<<< HEAD
     /** Navega a /agent y espera la carga, SIN exigir el botón "Caso Express". */
     public static Performable sinEsperarCasoExpress() {
         return instrumented(GoToAgentPage.class, false);
     }
 
+=======
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
     @Override
     @Step("Navega a la pagina de agent")
     public <T extends Actor> void performAs(T actor) {
@@ -101,6 +107,7 @@ public class GoToAgentPage implements Task {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+<<<<<<< HEAD
 
         // Para módulos sin "Caso Express" (p. ej. el módulo de proveedor tras re-login),
         // terminamos aquí: solo se requería navegar y esperar la carga.
@@ -109,6 +116,9 @@ public class GoToAgentPage implements Task {
             return;
         }
 
+=======
+        
+>>>>>>> 5783127ee331f818e5193c6c3bc56c81a70113f8
         // DEBUG: Capturar screenshot y HTML antes de buscar
         try {
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"));
