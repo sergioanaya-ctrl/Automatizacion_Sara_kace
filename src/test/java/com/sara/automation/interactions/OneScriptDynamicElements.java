@@ -2,6 +2,7 @@ package com.sara.automation.interactions;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -58,12 +59,14 @@ public final class OneScriptDynamicElements {
      * (p. ej. el resumen del editGrid).
      */
     public static void selectCustomDropdownByComponentClass(WebDriver driver, String componentClass, String value, String scope) {
-        WebElement control = getDropdownControl(driver, componentClass, scope);
+        // Espera ACTIVA del control: Form.io puede renderizar/re-renderizar el dropdown un instante
+        // después de que la sección esté "lista", lo que causaba NoSuchElement intermitente.
+        WebElement control = waitForDropdownControl(driver, componentClass, scope, Duration.ofSeconds(15));
         if (control == null) {
             throw new NoSuchElementException("No se encontró el dropdown control para componente: " + componentClass);
         }
 
-        clickWithJs(driver, control);
+        abrirDropdown(driver, componentClass, scope, control);
 
         // Espera ACTIVA del campo de búsqueda (en vez de un sleep fijo): retorna apenas aparece
         // (rápido si el dropdown abre rápido) y tolera hasta 5s si bajo carga abre lento,
@@ -100,11 +103,11 @@ public final class OneScriptDynamicElements {
      * antes de elegir la primera, ya que las opciones pueden venir de forma asíncrona del backend.
      */
     public static String selectFirstCustomDropdownOption(WebDriver driver, String componentClass, String scope) {
-        WebElement control = getDropdownControl(driver, componentClass, scope);
+        WebElement control = waitForDropdownControl(driver, componentClass, scope, Duration.ofSeconds(15));
         if (control == null) {
             throw new NoSuchElementException("No se encontró el dropdown control para componente: " + componentClass);
         }
-        clickWithJs(driver, control);
+        abrirDropdown(driver, componentClass, scope, control);
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         WebElement primera = wait.until(d -> {
@@ -120,6 +123,47 @@ public final class OneScriptDynamicElements {
         clickWithJs(driver, primera);
         sleep(150);
         return texto;
+    }
+
+    /**
+     * Espera ACTIVAMENTE a que el control del dropdown exista y sea visible, reintentando ante
+     * ausencia o staleness (Form.io re-renderiza). Devuelve null si no apareció en el timeout.
+     */
+    private static WebElement waitForDropdownControl(WebDriver driver, String componentClass, String scope, Duration timeout) {
+        long deadline = System.currentTimeMillis() + timeout.toMillis();
+        WebElement control = null;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                control = getDropdownControl(driver, componentClass, scope);
+                if (control != null && control.isDisplayed()) {
+                    return control;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // Re-render en curso: se reintenta.
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        return control;
+    }
+
+    /**
+     * Abre el dropdown clickeando su control, re-localizándolo si quedó stale tras un re-render.
+     */
+    private static void abrirDropdown(WebDriver driver, String componentClass, String scope, WebElement control) {
+        try {
+            clickWithJs(driver, control);
+        } catch (StaleElementReferenceException e) {
+            WebElement fresco = waitForDropdownControl(driver, componentClass, scope, Duration.ofSeconds(5));
+            if (fresco == null) {
+                throw new NoSuchElementException("El dropdown control quedó stale y no reapareció: " + componentClass);
+            }
+            clickWithJs(driver, fresco);
+        }
     }
 
     private static WebElement getDropdownControl(WebDriver driver, String componentClass, String scope) {
