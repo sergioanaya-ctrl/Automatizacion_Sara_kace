@@ -1,15 +1,16 @@
 Feature: Creacion de Expedientes en el sistema de gestion de casos
+
   @batch1
-  Scenario: Test Usuario 01 - ANTIOQUIA - MEDELLIN - AUTOS - PASO DE GASOLINA
+  Scenario: CASO-01 · Autos / Grua · Antioquia – Medellin
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio          |
-      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS | PASO DE GASOLINA  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -18,16 +19,16 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch2
-  Scenario: Test Usuario 02 - BOGOTA - BOGOTA - AUTOS - ABOGADO EN SITIO
+  Scenario: CASO-02 · Autos / Desplazamiento Por Inmovilizacion Del VH · Bogota D.C. – Bogota D.C.
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | BOGOTA D.C.                | BOGOTA D.C.             | NO                   | NO                  | AUTOS | ABOGADO EN SITIO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -36,88 +37,88 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch3
-  Scenario: Test Usuario 03 - VALLE DEL CAUCA - BAJO CALIMA - AUTOS - MECANICA BASICA
+  Scenario: CASO-03 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | VALLE DEL CAUCA       | BAJO CALIMA        | NO                   | NO                  | AUTOS | MECANICA BASICA  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
-   And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch4
-  Scenario: Test Usuario 04 - ATLANTICO - BARANOA - AUTOS - FRENOS
+  Scenario: CASO-04 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
-      | ATLANTICO             | BARANOA            | NO                   | NO                  | AUTOS | FRENOS   |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
-  And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch5
-  Scenario: Test Usuario 05 - CUNDINAMARCA - SOACHA - AUTOS - AMBULANCIA
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio     |
-      | CUNDINAMARCA          | SOACHA             | NO                   | NO                  | AUTOS | AMBULANCIA   |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
-  And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch6
-  Scenario: Test Usuario 06 - SANTANDER - BUCARAMANGA - AUTOS - GRUA
+  Scenario: CASO-05 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C.
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
-      | SANTANDER             | BUCARAMANGA        | NO                   | NO                  | AUTOS | GRUA     |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch6
+  Scenario: CASO-06 · Autos / Grua · Bogota D.C. – Bogota D.C.
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | GRUA |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch7
-  Scenario: Test Usuario 07 - NORTE DE SANTANDER - CUCUTA - AUTOS - CAMBIO LLANTAS
+  Scenario: CASO-07 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C.
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio        |
-      | NORTE DE SANTANDER    | CUCUTA             | NO                   | NO                  | AUTOS | CAMBIO LLANTAS  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -126,16 +127,16 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch8
-  Scenario: Test Usuario 08 - MAGDALENA - SANTA MARTA - AUTOS - CERRAJERO AUTOS COMPLEJIDAD BAJA
+  Scenario: CASO-08 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                            |
-      | MAGDALENA             | SANTA MARTA        | NO                   | NO                  | AUTOS | CERRAJERO AUTOS COMPLEJIDAD BAJA    |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -144,267 +145,268 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch9
-  Scenario: Test Usuario 09 - BOLIVAR - CARTAGENA LAGUNA CLUB - AUTOS - DESPLAZAMIENTO POR HORAS
+  Scenario: CASO-09 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                 |
-      | BOLIVAR               | CARTAGENA LAGUNA CLUB | NO                   | NO                  | AUTOS | DESPLAZAMIENTO POR HORAS |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch10
-  Scenario: Test Usuario 10 - NARIÑO - PASTO - AUTOS - FACILITADOR VIRTUAL
+  Scenario: CASO-10 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio              |
-      | NARIÑO                | PASTO              | NO                   | NO                  | AUTOS | FACILITADOR VIRTUAL   |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch11
-  Scenario: Test Usuario 11 - CAUCA - ALMAGUER - AUTOS - ABOGADO VIRTUAL
+  Scenario: CASO-11 · Autos / Grua · Antioquia – Medellin (combo C01)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio         |
-      | CAUCA                 | ALMAGUER           | NO                   | NO                  | AUTOS | ABOGADO VIRTUAL  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+
   @batch12
-  Scenario: Test Usuario 12 - QUINDIO - ARMENIA - AUTOS - ORIENTACION JURIDICA TELEFONICA AUTOS
+  Scenario: CASO-12 · Autos / Desplazamiento Por Inmovilizacion Del VH · Bogota D.C. – Bogota D.C. (combo C02)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                              |
-      | QUINDIO               | ARMENIA            | NO                   | NO                  | AUTOS | ORIENTACION JURIDICA TELEFONICA AUTOS |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch13
-  Scenario: Test Usuario 13 - RISARALDA - PEREIRA - AUTOS - CONDUCTOR PROFESIONAL
+  Scenario: CASO-13 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin (combo C03)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio               |
-      | RISARALDA             | PEREIRA            | NO                   | NO                  | AUTOS | CONDUCTOR PROFESIONAL  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch14
-  Scenario: Test Usuario 14 - TOLIMA - IBAGUE - AUTOS - CONDUCTOR FAMILIAR
+  Scenario: CASO-14 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C04)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio            |
-      | TOLIMA                | IBAGUE             | NO                   | NO                  | AUTOS | CONDUCTOR FAMILIAR  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
-  And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch15
-  Scenario: Test Usuario 15 - META - VILLAVICENCIO - AUTOS - ESTANCIA CONDUCTOR POR HURTO
+  Scenario: CASO-15 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C. (combo C05)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                        |
-      | META                  | VILLAVICENCIO      | NO                   | NO                  | AUTOS | ESTANCIA CONDUCTOR POR HURTO    |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
-  And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch16
-  Scenario: Test Usuario 16 - SUCRE - SINCELEJO - AUTOS - DESPLAZAMIENTO VIAJERO
+  Scenario: CASO-16 · Autos / Grua · Bogota D.C. – Bogota D.C. (combo C06)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                |
-      | SUCRE                 | SINCELEJO          | NO                   | NO                  | AUTOS | DESPLAZAMIENTO VIAJERO  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | GRUA |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
-   And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch17
-  Scenario: Test Usuario 17 - CORDOBA - ABROJAL - AUTOS - HOSPEDAJE VIAJERO
+  Scenario: CASO-17 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C. (combo C07)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio            |
-      | CORDOBA               | ABROJAL            | NO                   | NO                  | AUTOS | HOSPEDAJE VIAJERO   |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
-  And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch18
-  Scenario: Test Usuario 18 - CESAR - VALLEDUPAR - AUTOS - TRASLADO VEHICULO DE REEMPLAZO
+  Scenario: CASO-18 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin (combo C08)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                        |
-      | CESAR                 | VALLEDUPAR         | NO                   | NO                  | AUTOS | TRASLADO VEHICULO DE REEMPLAZO  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
-  And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch19
-  Scenario: Test Usuario 19 - GUAJIRA - RIOHACHA - AUTOS - RESCATE PARQUEADERO
+  Scenario: CASO-19 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C09)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio              |
-      | GUAJIRA               | RIOHACHA           | NO                   | NO                  | AUTOS | RESCATE PARQUEADERO   |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch20
-  Scenario: Test Usuario 20 - ARAUCA - PANAMA DE ARAUCA - AUTOS - PARQUEADERO
+  Scenario: CASO-20 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C10)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio    |
-      | ARAUCA                | PANAMA DE ARAUCA   | NO                   | NO                  | AUTOS | PARQUEADERO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
-   And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch21
-  Scenario: Test Usuario 21 - CASANARE - CARIBAYONA - AUTOS - DIAGNOSTICO VEHICULO
+  Scenario: CASO-21 · Autos / Grua · Antioquia – Medellin (combo C01)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio              |
-      | CASANARE              | CARIBAYONA         | NO                   | NO                  | AUTOS | DIAGNOSTICO VEHICULO  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch22
-  Scenario: Test Usuario 22 - VICHADA - PUERTO CARREÑO - AUTOS - CAMBIO DE BATERIA
+  Scenario: CASO-22 · Autos / Desplazamiento Por Inmovilizacion Del VH · Bogota D.C. – Bogota D.C. (combo C02)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio           |
-      | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE BATERIA  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
-   And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch23
-  Scenario: Test Usuario 23 - VICHADA - PUERTO CARREÑO  - AUTOS - CAMBIO DE DISPOSITIVO
+  Scenario: CASO-23 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin (combo C03)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio               |
-      | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | AUTOS | CAMBIO DE DISPOSITIVO  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -413,69 +415,70 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch24
-  Scenario: Test Usuario 24 - VAUPÉS - MITÚ - AUTOS - INSTALACION
+  Scenario: CASO-24 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C04)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio    |
-      | VAUPES                | MITU               | NO                   | NO                  | AUTOS | INSTALACION |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch25
-  Scenario: Test Usuario 25 - AMAZONAS - ARARA - AUTOS - MANTENIMIENTO PREVENTIVO
+  Scenario: CASO-25 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C. (combo C05)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio                   |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | AUTOS | MANTENIMIENTO PREVENTIVO   |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+
   @batch26
-  Scenario: Test Usuario 26 - PUTUMAYO - MOCOA - HOGARES - ATENCION VIRTUAL HOGAR
+  Scenario: CASO-26 · Autos / Grua · Bogota D.C. – Bogota D.C. (combo C06)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                  |
-      | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | ATENCION VIRTUAL HOGAR    |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | GRUA |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch27
-  Scenario: Test Usuario 27 - ANTIOQUIA - ENVIGADO - HOGARES - ABOGADO EN SITIO
+  Scenario: CASO-27 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C. (combo C07)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio         |
-      | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | ABOGADO EN SITIO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -484,16 +487,16 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch28
-  Scenario: Test Usuario 28 - ANTIOQUIA - ENVIGADO - HOGARES - ELECTRICISTA
+  Scenario: CASO-28 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin (combo C08)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio    |
-      | ANTIOQUIA                | ENVIGADO             | NO                   | NO                  | HOGARES | ELECTRICISTA |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -502,34 +505,34 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch29
-  Scenario: Test Usuario 29 - VALLE DEL CAUCA - CACHIMBAL - HOGARES - PLOMERO
+  Scenario: CASO-29 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C09)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio |
-      | VALLE DEL CAUCA       | CACHIMBAL          | NO                   | NO                  | HOGARES | PLOMERO  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch30
-  Scenario: Test Usuario 30 - ATLANTICO - AGUADA DE PABLO - HOGARES - CERRAJERO HO
+  Scenario: CASO-30 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C10)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio    |
-      | ATLANTICO             | AGUADA DE PABLO    | NO                   | NO                  | HOGARES | CERRAJERO HO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -538,34 +541,34 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch31
-  Scenario: Test Usuario 31 - CUNDINAMARCA - ZIPAQUIRA - HOGARES - VIDRIERO
+  Scenario: CASO-31 · Autos / Grua · Antioquia – Medellin (combo C01)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio |
-      | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | VIDRIERO |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch32
-  Scenario: Test Usuario 32 - SANTANORTE DE SANTANDER  - ARBOLEDAS - HOGARES - RETIRO DE ESCOMBROS
+  Scenario: CASO-32 · Autos / Desplazamiento Por Inmovilizacion Del VH · Bogota D.C. – Bogota D.C. (combo C02)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                |
-      | NORTE DE SANTANDER | ARBOLEDAS      | NO                   | NO                  | HOGARES | RETIRO DE ESCOMBROS     |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -574,321 +577,124 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos los conceptos del proveedor
 
   @batch33
-  Scenario: Test Usuario 33 - NORTE DE SANTANDER - OCAÑA - HOGARES - DESAGUE POR INUNDACION
+  Scenario: CASO-33 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin (combo C03)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                    |
-      | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | DESAGUE POR INUNDACION      |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
-   And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch34
-  Scenario: Test Usuario 34 - MAGDALENA - CIÉNAGA - HOGARES - ASESORIA JURIDICA PRESENCIAL
+  Scenario: CASO-34 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C04)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                        |
-      | MAGDALENA             | CIENAGA            | NO                   | NO                  | HOGARES | ASESORIA JURIDICA PRESENCIAL    |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch35
-  Scenario: Test Usuario 35 - BOLIVAR - TURBACO - HOGARES - ORIENTACION DIGITAL
+  Scenario: CASO-35 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C. (combo C05)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio             |
-      | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION DIGITAL  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
-   And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch36
-  Scenario: Test Usuario 36 - NARIÑO - IPIALES - HOGARES - FACILITADOR VIRTUAL
+  Scenario: CASO-36 · Autos / Grua · Bogota D.C. – Bogota D.C. (combo C06)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio              |
-      | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | FACILITADOR VIRTUAL   |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | GRUA |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch37
-  Scenario: Test Usuario 37 - VICHADA - PUERTO CARREÑO - HOGARES - VIGILANTE
+  Scenario: CASO-37 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C. (combo C07)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio   |
-      | VICHADA               | PUERTO CARREÑO     | NO                   | NO                  | HOGARES | VIGILANTE  |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
-   And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
+
   @batch38
-  Scenario: Test Usuario 38 - VAUPES - MITU - HOGARES - VIGILANTE SP
+  Scenario: CASO-38 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin (combo C08)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio     |
-      | VAUPES                | MITU               | NO                   | NO                  | HOGARES | VIGILANTE SP |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
+    And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
   @batch39
-  Scenario: Test Usuario 39 - AMAZONAS - ARARA - HOGARES - HOSPEDAJE VIAJERO
+  Scenario: CASO-39 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C09)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio            |
-      | AMAZONAS              | ARARA              | NO                   | NO                  | HOGARES | HOSPEDAJE VIAJERO   |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
     And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-  @batch40
-  Scenario: Test Usuario 40 - PUTUMAYO - MOCOA - HOGARES - TRASLADO DE BIENES
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio            |
-      | PUTUMAYO              | MOCOA              | NO                   | NO                  | HOGARES | TRASLADO DE BIENES  |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch41
-  Scenario: Test Usuario 41 - ANTIOQUIA - ENVIGADO - HOGARES - SECADO DE ALFOMBRAS
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                 |
-      | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | SECADO DE ALFOMBRAS |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch42
-  Scenario: Test Usuario 42 - ANTIOQUIA - ENVIGADO - HOGARES - SERVICIOS EXEQUIAL
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio              |
-      | ANTIOQUIA             | ENVIGADO           | NO                   | NO                  | HOGARES | SERVICIOS EXEQUIAL |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
-  And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch43
-  Scenario: Test Usuario 43 - VALLE DEL CAUCA - CACHIMBAL - HOGARES - GASTOS DE MUDANZA
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio             |
-      | VALLE DEL CAUCA       | CACHIMBAL          | NO                   | NO                  | HOGARES | GASTOS DE MUDANZA |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch44
-  Scenario: Test Usuario 44 - ATLANTICO - AGUADA DE PABLO - HOGARES - SEGUIMIENTO A LA REPARACION
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                      |
-      | ATLANTICO             | AGUADA DE PABLO    | NO                   | NO                  | HOGARES | SEGUIMIENTO A LA REPARACION |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch45
-  Scenario: Test Usuario 45 - CUNDINAMARCA - ZIPAQUIRA - HOGARES - REVISION Y REDACCION DE CONTRATOS
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                          |
-      | CUNDINAMARCA          | ZIPAQUIRA          | NO                   | NO                  | HOGARES | REVISION Y REDACCION DE CONTRATOS |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch46
-  Scenario: Test Usuario 46 - NORTE DE SANTANDER - ARBOLEDAS - HOGARES - ASESORIA PSICOLOGICA
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                |
-      | NORTE DE SANTANDER | ARBOLEDAS        | NO                   | NO                  | HOGARES | ASESORIA PSICOLOGICA |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch47
-  Scenario: Test Usuario 47 - NORTE DE SANTANDER - OCAÑA - HOGARES - CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                              |
-      | NORTE DE SANTANDER    | OCAÑA              | NO                   | NO                  | HOGARES | CONSEJERIA FAMILIAR VIRTUAL O TELEFONICO |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch48
-  Scenario: Test Usuario 48 - MAGDALENA - CIENAGA - HOGARES - ORIENTACION JURIDICA TELEFONICA
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                       |
-      | MAGDALENA             | CIENAGA            | NO                   | NO                  | HOGARES | ORIENTACION JURIDICA TELEFONICA |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
-      And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-  @batch49
-  Scenario: Test Usuario 49 - BOLIVAR - TURBACO - HOGARES - ORIENTACION MEDICA TELEFONICA
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio                      |
-      | BOLIVAR               | TURBACO            | NO                   | NO                  | HOGARES | ORIENTACION MEDICA TELEFONICA |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
-      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
-     And transicionamos los estados del caso hasta concluido
-    And cerramos sesion del usuario
-    And reingresamos como el proveedor asignado
-    And buscamos el expediente guardado y abrimos su edicion
-    And gestionamos los conceptos del proveedor
-
-
-  @batch50
-  Scenario: Test Usuario 50 - NARIÑO - IPIALES - HOGARES - PLAN DE ACCION
-    Given el actor tiene un navegador disponible
-    When abre la pagina de casos
-    And realiza login con credenciales
-    And navega a agent
-    And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea  | servicio        |
-      | NARIÑO                | IPIALES            | NO                   | NO                  | HOGARES | PLAN DE ACCION |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio      |
+      | Nombre del proveedor | Servicio |
       | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
@@ -896,6 +702,203 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
+  @batch40
+  Scenario: CASO-40 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C10)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS46 PRUEBAS46 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch41
+  Scenario: CASO-41 · Autos / Grua · Antioquia – Medellin (combo C01)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS47 PRUEBAS47 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch42
+  Scenario: CASO-42 · Autos / Desplazamiento Por Inmovilizacion Del VH · Bogota D.C. – Bogota D.C. (combo C02)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS48 PRUEBAS48 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch43
+  Scenario: CASO-43 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin (combo C03)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS49 PRUEBAS49 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch44
+  Scenario: CASO-44 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C04)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS50 PRUEBAS50 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch45
+  Scenario: CASO-45 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C. (combo C05)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch46
+  Scenario: CASO-46 · Autos / Grua · Bogota D.C. – Bogota D.C. (combo C06)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | GRUA |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS41 PRUEBAS41 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch47
+  Scenario: CASO-47 · Autos / Conductor Elegido · Bogota D.C. – Bogota D.C. (combo C07)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | BOGOTA D.C. | BOGOTA D.C. | NO | NO | AUTOS | CONDUCTOR ELEGIDO |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS42 PRUEBAS42 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch48
+  Scenario: CASO-48 · Conductor Elegido / Conductor Elegido · Antioquia – Medellin (combo C08)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | CONDUCTOR ELEGIDO | CONDUCTOR ELEGIDO |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS43 PRUEBAS43 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch49
+  Scenario: CASO-49 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C09)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS44 PRUEBAS44 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
+
+  @batch50
+  Scenario: CASO-50 · Autos / Desplazamiento Por Inmovilizacion Del VH · Antioquia – Medellin (combo C10)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | DESPLAZAMIENTO POR INMOVILIZACION DEL VH |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PRUEBAS45 PRUEBAS45 | TOMA SERVICIO |
+    And transicionamos los estados del caso hasta concluido
+    And cerramos sesion del usuario
+    And reingresamos como el proveedor asignado
+    And buscamos el expediente guardado y abrimos su edicion
+    And gestionamos los conceptos del proveedor
 
   @batch51
   Scenario: Reclamaciones - Creacion de caso de reclamacion 51
@@ -1121,4 +1124,3 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And creamos un caso de reclamaciones
     And gestionamos la reclamacion
-
