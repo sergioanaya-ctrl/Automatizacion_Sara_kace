@@ -184,7 +184,7 @@ function Create-XlsxFileDirect {
                     if ($colNum -gt 26) {
                         $cellRef = ([char]([byte][char]'A' + [math]::Floor(($colNum-1)/26) - 1)) + ([char]([byte][char]'A' + (($colNum-1) % 26))) + "$rowNum"
                     }
-                    $worksheetXml += "`n            <c r=""$cellRef"" t=""str""><v>$([Security.SecurityElement]::Escape($prop.Name))</v></c>"
+                    $worksheetXml += "`n            <c r=""$cellRef"" t=""inlineStr""><is><t xml:space=""preserve"">$([Security.SecurityElement]::Escape($prop.Name))</t></is></c>"
                     $colNum++
                 }
                 $worksheetXml += "`n        </row>"
@@ -200,7 +200,7 @@ function Create-XlsxFileDirect {
                         if ($colNum -gt 26) {
                             $cellRef = ([char]([byte][char]'A' + [math]::Floor(($colNum-1)/26) - 1)) + ([char]([byte][char]'A' + (($colNum-1) % 26))) + "$rowNum"
                         }
-                        $worksheetXml += "`n            <c r=""$cellRef"" t=""str""><v>$([Security.SecurityElement]::Escape($val))</v></c>"
+                        $worksheetXml += "`n            <c r=""$cellRef"" t=""inlineStr""><is><t xml:space=""preserve"">$([Security.SecurityElement]::Escape($val))</t></is></c>"
                         $colNum++
                     }
                     $worksheetXml += "`n        </row>"
@@ -542,6 +542,34 @@ $jsonFiles = Get-ChildItem -Path $serenityReportPath -Filter "*.json" -ErrorActi
 $allSteps = @()
 $testStats = @()
 
+# ===== CARGAR LOG DE CONSOLA POR ESCENARIO (system-out del JUnit XML) =====
+# Se construye ANTES del loop para usarlo como propiedad directa de cada test.
+# IMPORTANTE: el log de las tasks queda en el XML del FEATURE (testcase name="Test Usuario NN - ..."),
+# NO en el del runner (system-out vacio). Se extrae con regex sobre texto crudo (no [xml], que
+# fallaba por caracteres de control) y se mapea por NOMBRE DE TEST (= titulo de Serenity).
+$logByTest = @{}
+if (Test-Path $junitPath) {
+    Get-ChildItem -Path $junitPath -Filter "*.xml" -ErrorAction SilentlyContinue | ForEach-Object {
+        try {
+            $raw = Get-Content $_.FullName -Raw -Encoding UTF8 -ErrorAction Stop
+            $mOut = [regex]::Match($raw, '<system-out><!\[CDATA\[(.*?)\]\]></system-out>', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+            if (-not $mOut.Success) { return }
+            $logTxt = $mOut.Groups[1].Value
+            if ([string]::IsNullOrWhiteSpace($logTxt)) { return }  # runner XML: system-out vacio
+            # Sanitizar chars de control invalidos en XML (si no, romperian el xlsx de salida).
+            # NOTA: ya NO truncamos: el log va linea por fila, asi que no aplica el limite de celda.
+            $logTxt = [regex]::Replace($logTxt, '[\x00-\x08\x0B\x0C\x0E-\x1F]', '')
+            foreach ($mc in [regex]::Matches($raw, 'testcase\s+name="([^"]*)"')) {
+                $tcName = $mc.Groups[1].Value -replace '&amp;', '&' -replace '&lt;', '<' -replace '&gt;', '>' -replace '&quot;', '"' -replace '&#39;', "'"
+                if (-not [string]::IsNullOrWhiteSpace($tcName)) { $logByTest[$tcName.Trim()] = $logTxt }
+            }
+        } catch {
+            Write-Host "  [WARN] No se pudo leer system-out de $($_.Name): $_" -ForegroundColor Yellow
+        }
+    }
+    Write-Host "Logs de consola cargados para $($logByTest.Count) escenario(s)" -ForegroundColor Green
+}
+
 foreach ($jsonFile in $jsonFiles) {
     $jsonContent = Get-Content $jsonFile.FullName | ConvertFrom-Json
     $testName = $jsonContent.title
@@ -575,6 +603,10 @@ foreach ($jsonFile in $jsonFiles) {
             $testErrorType = $firstError.ErrorType
         }
         
+        $logConsola = ""
+        $tnKey = if ($testName) { ([string]$testName).Trim() } else { "" }
+        if ($logByTest.ContainsKey($tnKey)) { $logConsola = $logByTest[$tnKey] }
+
         $testStats += [PSCustomObject]@{
             Test = $testName
             Batch = $batch
@@ -584,6 +616,7 @@ foreach ($jsonFile in $jsonFiles) {
             Estado = $testState
             ErrorType = $testErrorType
             ErrorMessage = $testErrorMsg
+            LogConsola = $logConsola
         }
     }
 }
@@ -675,7 +708,7 @@ if ($errorSummary.Count -eq 0) {
     $errorSummary = @([PSCustomObject]@{ "Error Type" = "Sin Errores"; Cantidad = 0; Porcentaje = 0 })
 }
 
-# Hoja 4: Estadísticas por Test
+# Hoja 4: Estadísticas por Test (sin el log completo: el log va en su propia hoja, linea por fila)
 $testSummary = $testStats | Select-Object @{N="Test"; E={$_.Test}},
                                            @{N="Batch"; E={$_.Batch}},
                                            @{N="Maquina"; E={$machineName}},
@@ -687,10 +720,36 @@ $testSummary = $testStats | Select-Object @{N="Test"; E={$_.Test}},
                                            @{N="Error Type"; E={$_.ErrorType}},
                                            @{N="Error Message"; E={$_.ErrorMessage}}
 
+# Hoja 5: Log Consola (UNA LINEA POR FILA -> filtrable/buscable, facil de revisar).
+# Incluye Maquina/Usuario para que la consolidacion solo tenga que concatenar estas hojas.
+$logLinesSheet = @()
+foreach ($ts in $testStats) {
+    if ([string]::IsNullOrEmpty($ts.LogConsola)) { continue }
+    $n = 0
+    foreach ($ln in ($ts.LogConsola -split "`n")) {
+        $n++
+        $lineaLimpia = ($ln -replace "`r", "")
+        # Marca de error para metricas (contar/filtrar lineas de fallo).
+        $esError = if ($lineaLimpia -match '(?i)error|fall(o|a|ó|aron)|fail|exception|no se pudo|timeout|✗|✘') { "SI" } else { "" }
+        $logLinesSheet += [PSCustomObject]@{
+            Test    = $ts.Test
+            Batch   = $ts.Batch
+            Maquina = $machineName
+            Usuario = $userName
+            Nro     = $n
+            EsError = $esError
+            Linea   = $lineaLimpia
+        }
+    }
+}
+if (@($logLinesSheet).Count -eq 0) {
+    $logLinesSheet = @([PSCustomObject]@{ Test = ""; Batch = ""; Maquina = $machineName; Usuario = $userName; Nro = 0; EsError = ""; Linea = "(sin log de consola)" })
+}
+
 Write-Host "Generando Excel..." -ForegroundColor Cyan
 $excelSuccess = Create-ExcelFile -filePath $excelPath `
-                                 -sheetData @($stepsSheet, $slowSheet, $errorSummary, $testSummary) `
-                                 -sheetNames @("Todos los Pasos", "Pasos Lentos (>5s)", "Resumen de Errores", "Resumen por Test") `
+                                 -sheetData @($stepsSheet, $slowSheet, $errorSummary, $testSummary, $logLinesSheet) `
+                                 -sheetNames @("Todos los Pasos", "Pasos Lentos (>5s)", "Resumen de Errores", "Resumen por Test", "Log Consola") `
                                  -csvPath $csvPath
 
 if ($excelSuccess) {

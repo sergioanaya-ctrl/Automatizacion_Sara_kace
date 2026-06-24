@@ -877,6 +877,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
+
   @batch50
   Scenario: Test Usuario 50 - NARIÑO - IPIALES - HOGARES - PLAN DE ACCION
     Given el actor tiene un navegador disponible
@@ -895,3 +896,12 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And buscamos el expediente guardado y abrimos su edicion
     And gestionamos los conceptos del proveedor
 
+
+  @batch51
+  Scenario: Reclamaciones - Creacion de caso de reclamacion
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And creamos un caso de reclamaciones
+    And gestionamos la reclamacion

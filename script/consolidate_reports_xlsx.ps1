@@ -110,8 +110,14 @@ function Read-XlsxSheetSimple {
             $rowData = @()
             
             foreach ($cell in $row.c) {
-                # Los valores están directamente en $cell.v
+                # Soporta dos formatos: t="str" con <v>, y t="inlineStr" con <is><t>.
+                # (El escritor nativo ahora usa inlineStr para que los valores largos/multilinea
+                # -como el Log de consola- se muestren bien en Excel/LibreOffice.)
                 $cellValue = $cell.v
+                if ($null -eq $cellValue) {
+                    $tNode = $cell.SelectSingleNode("*[local-name()='is']/*[local-name()='t']")
+                    if ($tNode) { $cellValue = $tNode.InnerText }
+                }
                 $rowData += @($cellValue)
             }
             
@@ -173,13 +179,37 @@ Write-Host ""
 Write-Host "[INFO] Procesando archivos XLSX..." -ForegroundColor Cyan
 
 $allSteps = @()
+# Lineas de log de consola (una por fila) acumuladas de todos los step_details, para el consolidado.
+$allLogLines = @()
 
 foreach ($file in $xlsxFiles) {
     Write-Host "  Leyendo: $($file.Name)..." -ForegroundColor White
-    
+
     try {
         # Leer hoja "Todos los Pasos" del XLSX
         $xlsxData = Read-XlsxSheetSimple -XlsxPath $file.FullName -SheetName "Todos los Pasos"
+
+        # Leer la hoja "Log Consola" (una linea por fila) y acumularla para el consolidado.
+        try {
+            $logData = Read-XlsxSheetSimple -XlsxPath $file.FullName -SheetName "Log Consola"
+            foreach ($lr in $logData) {
+                if ($lr.PSObject.Properties.Name -contains "Linea") {
+                    $esErr = if ($lr.PSObject.Properties.Name -contains "EsError") { $lr.EsError } else { "" }
+                    $allLogLines += [PSCustomObject]@{
+                        Test    = $lr.Test
+                        Batch   = $lr.Batch
+                        Maquina = $lr.Maquina
+                        Usuario = $lr.Usuario
+                        Nro     = $lr.Nro
+                        EsError = $esErr
+                        Linea   = $lr.Linea
+                        "Archivo Origen" = $file.Name
+                    }
+                }
+            }
+        } catch {
+            Write-Host "    [WARN] No se pudo leer 'Log Consola' de $($file.Name): $_" -ForegroundColor Yellow
+        }
         
         if ($xlsxData.Count -eq 0) {
             Write-Host "    ADVERTENCIA: Sin datos o hoja no encontrada" -ForegroundColor Yellow
@@ -518,7 +548,13 @@ try {
         $slowStepsWithMin | Export-Excel -Path $excelPath -WorksheetName "Pasos Lentos" -AutoSize -TableStyle "Light1" -AutoFilter -FreezeTopRow -Append
         Write-Host "  OK Hoja 8: Pasos Lentos ($($slowSteps.Count) pasos)" -ForegroundColor Green
     }
-    
+
+    # Hoja 9: Log Consola (una linea por fila, de todas las maquinas) - filtrable/buscable
+    if (@($allLogLines).Count -gt 0) {
+        @($allLogLines) | Export-Excel -Path $excelPath -WorksheetName "Log Consola" -AutoSize -TableStyle "Light1" -AutoFilter -FreezeTopRow -Append
+        Write-Host "  OK Hoja 9: Log Consola ($(@($allLogLines).Count) lineas)" -ForegroundColor Green
+    }
+
     $excelFileInfo = Get-Item $excelPath
     $excelSizeMB = [math]::Round($excelFileInfo.Length / 1MB, 2)
     Write-Host "  - Excel generado: $excelPath ($excelSizeMB MB)" -ForegroundColor Green
