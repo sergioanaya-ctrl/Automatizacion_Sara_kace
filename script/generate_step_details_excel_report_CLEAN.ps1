@@ -162,57 +162,54 @@ function Create-XlsxFileDirect {
         $writer.Close()
         
         # 6. Crear worksheets
+        # IMPORTANTE: se ESCRIBE DIRECTO al StreamWriter fila por fila en vez de acumular un
+        # string con '+=' (que en PowerShell es O(n^2) y, con la hoja "Log Consola" de miles de
+        # filas, hace que la generación parezca "colgada" durante minutos).
         for ($i = 0; $i -lt $sheetData.Count; $i++) {
             $sheet = $sheetData[$i]
             if ($null -eq $sheet -or $sheet.Count -eq 0) { continue }
-            
-            $worksheetXml = @"
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-    <sheetData>
-"@
-            
+
+            $entry = $zipArchive.CreateEntry("xl/worksheets/sheet$($i+1).xml")
+            $writer = New-Object System.IO.StreamWriter($entry.Open())
+            $writer.Write("<?xml version=""1.0"" encoding=""UTF-8"" standalone=""yes""?>`n<worksheet xmlns=""http://schemas.openxmlformats.org/spreadsheetml/2006/main"">`n    <sheetData>")
+
             $rowNum = 1
             $firstItem = $sheet | Select-Object -First 1
-            
+
             if ($firstItem) {
                 # Headers
                 $colNum = 1
-                $worksheetXml += "`n        <row r=""$rowNum"">"
+                $writer.Write("`n        <row r=""$rowNum"">")
                 foreach ($prop in $firstItem.PSObject.Properties) {
                     $cellRef = [char]([byte][char]'A' + $colNum - 1) + "$rowNum"
                     if ($colNum -gt 26) {
                         $cellRef = ([char]([byte][char]'A' + [math]::Floor(($colNum-1)/26) - 1)) + ([char]([byte][char]'A' + (($colNum-1) % 26))) + "$rowNum"
                     }
-                    $worksheetXml += "`n            <c r=""$cellRef"" t=""inlineStr""><is><t xml:space=""preserve"">$([Security.SecurityElement]::Escape($prop.Name))</t></is></c>"
+                    $writer.Write("`n            <c r=""$cellRef"" t=""inlineStr""><is><t xml:space=""preserve"">$([Security.SecurityElement]::Escape($prop.Name))</t></is></c>")
                     $colNum++
                 }
-                $worksheetXml += "`n        </row>"
+                $writer.Write("`n        </row>")
                 $rowNum++
-                
+
                 # Data rows
                 foreach ($item in $sheet) {
                     $colNum = 1
-                    $worksheetXml += "`n        <row r=""$rowNum"">"
+                    $writer.Write("`n        <row r=""$rowNum"">")
                     foreach ($prop in $item.PSObject.Properties) {
                         $val = if ($null -eq $prop.Value) { "" } else { [string]$prop.Value }
                         $cellRef = [char]([byte][char]'A' + $colNum - 1) + "$rowNum"
                         if ($colNum -gt 26) {
                             $cellRef = ([char]([byte][char]'A' + [math]::Floor(($colNum-1)/26) - 1)) + ([char]([byte][char]'A' + (($colNum-1) % 26))) + "$rowNum"
                         }
-                        $worksheetXml += "`n            <c r=""$cellRef"" t=""inlineStr""><is><t xml:space=""preserve"">$([Security.SecurityElement]::Escape($val))</t></is></c>"
+                        $writer.Write("`n            <c r=""$cellRef"" t=""inlineStr""><is><t xml:space=""preserve"">$([Security.SecurityElement]::Escape($val))</t></is></c>")
                         $colNum++
                     }
-                    $worksheetXml += "`n        </row>"
+                    $writer.Write("`n        </row>")
                     $rowNum++
                 }
             }
-            
-            $worksheetXml += "`n    </sheetData>`n</worksheet>"
-            
-            $entry = $zipArchive.CreateEntry("xl/worksheets/sheet$($i+1).xml")
-            $writer = New-Object System.IO.StreamWriter($entry.Open())
-            $writer.Write($worksheetXml)
+
+            $writer.Write("`n    </sheetData>`n</worksheet>")
             $writer.Close()
         }
         
