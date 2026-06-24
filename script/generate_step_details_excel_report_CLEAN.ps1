@@ -536,7 +536,9 @@ Write-Host ""
 
 # Cargar JSON de Serenity
 $jsonFiles = Get-ChildItem -Path $serenityReportPath -Filter "*.json" -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch "index" }
-$allSteps = @()
+# Listas .NET (Add O(1)) en vez de arrays con '+=' (O(n^2)): con 50 escenarios y miles de
+# pasos/líneas de consola, el '+=' hacía que la generación pareciera "colgada".
+$allSteps = [System.Collections.Generic.List[object]]::new()
 $testStats = @()
 
 # ===== CARGAR LOG DE CONSOLA POR ESCENARIO (system-out del JUnit XML) =====
@@ -582,7 +584,7 @@ foreach ($jsonFile in $jsonFiles) {
     
     if ($jsonContent.testSteps) {
         $steps = Extract-TestSteps -steps $jsonContent.testSteps -testName $testName -batch $batch
-        $allSteps += $steps
+        if ($steps) { $allSteps.AddRange([object[]]@($steps)) }
         
         $slowSteps = $steps | Where-Object { $_.Tiempo_ms -gt 5000 }
         $totalMs = ($steps | Measure-Object -Property Tiempo_ms -Sum).Sum
@@ -621,7 +623,8 @@ foreach ($jsonFile in $jsonFiles) {
 # ===== GENERAR CSV =====
 
 $csvPath = "$outputPath\step_details_$timestamp.csv"
-$csvLines = @('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Tiempo (ms)","Tiempo (s)","Tiempo (min)","Estado","Error Type","Error Message","Origen Error"')
+$csvLines = [System.Collections.Generic.List[object]]::new()
+$csvLines.Add('"Test","Batch","Maquina","Usuario","Descripcion","Accion","Elemento","Valor","Tiempo (ms)","Tiempo (s)","Tiempo (min)","Estado","Error Type","Error Message","Origen Error"')
 
 foreach ($step in $allSteps) {
     $desc = $step.Descripcion -replace '"', '""'
@@ -647,8 +650,8 @@ foreach ($step in $allSteps) {
         "`"$errorMsg`""
         "`"$errorSource`""
     ) -join ","
-    
-    $csvLines += $line
+
+    $csvLines.Add($line)
 }
 
 $csvLines | Out-File -FilePath $csvPath -Encoding UTF8
@@ -719,7 +722,7 @@ $testSummary = $testStats | Select-Object @{N="Test"; E={$_.Test}},
 
 # Hoja 5: Log Consola (UNA LINEA POR FILA -> filtrable/buscable, facil de revisar).
 # Incluye Maquina/Usuario para que la consolidacion solo tenga que concatenar estas hojas.
-$logLinesSheet = @()
+$logLinesSheet = [System.Collections.Generic.List[object]]::new()
 foreach ($ts in $testStats) {
     if ([string]::IsNullOrEmpty($ts.LogConsola)) { continue }
     $n = 0
@@ -728,7 +731,7 @@ foreach ($ts in $testStats) {
         $lineaLimpia = ($ln -replace "`r", "")
         # Marca de error para metricas (contar/filtrar lineas de fallo).
         $esError = if ($lineaLimpia -match '(?i)error|fall(o|a|ó|aron)|fail|exception|no se pudo|timeout|✗|✘') { "SI" } else { "" }
-        $logLinesSheet += [PSCustomObject]@{
+        $logLinesSheet.Add([PSCustomObject]@{
             Test    = $ts.Test
             Batch   = $ts.Batch
             Maquina = $machineName
@@ -736,7 +739,7 @@ foreach ($ts in $testStats) {
             Nro     = $n
             EsError = $esError
             Linea   = $lineaLimpia
-        }
+        })
     }
 }
 if (@($logLinesSheet).Count -eq 0) {
@@ -1032,12 +1035,14 @@ $html = @"
                 <tbody>
 "@
 
+# Filas en una lista y un solo join (evita '+=' por paso = O(n^2) sobre miles de pasos).
+$filasHtml = [System.Collections.Generic.List[object]]::new()
 foreach ($step in $allSteps) {
     $badgeClass = if($step.EsFallo) { 'badge-error' } else { 'badge-success' }
     $errorDisplay = if($step.EsFallo) { $step.ErrorType } else { "-" }
     $rowClass = $step.Estado
-    
-    $html += @"
+
+    $filasHtml.Add(@"
                     <tr class="$rowClass">
                         <td><strong>$(Encode-HtmlSpecialChars $step.Test)</strong></td>
                         <td>$($step.Batch)</td>
@@ -1048,8 +1053,9 @@ foreach ($step in $allSteps) {
                         <td><strong>$($step.Tiempo_ms)</strong></td>
                     </tr>
 
-"@
+"@)
 }
+$html += ($filasHtml -join "")
 
 $html += @"
                 </tbody>
