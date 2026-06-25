@@ -213,9 +213,23 @@ public class BuscarExpediente implements Task {
         By filaCualquiera = By.xpath("//table//tbody//tr[.//td[normalize-space(.)='" + expediente + "']]");
         By verCasoBy = By.xpath("//div[@role='menuitem'][contains(normalize-space(.), 'Ver caso')]");
 
+        By seccionGestion = By.xpath("//span[contains(normalize-space(.),'cierres de expediente')]");
+
         driver.switchTo().defaultContent();
         long deadline = System.currentTimeMillis() + 30000;
+        int scrollStep = 0;
         while (System.currentTimeMillis() < deadline) {
+            // Llevar el tablero de gestión a la vista: sus filas pueden no renderizarse/ser
+            // interactuables hasta que la sección está en viewport.
+            try {
+                WebElement sec = driver.findElement(seccionGestion);
+                js.executeScript("arguments[0].scrollIntoView({block:'center'});", sec);
+            } catch (Exception e) {
+                // Si aún no está la sección, bajar la página progresivamente para que cargue.
+                js.executeScript("window.scrollBy(0, arguments[0]);", 600 * (++scrollStep));
+            }
+            sleep(400);
+
             WebElement fila = primerClickable(driver, filaGestion);
             if (fila == null) {
                 fila = primerClickable(driver, filaCualquiera);
