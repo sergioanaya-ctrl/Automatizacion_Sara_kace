@@ -223,39 +223,37 @@ public class BuscarExpediente implements Task {
 
         driver.switchTo().defaultContent();
 
-        long deadline = System.currentTimeMillis() + 45000;
-        long ultimoRefresh = System.currentTimeMillis() - 9000; // fuerza refresh en la 1ra iteración
-        int scrollStep = 0;
-        while (System.currentTimeMillis() < deadline) {
-            // Llevar el tablero de gestión a la vista: sus filas pueden no renderizarse/ser
-            // interactuables hasta que la sección está en viewport.
+        // Hasta 5 intentos: si el expediente no aparece, se pulsa "Actualizar" y se reintenta.
+        final int MAX_INTENTOS = 5;
+        for (int intento = 1; intento <= MAX_INTENTOS; intento++) {
+            // Llevar el tablero de gestión a la vista (sus filas pueden no renderizarse fuera del viewport).
             try {
                 WebElement sec = driver.findElement(seccionGestion);
                 js.executeScript("arguments[0].scrollIntoView({block:'center'});", sec);
             } catch (Exception e) {
-                // Si aún no está la sección, bajar la página progresivamente para que cargue.
-                js.executeScript("window.scrollBy(0, arguments[0]);", 600 * (++scrollStep));
+                js.executeScript("window.scrollBy(0, 500);");
             }
             sleep(400);
 
-            // Refrescar el tablero cada ~8s: el expediente recién concluido tarda en reflejarse.
-            if (System.currentTimeMillis() - ultimoRefresh > 8000) {
-                WebElement refresh = primerClickable(driver, refreshGestion);
-                if (refresh != null) {
-                    clickSinScroll(js, refresh);
-                    System.out.println("  [BuscarExpediente] ↻ Tablero de gestión actualizado");
-                    sleep(1800);
-                }
-                ultimoRefresh = System.currentTimeMillis();
+            // Clic en "Actualizar tabla" para refrescar el listado.
+            WebElement refresh = primerClickable(driver, refreshGestion);
+            if (refresh != null) {
+                clickSinScroll(js, refresh);
+                System.out.println("  [BuscarExpediente] ↻ Actualizar tabla (intento " + intento + "/" + MAX_INTENTOS + ")");
             }
+            sleep(2500); // esperar a que recargue el listado
 
-            // DIAGNÓSTICO: qué expedientes lista el tablero de gestión y si el nuestro está.
+            // DIAGNÓSTICO: qué expedientes lista el tablero y si el nuestro ya está.
             String enTablero = expedientesEnTableroGestion(js);
             boolean presente = enTablero != null && enTablero.contains(expediente);
-            System.out.println("  [BuscarExpediente] [diag] buscado=" + expediente
-                    + (presente ? " -> PRESENTE en tablero" : " -> NO está en tablero")
-                    + " | tablero=[" + enTablero + "]");
+            System.out.println("  [BuscarExpediente] [diag] intento " + intento + " | buscado=" + expediente
+                    + (presente ? " -> PRESENTE" : " -> NO está") + " | tablero=[" + enTablero + "]");
 
+            if (!presente) {
+                continue; // no apareció aún: volver a "Actualizar"
+            }
+
+            // Está en el tablero: abrir su menú '...' -> 'Ver caso'.
             WebElement fila = primerClickable(driver, filaGestion);
             if (fila == null) {
                 fila = primerClickable(driver, filaCualquiera);
@@ -263,29 +261,23 @@ public class BuscarExpediente implements Task {
             if (fila != null) {
                 try {
                     WebElement acciones = fila.findElement(By.xpath(".//button[@aria-haspopup='menu']"));
-                    // Abrir el menú '...' con clic nativo (radix abre confiable; el botón ya está
-                    // en vista por el scroll a la sección).
-                    clickResiliente(js, acciones);
-                    // El ítem 'Ver caso' se renderiza en un portal: clic con JS puro SIN scroll,
-                    // porque cualquier scrollIntoView mueve la página y CIERRA el menú radix.
-                    WebElement verCaso = new WebDriverWait(driver, Duration.ofSeconds(8))
+                    clickResiliente(js, acciones); // abrir menú (clic nativo: radix abre confiable)
+                    WebElement verCaso = new WebDriverWait(driver, Duration.ofSeconds(6))
                             .until(ExpectedConditions.presenceOfElementLocated(verCasoBy));
-                    clickSinScroll(js, verCaso);
+                    clickSinScroll(js, verCaso);   // 'Ver caso' (portal): clic JS sin scroll
                     System.out.println("  [BuscarExpediente] ✓ Abierto desde tablero de gestión ('Ver caso')");
                     return true;
                 } catch (Exception e) {
-                    System.out.println("  [BuscarExpediente] ⚠ Fila hallada pero no se pudo abrir 'Ver caso': " + e.getMessage());
-                    // Cerrar un posible menú abierto antes de reintentar.
+                    System.out.println("  [BuscarExpediente] ⚠ Presente pero no se pudo abrir 'Ver caso': " + e.getMessage());
                     try {
                         js.executeScript("document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));");
                     } catch (Exception ignored) {
                     }
                 }
             }
-            sleep(500);
         }
-        System.out.println("  [BuscarExpediente] ⚠ No se encontró la fila del expediente '" + expediente
-                + "' en el tablero de gestión tras 45s (ver [diag] arriba para saber qué listaba).");
+        System.out.println("  [BuscarExpediente] ⚠ El expediente '" + expediente
+                + "' NO aparece en el tablero de gestión tras " + MAX_INTENTOS + " actualizaciones.");
         return false;
     }
 
