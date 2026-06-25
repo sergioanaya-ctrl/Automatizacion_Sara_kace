@@ -223,8 +223,10 @@ public class BuscarExpediente implements Task {
 
         driver.switchTo().defaultContent();
 
-        // Hasta 5 intentos: si el expediente no aparece, se pulsa "Actualizar" y se reintenta.
-        final int MAX_INTENTOS = 5;
+        // El expediente tarda en reflejarse en el tablero (puede ser minutos). Se pulsa
+        // "Actualizar" y se espera de forma creciente: 15s el primer intento y +5s cada vez.
+        final int MAX_INTENTOS = 6;
+        long espera = 15000;
         for (int intento = 1; intento <= MAX_INTENTOS; intento++) {
             // Llevar el tablero de gestión a la vista (sus filas pueden no renderizarse fuera del viewport).
             try {
@@ -239,15 +241,18 @@ public class BuscarExpediente implements Task {
             WebElement refresh = primerClickable(driver, refreshGestion);
             if (refresh != null) {
                 clickSinScroll(js, refresh);
-                System.out.println("  [BuscarExpediente] ↻ Actualizar tabla (intento " + intento + "/" + MAX_INTENTOS + ")");
+                System.out.println("  [BuscarExpediente] ↻ Actualizar tabla (intento " + intento + "/" + MAX_INTENTOS
+                        + ", esperando " + (espera / 1000) + "s)");
             }
-            sleep(2500); // esperar a que recargue el listado
+            sleep(espera); // espera creciente: el expediente tarda en reflejarse
 
             // DIAGNÓSTICO: qué expedientes lista el tablero y si el nuestro ya está.
             String enTablero = expedientesEnTableroGestion(js);
             boolean presente = enTablero != null && enTablero.contains(expediente);
             System.out.println("  [BuscarExpediente] [diag] intento " + intento + " | buscado=" + expediente
                     + (presente ? " -> PRESENTE" : " -> NO está") + " | tablero=[" + enTablero + "]");
+
+            espera += 5000; // aumentar la espera para el siguiente intento
 
             if (!presente) {
                 continue; // no apareció aún: volver a "Actualizar"
