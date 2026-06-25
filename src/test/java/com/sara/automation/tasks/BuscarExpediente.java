@@ -236,14 +236,15 @@ public class BuscarExpediente implements Task {
             }
             if (fila != null) {
                 try {
-                    // Scroll a la fila (puede estar bajo el fold) para que el menú sea interactuable.
-                    js.executeScript("arguments[0].scrollIntoView({block:'center'});", fila);
-                    sleep(300);
                     WebElement acciones = fila.findElement(By.xpath(".//button[@aria-haspopup='menu']"));
+                    // Abrir el menú '...' con clic nativo (radix abre confiable; el botón ya está
+                    // en vista por el scroll a la sección).
                     clickResiliente(js, acciones);
+                    // El ítem 'Ver caso' se renderiza en un portal: clic con JS puro SIN scroll,
+                    // porque cualquier scrollIntoView mueve la página y CIERRA el menú radix.
                     WebElement verCaso = new WebDriverWait(driver, Duration.ofSeconds(8))
                             .until(ExpectedConditions.presenceOfElementLocated(verCasoBy));
-                    clickResiliente(js, verCaso); // clickResiliente hace scrollIntoView + click JS
+                    clickSinScroll(js, verCaso);
                     System.out.println("  [BuscarExpediente] ✓ Abierto desde tablero de gestión ('Ver caso')");
                     return true;
                 } catch (Exception e) {
@@ -388,6 +389,23 @@ public class BuscarExpediente implements Task {
                     "arguments[0].dispatchEvent(new Event('input', {bubbles:true}));"
                   + "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));",
                     input);
+        }
+    }
+
+    /**
+     * Clic con JavaScript SIN hacer scrollIntoView. Útil para menús radix (portal): cualquier
+     * scroll cierra el menú. JS .click() dispara el handler aunque el elemento no esté en viewport.
+     */
+    private void clickSinScroll(JavascriptExecutor js, WebElement el) {
+        try {
+            js.executeScript("arguments[0].click();", el);
+        } catch (Exception e) {
+            js.executeScript(
+                    "var el=arguments[0];"
+                  + "el.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,cancelable:true,view:window}));"
+                  + "el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true,cancelable:true,view:window}));"
+                  + "el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));",
+                    el);
         }
     }
 
