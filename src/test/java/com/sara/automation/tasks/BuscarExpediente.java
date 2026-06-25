@@ -223,22 +223,8 @@ public class BuscarExpediente implements Task {
 
         driver.switchTo().defaultContent();
 
-        // Refrescar el tablero de gestión: el expediente recién concluido puede no estar listado
-        // todavía. Se lleva a la vista y se pulsa "Actualizar tabla" una vez.
-        try {
-            WebElement sec0 = driver.findElement(seccionGestion);
-            js.executeScript("arguments[0].scrollIntoView({block:'center'});", sec0);
-            sleep(400);
-            WebElement refresh = primerClickable(driver, refreshGestion);
-            if (refresh != null) {
-                clickSinScroll(js, refresh);
-                System.out.println("  [BuscarExpediente] ↻ Tablero de gestión actualizado");
-                sleep(1500);
-            }
-        } catch (Exception ignored) {
-        }
-
-        long deadline = System.currentTimeMillis() + 30000;
+        long deadline = System.currentTimeMillis() + 45000;
+        long ultimoRefresh = System.currentTimeMillis() - 9000; // fuerza refresh en la 1ra iteración
         int scrollStep = 0;
         while (System.currentTimeMillis() < deadline) {
             // Llevar el tablero de gestión a la vista: sus filas pueden no renderizarse/ser
@@ -251,6 +237,24 @@ public class BuscarExpediente implements Task {
                 js.executeScript("window.scrollBy(0, arguments[0]);", 600 * (++scrollStep));
             }
             sleep(400);
+
+            // Refrescar el tablero cada ~8s: el expediente recién concluido tarda en reflejarse.
+            if (System.currentTimeMillis() - ultimoRefresh > 8000) {
+                WebElement refresh = primerClickable(driver, refreshGestion);
+                if (refresh != null) {
+                    clickSinScroll(js, refresh);
+                    System.out.println("  [BuscarExpediente] ↻ Tablero de gestión actualizado");
+                    sleep(1800);
+                }
+                ultimoRefresh = System.currentTimeMillis();
+            }
+
+            // DIAGNÓSTICO: qué expedientes lista el tablero de gestión y si el nuestro está.
+            String enTablero = expedientesEnTableroGestion(js);
+            boolean presente = enTablero != null && enTablero.contains(expediente);
+            System.out.println("  [BuscarExpediente] [diag] buscado=" + expediente
+                    + (presente ? " -> PRESENTE en tablero" : " -> NO está en tablero")
+                    + " | tablero=[" + enTablero + "]");
 
             WebElement fila = primerClickable(driver, filaGestion);
             if (fila == null) {
@@ -280,8 +284,28 @@ public class BuscarExpediente implements Task {
             }
             sleep(500);
         }
-        System.out.println("  [BuscarExpediente] ⚠ No se encontró la fila del expediente en el tablero de gestión.");
+        System.out.println("  [BuscarExpediente] ⚠ No se encontró la fila del expediente '" + expediente
+                + "' en el tablero de gestión tras 45s (ver [diag] arriba para saber qué listaba).");
         return false;
+    }
+
+    /**
+     * DIAGNÓSTICO: devuelve los números de expediente (15 dígitos) listados actualmente en el
+     * tablero "Mis cierres de expediente en gestión", separados por coma.
+     */
+    private String expedientesEnTableroGestion(JavascriptExecutor js) {
+        try {
+            Object r = js.executeScript(
+                    "var sp=Array.from(document.querySelectorAll('span')).find(s=>s.textContent.indexOf('cierres de expediente')>=0);"
+                  + "if(!sp) return 'SIN_SECCION';"
+                  + "var b=sp.closest('.border-b'); if(!b) return 'SIN_BOARD';"
+                  + "var tds=Array.from(b.querySelectorAll('table tbody tr td'));"
+                  + "var nums=tds.map(td=>td.textContent.trim()).filter(t=>/^[0-9]{15}$/.test(t));"
+                  + "return nums.join(',');");
+            return r == null ? null : r.toString();
+        } catch (Exception e) {
+            return "ERR:" + e.getMessage();
+        }
     }
 
     /**
