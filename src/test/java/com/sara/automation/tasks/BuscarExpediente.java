@@ -1,6 +1,8 @@
 package com.sara.automation.tasks;
 
 import com.sara.automation.utils.ExpedienteContext;
+import com.sara.automation.utils.ProveedorContext;
+import com.sara.automation.utils.ProveedorPoolManager;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -45,7 +47,10 @@ public class BuscarExpediente implements Task {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         String expediente = ExpedienteContext.getExpediente();
 
+        ProveedorPoolManager.Proveedor prov = ProveedorContext.getOrNull();
+        String provLogin = (prov != null) ? prov.getUsuario() : "(desconocido)";
         System.out.println("\n  [BuscarExpediente] ==================== BÚSQUEDA DE EXPEDIENTE '" + expediente + "' ====================");
+        System.out.println("  [BuscarExpediente] Proveedor esperado en sesión: " + provLogin);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         // 1. Abrir búsqueda avanzada (en el shell, fuera del iframe).
@@ -67,19 +72,31 @@ public class BuscarExpediente implements Task {
         clickResiliente(js, filtrar);
         System.out.println("  [BuscarExpediente] ✓ Click en 'Filtrar'");
 
-        // 5. Esperar la fila del expediente en la tabla de resultados y abrir su edición.
-        By botonEditarDeLaFila = By.xpath(
-                "//table//tbody//tr[.//td[contains(normalize-space(.), '" + expediente + "')]]"
-              + "//button[@title='Editar']");
-        WebElement editar = wait.until(ExpectedConditions.elementToBeClickable(botonEditarDeLaFila));
-        System.out.println("  [BuscarExpediente] ✓ Expediente encontrado en resultados");
-        clickResiliente(js, editar);
-        System.out.println("  [BuscarExpediente] ✓ Click en 'Editar'");
+        // 5. Intentar abrir por la Búsqueda avanzada (botón 'Editar' de la fila).
+        WebElement editar = buscarEditarConReintento(driver, js, expediente);
+        if (editar != null) {
+            clickResiliente(js, editar);
+            System.out.println("  [BuscarExpediente] ✓ Click en 'Editar' (búsqueda avanzada)");
+        } else {
+            // FALLBACK: la búsqueda avanzada a veces devuelve "sin resultados" aunque el
+            // expediente exista. Lo abrimos desde la TABLA PRINCIPAL (el caso recién creado
+            // queda arriba): fila -> menú '...' -> 'Ver caso'.
+            System.out.println("  [BuscarExpediente] ↪ Búsqueda avanzada sin resultado; usando fallback de la tabla principal...");
+            // Cerrar la ventana de búsqueda avanzada (X): si queda abierta, tapa la tabla y el
+            // fallback no puede ver/clickear la fila ni el menú 'Ver caso'.
+            cerrarBusquedaAvanzada(driver, js);
+            if (!verCasoDesdeTablaPrincipal(driver, js, expediente)) {
+                String sinRes = mensajeSinResultados(driver);
+                throw new AssertionError("No se pudo abrir el expediente '" + expediente
+                        + "' ni por búsqueda avanzada ni por la tabla principal (Ver caso)."
+                        + (sinRes != null ? " Tabla: SIN RESULTADOS (\"" + sinRes + "\")." : ""));
+            }
+        }
 
-        // 6. Esperar a que cargue la página de edición.
+        // 6. Esperar a que cargue la página de edición / caso.
         driver.switchTo().defaultContent();
         esperarCargaPagina(driver);
-        System.out.println("  [BuscarExpediente] ==================== ✓ EDICIÓN DEL EXPEDIENTE ABIERTA ====================\n");
+        System.out.println("  [BuscarExpediente] ==================== ✓ EXPEDIENTE ABIERTO ====================\n");
     }
 
     /**
@@ -129,6 +146,210 @@ public class BuscarExpediente implements Task {
             throw new AssertionError("No se encontró el campo 'Expediente' (data[external_code]) en la página ni en sus iframes.");
         }
         System.out.println("  [BuscarExpediente] ✓ Formulario de filtros localizado");
+    }
+
+    /**
+     * Busca el botón "Editar" de la fila del expediente, tolerante a carga lenta y a que los
+     * resultados estén en un frame distinto. Si no aparece en la primera ventana, reintenta
+     * 'Filtrar' una vez (por si el valor no se aplicó) y vuelve a esperar.
+     */
+    private WebElement buscarEditarConReintento(WebDriver driver, JavascriptExecutor js, String expediente) {
+        WebElement btn = localizarEditarEnAlgunFrame(driver, expediente, Duration.ofSeconds(20));
+        if (btn != null) {
+            return btn;
+        }
+        String sinRes1 = mensajeSinResultados(driver);
+        if (sinRes1 != null) {
+            System.out.println("  [BuscarExpediente] ⚠ El filtro indica SIN RESULTADOS: \"" + sinRes1 + "\".");
+        }
+        System.out.println("  [BuscarExpediente] ↻ Reintentando 'Filtrar'...");
+        reintentarFiltrar(driver, js, expediente);
+        return localizarEditarEnAlgunFrame(driver, expediente, Duration.ofSeconds(20));
+    }
+
+    /**
+     * Cierra la ventana/panel de "Búsqueda avanzada" con su botón X (svg.lucide-x). Si queda
+     * abierta, tapa la tabla principal y el fallback no puede interactuar con ella.
+     */
+    private void cerrarBusquedaAvanzada(WebDriver driver, JavascriptExecutor js) {
+        try {
+            driver.switchTo().defaultContent();
+            By closeBy = By.xpath(
+                    "//button[.//*[local-name()='svg' and contains(@class,'lucide-x')]]");
+            WebElement x = null;
+            for (WebElement b : driver.findElements(closeBy)) {
+                try {
+                    if (b.isDisplayed() && b.isEnabled()) {
+                        x = b;
+                        break;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            if (x != null) {
+                clickResiliente(js, x);
+                System.out.println("  [BuscarExpediente] ✓ Ventana de búsqueda avanzada cerrada");
+                sleep(800); // dejar que el panel se cierre y el tablero quede visible
+            } else {
+                System.out.println("  [BuscarExpediente] (no se halló el botón X de búsqueda avanzada; continúo)");
+            }
+        } catch (Exception e) {
+            System.out.println("  [BuscarExpediente] ⚠ No se pudo cerrar búsqueda avanzada: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Fallback: abre el expediente desde la TABLA PRINCIPAL de expedientes (React/radix, en el
+     * documento shell, fuera del iframe de filtros). Ubica la fila cuyo texto coincide con el
+     * expediente, abre el menú de acciones ('...', button[aria-haspopup='menu']) y hace clic en
+     * 'Ver caso'. Devuelve true si lo logró.
+     */
+    private boolean verCasoDesdeTablaPrincipal(WebDriver driver, JavascriptExecutor js, String expediente) {
+        // Preferir el tablero "Mis cierres de expediente en gestión" (el de conceptos): el menú '...'
+        // de otros tableros (p. ej. "Reporte para los Proveedores") NO tiene 'Ver caso'.
+        By filaGestion = By.xpath(
+                "//div[contains(@class,'border-b')][.//span[contains(normalize-space(.),'cierres de expediente')]]"
+              + "//table//tbody//tr[.//td[normalize-space(.)='" + expediente + "']]");
+        By filaCualquiera = By.xpath("//table//tbody//tr[.//td[normalize-space(.)='" + expediente + "']]");
+        By verCasoBy = By.xpath("//div[@role='menuitem'][contains(normalize-space(.), 'Ver caso')]");
+
+        driver.switchTo().defaultContent();
+        long deadline = System.currentTimeMillis() + 30000;
+        while (System.currentTimeMillis() < deadline) {
+            WebElement fila = primerClickable(driver, filaGestion);
+            if (fila == null) {
+                fila = primerClickable(driver, filaCualquiera);
+            }
+            if (fila != null) {
+                try {
+                    // Scroll a la fila (puede estar bajo el fold) para que el menú sea interactuable.
+                    js.executeScript("arguments[0].scrollIntoView({block:'center'});", fila);
+                    sleep(300);
+                    WebElement acciones = fila.findElement(By.xpath(".//button[@aria-haspopup='menu']"));
+                    clickResiliente(js, acciones);
+                    WebElement verCaso = new WebDriverWait(driver, Duration.ofSeconds(8))
+                            .until(ExpectedConditions.presenceOfElementLocated(verCasoBy));
+                    clickResiliente(js, verCaso); // clickResiliente hace scrollIntoView + click JS
+                    System.out.println("  [BuscarExpediente] ✓ Abierto desde tablero de gestión ('Ver caso')");
+                    return true;
+                } catch (Exception e) {
+                    System.out.println("  [BuscarExpediente] ⚠ Fila hallada pero no se pudo abrir 'Ver caso': " + e.getMessage());
+                    // Cerrar un posible menú abierto antes de reintentar.
+                    try {
+                        js.executeScript("document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));");
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            sleep(500);
+        }
+        System.out.println("  [BuscarExpediente] ⚠ No se encontró la fila del expediente en el tablero de gestión.");
+        return false;
+    }
+
+    /**
+     * Recorre el documento principal y todos los iframes buscando el botón Editar de la fila
+     * cuyo texto contiene el expediente. Deja el driver en el frame donde lo encuentra (para
+     * que el click posterior funcione). Devuelve null si no aparece dentro del timeout.
+     */
+    private WebElement localizarEditarEnAlgunFrame(WebDriver driver, String expediente, Duration timeout) {
+        By rowEditar = By.xpath(
+                "//table//tbody//tr[.//td[contains(normalize-space(.), '" + expediente + "')]]"
+              + "//button[@title='Editar']");
+        long deadline = System.currentTimeMillis() + timeout.toMillis();
+        while (System.currentTimeMillis() < deadline) {
+            driver.switchTo().defaultContent();
+            WebElement f = primerClickable(driver, rowEditar);
+            if (f != null) {
+                return f;
+            }
+            for (WebElement frame : driver.findElements(By.tagName("iframe"))) {
+                try {
+                    driver.switchTo().defaultContent();
+                    driver.switchTo().frame(frame);
+                    f = primerClickable(driver, rowEditar);
+                    if (f != null) {
+                        return f;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            driver.switchTo().defaultContent();
+            sleep(500);
+        }
+        return null;
+    }
+
+    /**
+     * Busca en el documento principal y en los iframes un mensaje típico de "sin resultados".
+     * Devuelve el texto encontrado (recortado) o null. Sirve para distinguir "filtro vacío"
+     * (el proveedor no ve ese expediente) de "carga lenta / frame distinto".
+     */
+    private String mensajeSinResultados(WebDriver driver) {
+        String script =
+                "var pats=['no se encontr','sin resultados','no hay registros','no hay datos',"
+              + "'0 resultados','no matching','no records','ningún resultado','ningun resultado'];"
+              + "var t=(document.body?document.body.innerText:'').toLowerCase();"
+              + "for (var i=0;i<pats.length;i++){var k=t.indexOf(pats[i]); if(k>=0){return document.body.innerText.substring(Math.max(0,k-10), k+50);}}"
+              + "return null;";
+        try {
+            driver.switchTo().defaultContent();
+            Object r = ((JavascriptExecutor) driver).executeScript(script);
+            if (r instanceof String) {
+                return ((String) r).replaceAll("\\s+", " ").trim();
+            }
+            for (WebElement frame : driver.findElements(By.tagName("iframe"))) {
+                try {
+                    driver.switchTo().defaultContent();
+                    driver.switchTo().frame(frame);
+                    Object rf = ((JavascriptExecutor) driver).executeScript(script);
+                    if (rf instanceof String) {
+                        return ((String) rf).replaceAll("\\s+", " ").trim();
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        } catch (Exception ignored) {
+        } finally {
+            try { driver.switchTo().defaultContent(); } catch (Exception ignored) {}
+        }
+        return null;
+    }
+
+    /** Primer elemento visible y habilitado para el locator dado, o null. */
+    private WebElement primerClickable(WebDriver driver, By locator) {
+        for (WebElement el : driver.findElements(locator)) {
+            try {
+                if (el.isDisplayed() && el.isEnabled()) {
+                    return el;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
+    }
+
+    /** Re-entra al frame del formulario de filtros, reescribe el expediente y vuelve a Filtrar. */
+    private void reintentarFiltrar(WebDriver driver, JavascriptExecutor js, String expediente) {
+        try {
+            WebDriverWait w = new WebDriverWait(driver, Duration.ofSeconds(15));
+            entrarAlFrameDelFormulario(driver, w);
+            WebElement campo = w.until(ExpectedConditions.visibilityOfElementLocated(CAMPO_EXPEDIENTE));
+            escribirEnFormio(js, campo, expediente);
+            WebElement filtrar = w.until(ExpectedConditions.elementToBeClickable(BTN_FILTRAR));
+            clickResiliente(js, filtrar);
+            System.out.println("  [BuscarExpediente] ✓ Reintento de 'Filtrar' enviado");
+        } catch (Exception e) {
+            System.out.println("  [BuscarExpediente] ⚠ No se pudo reintentar 'Filtrar': " + e.getMessage());
+        }
+    }
+
+    private void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
