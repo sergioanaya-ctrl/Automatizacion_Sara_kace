@@ -211,7 +211,9 @@ public class BuscarExpediente implements Task {
                 "//div[contains(@class,'border-b')][.//span[contains(normalize-space(.),'cierres de expediente')]]"
               + "//table//tbody//tr[.//td[normalize-space(.)='" + expediente + "']]");
         By filaCualquiera = By.xpath("//table//tbody//tr[.//td[normalize-space(.)='" + expediente + "']]");
-        By verCasoBy = By.xpath("//div[@role='menuitem'][contains(normalize-space(.), 'Ver caso')]");
+        // El ítem del menú es "Ver detalle del caso" (algunos tableros usan "Ver caso").
+        By verCasoBy = By.xpath(
+                "//div[@role='menuitem'][contains(normalize-space(.),'detalle del caso') or contains(normalize-space(.),'Ver caso')]");
 
         By seccionGestion = By.xpath("//span[contains(normalize-space(.),'cierres de expediente')]");
 
