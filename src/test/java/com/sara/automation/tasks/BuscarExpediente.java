@@ -211,13 +211,33 @@ public class BuscarExpediente implements Task {
                 "//div[contains(@class,'border-b')][.//span[contains(normalize-space(.),'cierres de expediente')]]"
               + "//table//tbody//tr[.//td[normalize-space(.)='" + expediente + "']]");
         By filaCualquiera = By.xpath("//table//tbody//tr[.//td[normalize-space(.)='" + expediente + "']]");
-        // El ítem del menú es "Ver detalle del caso" (algunos tableros usan "Ver caso").
-        By verCasoBy = By.xpath(
-                "//div[@role='menuitem'][contains(normalize-space(.),'detalle del caso') or contains(normalize-space(.),'Ver caso')]");
+        // OJO: 'Ver detalle del caso' abre el formulario en SOLO LECTURA. El que permite
+        // gestionar conceptos es 'Ver caso' (tablero "Mis cierres de expediente en gestión").
+        // Match EXACTO para NO caer en 'Ver detalle del caso'.
+        By verCasoBy = By.xpath("//div[@role='menuitem'][normalize-space(.)='Ver caso']");
+        By refreshGestion = By.xpath(
+                "//div[contains(@class,'border-b')][.//span[contains(normalize-space(.),'cierres de expediente')]]"
+              + "//button[@title='Actualizar tabla']");
 
         By seccionGestion = By.xpath("//span[contains(normalize-space(.),'cierres de expediente')]");
 
         driver.switchTo().defaultContent();
+
+        // Refrescar el tablero de gestión: el expediente recién concluido puede no estar listado
+        // todavía. Se lleva a la vista y se pulsa "Actualizar tabla" una vez.
+        try {
+            WebElement sec0 = driver.findElement(seccionGestion);
+            js.executeScript("arguments[0].scrollIntoView({block:'center'});", sec0);
+            sleep(400);
+            WebElement refresh = primerClickable(driver, refreshGestion);
+            if (refresh != null) {
+                clickSinScroll(js, refresh);
+                System.out.println("  [BuscarExpediente] ↻ Tablero de gestión actualizado");
+                sleep(1500);
+            }
+        } catch (Exception ignored) {
+        }
+
         long deadline = System.currentTimeMillis() + 30000;
         int scrollStep = 0;
         while (System.currentTimeMillis() < deadline) {
