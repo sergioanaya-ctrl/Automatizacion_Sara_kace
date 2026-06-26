@@ -118,12 +118,20 @@ public class CrearNovedadProveedor implements Task {
         clickResiliente(js, btnGeneral);
         System.out.println("  [CrearNovedadProveedor] ✓ Click en Guardar general");
 
+        // CRÍTICO: el guardado general recarga la página. Si devolvemos el control de inmediato,
+        // el siguiente paso (transición de estados) entra a un iframe que se desprende
+        // ("target frame detached"). Esperamos a que la recarga termine y el form vuelva a estar.
+        driver.switchTo().defaultContent();
+        sleep(3000); // dar tiempo a que INICIE la recarga
         try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            WebDriverWait recarga = new WebDriverWait(driver, Duration.ofSeconds(30));
+            recarga.until(d -> "complete".equals(((JavascriptExecutor) d).executeScript("return document.readyState")));
+            recarga.until(ExpectedConditions.presenceOfElementLocated(By.id("form_onescript_iframe")));
+        } catch (Exception ignored) {
         }
-        System.out.println("  [CrearNovedadProveedor] ==================== ✓ NOVEDAD CREADA ====================\n");
+        sleep(4000); // settle adicional para que el formulario quede interactivo
+        driver.switchTo().defaultContent();
+        System.out.println("  [CrearNovedadProveedor] ==================== ✓ NOVEDAD CREADA (página recargada) ====================\n");
     }
 
     /**
