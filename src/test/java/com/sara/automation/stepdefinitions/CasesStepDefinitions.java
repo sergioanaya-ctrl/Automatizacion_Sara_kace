@@ -3,6 +3,7 @@ package com.sara.automation.stepdefinitions;
 import com.sara.automation.tasks.BuscarExpediente;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.CrearCasoReclamaciones;
+import com.sara.automation.tasks.CrearNovedadProveedor;
 import com.sara.automation.tasks.DiligenciarProveedorGestion;
 import com.sara.automation.tasks.GestionConceptosProveedor;
 import com.sara.automation.tasks.GestionarReclamacion;
@@ -201,6 +202,12 @@ public class CasesStepDefinitions {
                 .andContents(proveedor.getUsuario() + " (" + nombreProveedor + ")");
 
         actor.attemptsTo(DiligenciarProveedorGestion.conDatos(nombreProveedor, servicio));
+    }
+
+    @When("creamos una novedad")
+    public void creamosUnaNovedad() {
+        // Tras diligenciar proveedor + guardado general: pestaña Novedades -> Crear -> diligenciar -> guardar.
+        actor.attemptsTo(CrearNovedadProveedor.now());
     }
 
     private String required(Map<String, String> row, String key) {

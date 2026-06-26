@@ -1,7 +1,7 @@
 Feature: Creacion de Expedientes en el sistema de gestion de casos
 
   @batch1
-  Scenario: CASO-01 · Autos / Grua · Antioquia – Medellin
+  Scenario: CASO-01  Autos  Grua  Antioquia  Medellin
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales
@@ -12,6 +12,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio |
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
+    And creamos una novedad
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado

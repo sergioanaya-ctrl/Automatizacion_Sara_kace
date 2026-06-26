@@ -226,7 +226,7 @@ public class BuscarExpediente implements Task {
         // El expediente tarda en reflejarse en el tablero (puede ser minutos). Se pulsa
         // "Actualizar" y se espera de forma creciente: 15s el primer intento y +5s cada vez.
         final int MAX_INTENTOS = 6;
-        long espera = 15000;
+        long espera = 30000;
         for (int intento = 1; intento <= MAX_INTENTOS; intento++) {
             // Llevar el tablero de gestión a la vista (sus filas pueden no renderizarse fuera del viewport).
             try {
