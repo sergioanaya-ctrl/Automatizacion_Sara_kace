@@ -22,8 +22,8 @@
         </a>
       </li>
       
-      <li ref="tabLi-tabs1" role="tab" class="nav-item active">
-        <a ref="tabLink-tabs1" href="#novedades" class="nav-link active">
+      <li ref="tabLi-tabs1" role="tab" class="nav-item">
+        <a ref="tabLink-tabs1" href="#novedades" class="nav-link">
           Novedades
         </a>
       </li>
@@ -52,8 +52,8 @@
         </a>
       </li>
       
-      <li ref="tabLi-tabs1" role="tab" class="nav-item">
-        <a ref="tabLink-tabs1" href="#finalizacion" class="nav-link">
+      <li ref="tabLi-tabs1" role="tab" class="nav-item active">
+        <a ref="tabLink-tabs1" href="#finalizacion" class="nav-link active">
           Finalización
         </a>
       </li>
@@ -1968,7 +1968,7 @@ PUNTO CERCANO: CL 45 NO 22 - 18, BOGOTÁ, D.C., BOGOTÁ, D.C." spellcheck="true"
 
   </div>
   
-  <div ref="tab-tabs1" style="display: block;" class="card-body tab-pane active" role="tabpanel">
+  <div ref="tab-tabs1" style="display: none;" class="card-body tab-pane" role="tabpanel">
     <div ref="component" class="form-group has-feedback formio-component formio-component-kace_event_log formio-component-kaceEventLog4  formio-component-label-hidden" id="etwxmp">
   
   
@@ -2807,6 +2807,7 @@ PUNTO CERCANO: CL 45 NO 22 - 18, BOGOTÁ, D.C., BOGOTÁ, D.C." spellcheck="true"
 
 
 
+
 <div ref="component" class="form-group has-feedback formio-component formio-component-checkbox formio-component-genera_pago_al_proveedor  formio-hidden" id="exe4ula">
   
 </div>
@@ -3485,7 +3486,7 @@ Crear
 
   </div>
   
-  <div ref="tab-tabs1" style="display: none;" class="card-body tab-pane" role="tabpanel">
+  <div ref="tab-tabs1" style="display: block;" class="card-body tab-pane active" role="tabpanel">
     <div ref="component" class="form-group has-feedback formio-component formio-component-kace_event_log formio-component-kaceEventLog3  formio-component-label-hidden" id="ejrftx">
   
   
@@ -3570,6 +3571,7 @@ Crear
   <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
   
 </div>
+
 
 
 
@@ -3732,253 +3734,4 @@ Crear
 
   <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
   
-</div>
-<div class="formio-dialog formio-dialog-theme-default component-settings">
-  <div ref="dialogOverlay" class="formio-dialog-overlay"></div>
-  <div role="dialog" ref="dialogContents" class="formio-dialog-content">
-    <div ref="dialogContents"></div>
-    <button ref="dialogClose" aria-label="Close modal window." class="formio-dialog-close float-right btn-sm"></button>
-  <div>
-  
-    <div id="ei0ktwa" class="row formio-component formio-component-columns formio-component-columns  formio-component-label-hidden" ref="component">
-  
-  
-
-
-
-
-<div class="
-    col-md-6
-    col-md-offset-0
-    col-md-push-0
-    col-md-pull-0
-  " ref="column-ei0ktwa">
-  <div id="eyx6imqk" class="form-group has-feedback formio-component formio-component-custom-select formio-component-quien_reporta_la_novedad  required" ref="component">
-  
-  
-  <label ref="label" class="col-form-label  field-required" for="eyx6imqk-quien_reporta_la_novedad" id="l-eyx6imqk-quien_reporta_la_novedad">
-  Quien reporta la novedad
-  
-  
-</label>
-
-
-
-
-
-<div id="custom-select-eyx6imqk"><div class="custom-dropdown "><div class="custom-dropdown-control">Elige una opción<span class="arrow">▾</span></div></div></div>
-
-
-
-
-  <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-  
-</div>
-
-
-</div>
-
-<div class="
-    col-md-6
-    col-md-offset-0
-    col-md-push-0
-    col-md-pull-0
-  " ref="column-ei0ktwa">
-  <div id="efbuat" class="form-group has-feedback formio-component formio-component-custom-select formio-component-causa_de_la_novedad  required" ref="component">
-  
-  
-  <label ref="label" class="col-form-label  field-required" for="efbuat-causa_de_la_novedad" id="l-efbuat-causa_de_la_novedad">
-  Causa de la novedad
-  
-  
-</label>
-
-
-
-
-
-<div id="custom-select-efbuat"><div class="custom-dropdown "><div class="custom-dropdown-control">Elige una opción<span class="arrow">▾</span></div></div></div>
-
-
-
-
-  <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-  
-</div>
-
-
-</div>
-
-
-
-
-
-
-  <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-  
-</div>
-
-  
-
-  
-    <div id="e9pp9cr" class="row formio-component formio-component-columns formio-component-columns1  formio-component-label-hidden" ref="component">
-  
-  
-
-
-
-
-<div class="
-    col-md-6
-    col-md-offset-0
-    col-md-push-0
-    col-md-pull-0
-  " ref="column-e9pp9cr">
-  <div id="ef83zem" class="form-group has-feedback formio-component formio-component-custom-select formio-component-se_genero_queja  required" ref="component">
-  
-  
-  <label ref="label" class="col-form-label  field-required" for="ef83zem-se_genero_queja" id="l-ef83zem-se_genero_queja">
-  Se Genero Queja
-  
-  
-</label>
-
-
-
-
-
-<div id="custom-select-ef83zem"><div class="custom-dropdown "><div class="custom-dropdown-control">Elige una opción<span class="arrow">▾</span></div></div></div>
-
-
-
-
-  <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-  
-</div>
-
-
-</div>
-
-<div class="
-    col-md-6
-    col-md-offset-0
-    col-md-push-0
-    col-md-pull-0
-  " ref="column-e9pp9cr">
-  <div id="e5zs8xi" class="form-group has-feedback formio-component formio-component-kace_text_field formio-component-radicado_de_la_queja  required formio-hidden" ref="component">
-  
-</div>
-
-
-</div>
-
-
-
-
-
-
-  <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-  
-</div>
-
-  
-
-  
-    <div id="ebt88k" class="row formio-component formio-component-columns formio-component-columns2  formio-component-label-hidden" ref="component">
-  
-  
-
-
-
-
-<div class="
-    col-md-6
-    col-md-offset-0
-    col-md-push-0
-    col-md-pull-0
-  " ref="column-ebt88k">
-  <div id="ej5h0i" class="form-group has-feedback formio-component formio-component-kace_text_field formio-component-creado_por  formio-component-label-hidden formio-hidden" ref="component">
-  
-</div>
-
-
-</div>
-
-<div class="
-    col-md-6
-    col-md-offset-0
-    col-md-push-0
-    col-md-pull-0
-  " ref="column-ebt88k">
-  <div id="ecy0i3o" class="form-group has-feedback formio-component formio-component-kace_calendar formio-component-fecha_de_creacion  formio-hidden" ref="component">
-  
-</div>
-<div id="e9pwrur" class="form-group has-feedback formio-component formio-component-kace_calendar formio-component-fecha_modificacion  formio-hidden" ref="component">
-  
-</div>
-
-
-</div>
-
-
-
-
-
-
-  <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-  
-</div>
-
-  
-
-  
-    <div id="eqlpobl" class="form-group has-feedback formio-component formio-component-kace-d7726f06de2e45c3908377d10d9613df formio-component-observacion  formio-component-label-hidden" ref="component">
-  
-  
-
-
-
-<div id="kace-d7726f06de2e45c3908377d10d9613df-eqlpobl"><div class="form-group "><div class="d-flex align-items-center gap-2 mb-2"><button type="button" class="mic-button mr-2 " aria-pressed="false" title="Iniciar grabación"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic" aria-hidden="true"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg></button><small class="text-muted ms-2"></small></div><textarea class="form-control" rows="6" placeholder="" maxlength="1024"></textarea><small class="text-muted d-block mt-1">0 / 1024</small></div></div>
-
-
-
-
-  <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-  
-</div>
-
-  
-
-  
-    <div id="ep3od3m" class="form-group has-feedback formio-component formio-component-hidden formio-component-enviado_a_bitacora  formio-component-label-hidden" ref="component">
-  
-  
-
-
-
-<div ref="element">
-          
-  
-  
-    <input ref="input" name="data[novedades_asistencia_movilidad][13][enviado_a_bitacora]" type="hidden" class="form-control" lang="en" value="" id="ep3od3m-enviado_a_bitacora" aria-labelledby="l-ep3od3m-enviado_a_bitacora " aria-required="false" aria-invalid="false">
-    
-
-
-
-
-
-
-
-        </div>
-
-
-
-
-  <div ref="messageContainer" class="formio-errors invalid-feedback"></div>
-  
-</div>
-
-  
-
-</div><button class="btn btn-primary">Guardar</button></div>
 </div>

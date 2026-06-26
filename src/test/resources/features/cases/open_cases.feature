@@ -13,6 +13,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | Nombre del proveedor | Servicio |
       | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
     And creamos una novedad
+    And diligenciamos la finalizacion
+    And diligenciamos la documentacion cnm
     And transicionamos los estados del caso hasta concluido
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado

@@ -4,6 +4,7 @@ import com.sara.automation.tasks.BuscarExpediente;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.CrearCasoReclamaciones;
 import com.sara.automation.tasks.CrearNovedadProveedor;
+import com.sara.automation.tasks.CrearRegistroEnTab;
 import com.sara.automation.tasks.DiligenciarProveedorGestion;
 import com.sara.automation.tasks.GestionConceptosProveedor;
 import com.sara.automation.tasks.GestionarReclamacion;
@@ -208,6 +209,18 @@ public class CasesStepDefinitions {
     public void creamosUnaNovedad() {
         // Tras diligenciar proveedor + guardado general: pestaña Novedades -> Crear -> diligenciar -> guardar.
         actor.attemptsTo(CrearNovedadProveedor.now());
+    }
+
+    @When("diligenciamos la finalizacion")
+    public void diligenciamosLaFinalizacion() {
+        // Pestaña Finalización -> Crear -> primera opción de cada dropdown + observación -> guardar.
+        actor.attemptsTo(CrearRegistroEnTab.en("#finalizacion", "Finalización"));
+    }
+
+    @When("diligenciamos la documentacion cnm")
+    public void diligenciamosLaDocumentacionCnm() {
+        // Pestaña Documentación CNM -> Crear -> primera opción de cada dropdown + observación -> guardar.
+        actor.attemptsTo(CrearRegistroEnTab.en("#documentacionCnm", "Documentación CNM"));
     }
 
     private String required(Map<String, String> row, String key) {

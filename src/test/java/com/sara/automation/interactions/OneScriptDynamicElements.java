@@ -126,6 +126,29 @@ public final class OneScriptDynamicElements {
     }
 
     /**
+     * Abre el control de dropdown dado (un .custom-dropdown-control concreto) y selecciona la
+     * PRIMERA opción válida. Útil para diligenciar genéricamente todos los dropdowns de un dialog
+     * sin conocer sus nombres de componente. Devuelve el texto elegido.
+     */
+    public static String selectFirstOptionOfControl(WebDriver driver, WebElement control) {
+        clickWithJs(driver, control);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement primera = wait.until(d -> {
+            Object found = ((JavascriptExecutor) d).executeScript(
+                    "const malos = ['cargando','loading','no hay','sin resultados','no results','no se encontr','elige una','seleccion'];"
+                            + "const items = Array.from(document.querySelectorAll('ul.custom-dropdown-list li, div.custom-dropdown-item, div[role=\\\"option\\\"]'));"
+                            + "const visible = items.filter(el => el.offsetParent !== null && el.textContent.trim().length > 0"
+                            + "    && !malos.some(m => el.textContent.trim().toLowerCase().includes(m)));"
+                            + "return visible.length ? visible[0] : null;");
+            return found instanceof WebElement ? (WebElement) found : null;
+        });
+        String texto = primera.getText().trim();
+        clickWithJs(driver, primera);
+        sleep(150);
+        return texto;
+    }
+
+    /**
      * Espera ACTIVAMENTE a que el control del dropdown exista y sea visible, reintentando ante
      * ausencia o staleness (Form.io re-renderiza). Devuelve null si no apareció en el timeout.
      */
