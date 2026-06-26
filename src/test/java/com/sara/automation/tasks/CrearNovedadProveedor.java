@@ -85,11 +85,13 @@ public class CrearNovedadProveedor implements Task {
         // 3. Esperar el dialog y diligenciar los 3 dropdowns (primera opción válida) + observación.
         wait.until(d -> !d.findElements(By.cssSelector(SCOPE_DIALOG + " ." + COMP_QUIEN + " .custom-dropdown-control")).isEmpty());
 
-        String quien = OneScriptDynamicElements.selectFirstCustomDropdownOption(driver, COMP_QUIEN, SCOPE_DIALOG);
+        String quien = seleccionarDropdown(driver, js, COMP_QUIEN, "Quien reporta");
         System.out.println("  [CrearNovedadProveedor] ✓ Quien reporta = " + quien);
-        String causa = OneScriptDynamicElements.selectFirstCustomDropdownOption(driver, COMP_CAUSA, SCOPE_DIALOG);
+        sleep(700); // el dialog se re-renderiza tras seleccionar; dar respiro al siguiente dropdown
+        String causa = seleccionarDropdown(driver, js, COMP_CAUSA, "Causa de la novedad");
         System.out.println("  [CrearNovedadProveedor] ✓ Causa de la novedad = " + causa);
-        String queja = OneScriptDynamicElements.selectFirstCustomDropdownOption(driver, COMP_QUEJA, SCOPE_DIALOG);
+        sleep(700);
+        String queja = seleccionarDropdown(driver, js, COMP_QUEJA, "Se generó queja");
         System.out.println("  [CrearNovedadProveedor] ✓ Se generó queja = " + queja);
 
         WebElement textarea = wait.until(d -> {
@@ -122,6 +124,38 @@ public class CrearNovedadProveedor implements Task {
             Thread.currentThread().interrupt();
         }
         System.out.println("  [CrearNovedadProveedor] ==================== ✓ NOVEDAD CREADA ====================\n");
+    }
+
+    /**
+     * Selecciona la primera opción del dropdown custom (en el dialog), con reintento: el dialog
+     * se re-renderiza tras cada selección, por lo que el siguiente dropdown puede tardar en estar
+     * listo. Reintenta hasta 3 veces cerrando cualquier menú abierto entre intentos.
+     */
+    private String seleccionarDropdown(WebDriver driver, JavascriptExecutor js, String componentClass, String etiqueta) {
+        RuntimeException ultimo = null;
+        for (int intento = 1; intento <= 3; intento++) {
+            try {
+                return OneScriptDynamicElements.selectFirstCustomDropdownOption(driver, componentClass, SCOPE_DIALOG);
+            } catch (RuntimeException e) {
+                ultimo = e;
+                System.out.println("  [CrearNovedadProveedor] ⚠ '" + etiqueta + "' no listo (intento " + intento + "/3), reintentando...");
+                // Cerrar cualquier dropdown abierto (Escape) sin tocar el dialog, y esperar el re-render.
+                try {
+                    js.executeScript("document.activeElement && document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));");
+                } catch (Exception ignored) {
+                }
+                sleep(1200);
+            }
+        }
+        throw (ultimo != null) ? ultimo : new RuntimeException("No se pudo seleccionar el dropdown: " + etiqueta);
+    }
+
+    private void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /** Localiza el iframe que contiene la pestaña "Novedades". */
