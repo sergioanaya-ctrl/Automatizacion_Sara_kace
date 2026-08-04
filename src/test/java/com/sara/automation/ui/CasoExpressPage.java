@@ -38,17 +38,19 @@ public class CasoExpressPage {
      * Opción "Formulario Creación de Casos (ASISTENCIA)" en el dropdown.
      * Se selecciona después de abrir el menú Caso Express.
      * CONTEXTO: Fuera del iframe - dentro del dropdown del menú
+     * Nota: Es un div con role="menuitem", no un button
      */
     public static final Target FORMULARIO_ASISTENCIA = Target.the("Formulario Creación de Casos (ASISTENCIA)")
-            .locatedBy("//button[contains(normalize-space(.), 'Formulario Creación de Casos (ASISTENCIA)')]");
+            .locatedBy("//div[@role='menuitem']//span[contains(normalize-space(.), 'Formulario Creación de Casos (ASISTENCIA)')]/ancestor::div[@role='menuitem']");
 
     /**
      * Opción "Formulario Creación de Casos (RECLAMACIONES)" en el dropdown.
      * Se selecciona después de abrir el menú Caso Express.
      * CONTEXTO: Fuera del iframe - dentro del dropdown del menú
+     * Nota: Es un div con role="menuitem", no un button
      */
     public static final Target FORMULARIO_CREACION_RECLAMACIONES = Target.the("Formulario Creación de Casos (RECLAMACIONES)")
-            .locatedBy("//button[contains(normalize-space(.), 'Formulario Creación de Casos (RECLAMACIONES)')]");
+            .locatedBy("//div[@role='menuitem']//span[contains(normalize-space(.), 'Formulario Creación de Casos (RECLAMACIONES)')]/ancestor::div[@role='menuitem']");
 
     // ============================================================
     // SECCIÓN 2: IFRAME
