@@ -1,6 +1,6 @@
 package com.sara.automation.interactions;
 
-import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.ui.CasoExpressPage;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Interaction;
 import net.serenitybdd.screenplay.Performable;
@@ -51,7 +51,7 @@ public class SwitchToOneScriptIframe implements Interaction {
                     .until(d -> {
                         try {
                             d.switchTo().defaultContent();
-                            WebElement iframe = d.findElement(CasoCreatePage.Form_OneScript_Iframe_By);
+                            WebElement iframe = d.findElement(CasoExpressPage.IFRAME_ONESCRIPT);
                             d.switchTo().frame(iframe);
                             return true;
                         } catch (NoSuchElementException | StaleElementReferenceException | NoSuchFrameException e) {

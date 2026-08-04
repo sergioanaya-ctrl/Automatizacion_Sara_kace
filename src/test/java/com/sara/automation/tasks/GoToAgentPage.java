@@ -1,7 +1,7 @@
 package com.sara.automation.tasks;
 
 import com.sara.automation.ui.AgentPage;
-import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.ui.CasoExpressPage;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -145,19 +145,15 @@ public class GoToAgentPage implements Task {
         
         // Intentar buscar el elemento con timeout más largo
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Caso_Express, isVisible()).forNoMoreThan(30).seconds());
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.BOTON_CASO_EXPRESS, isVisible()).forNoMoreThan(30).seconds());
         } catch (AssertionError e) {
             // Si falla, intentar con fallback
-            System.out.println("FALLBACK: Intentando con localizadores alternativos...");
+            System.out.println("FALLBACK: Intentando con localizador alternativo...");
             try {
-                actor.attemptsTo(WaitUntil.the(CasoCreatePage.Caso_Express_FALLBACK, isVisible()).forNoMoreThan(20).seconds());
+                actor.attemptsTo(WaitUntil.the(CasoExpressPage.BOTON_CASO_EXPRESS_FALLBACK, isVisible()).forNoMoreThan(20).seconds());
             } catch (AssertionError e2) {
-                try {
-                    actor.attemptsTo(WaitUntil.the(CasoCreatePage.Caso_Express_FALLBACK2, isVisible()).forNoMoreThan(20).seconds());
-                } catch (AssertionError e3) {
-                    // Si todo falla, lanzar el error original con más contexto
-                    throw new AssertionError("No se encontró 'Caso Express' después de múltiples intentos. Revisar target/agent_page_debug_*.txt en el volumen montado", e);
-                }
+                // Si todo falla, lanzar el error original con más contexto
+                throw new AssertionError("No se encontró 'Caso Express' después de múltiples intentos. Revisar target/agent_page_debug_*.txt en el volumen montado", e);
             }
         }
     }

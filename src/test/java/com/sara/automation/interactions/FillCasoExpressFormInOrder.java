@@ -1,6 +1,6 @@
 package com.sara.automation.interactions;
 
-import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.ui.CasoExpressPage;
 import com.sara.automation.utils.ExpedienteContext;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Interaction;
@@ -582,14 +582,14 @@ public class FillCasoExpressFormInOrder implements Interaction {
         String detalleDireccionDestino = "Barrio " + BARRIOS[RANDOM.nextInt(BARRIOS.length)] + ", Apt. " + (1 + RANDOM.nextInt(90));
 
         // Bloque de direcciones respetando la vista del formulario.
-        llenarCampo(actor, CasoCreatePage.Direccion_Servicio, direccionServicio);
-        llenarCampo(actor, CasoCreatePage.Direccion_Destino, direccionDestino);
-        llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Destino, detalleDireccionDestino);
-        llenarCampo(actor, CasoCreatePage.Detalle_Direccion_Servicio, detalleDireccionServicio);
+        llenarCampo(actor, CasoExpressPage.DIRECCION_SERVICIO, direccionServicio);
+        llenarCampo(actor, CasoExpressPage.DIRECCION_DESTINO, direccionDestino);
+        llenarCampo(actor, CasoExpressPage.Detalle_DIRECCION_DESTINO, detalleDireccionDestino);
+        llenarCampo(actor, CasoExpressPage.Detalle_DIRECCION_SERVICIO, detalleDireccionServicio);
         // NO llenamos "Marca de vehículo": al diligenciarla se habilita el campo requerido
         // 'data[clase_vehiculo]', que quedaría vacío y bloquearía el guardado. Marca es opcional,
         // así que se omite para no disparar esa dependencia.
-        llenarCampo(actor, CasoCreatePage.Ubicacion_Servicio, UBICACION_SERVICIO_DEFAULT);
+        llenarCampo(actor, CasoExpressPage.UBICACION_SERVICIO, UBICACION_SERVICIO_DEFAULT);
     }
 
     private <T extends Actor> void llenarServiciosEspecialesYAsignacionEnOrden(T actor) {
@@ -605,10 +605,10 @@ public class FillCasoExpressFormInOrder implements Interaction {
     private <T extends Actor> void llenarObservacionFinal(T actor) {
         // Último campo editable del formulario antes de accionar Guardar.
         long t0 = System.currentTimeMillis();
-        actor.attemptsTo(Scroll.to(CasoCreatePage.Observacion_Final));
+        actor.attemptsTo(Scroll.to(CasoExpressPage.OBSERVACION_FINAL));
         long tScroll = System.currentTimeMillis();
         String observacion = this.observacionFinal != null ? this.observacionFinal : generarObservacionAleatoria();
-        llenarCampo(actor, CasoCreatePage.Observacion_Final, observacion);
+        llenarCampo(actor, CasoExpressPage.OBSERVACION_FINAL, observacion);
         long tFill = System.currentTimeMillis();
         System.out.println("  [TIMING observacion] scroll=" + (tScroll - t0) + "ms | llenado=" + (tFill - tScroll) + "ms");
     }
@@ -620,17 +620,17 @@ public class FillCasoExpressFormInOrder implements Interaction {
     private <T extends Actor> void guardarFormulario(T actor) {
         ensureIframeContext(actor);
         try {
-            actor.attemptsTo(Scroll.to(CasoCreatePage.Guardar_Formulario));
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Formulario, isVisible()).forNoMoreThan(20).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Formulario));
+            actor.attemptsTo(Scroll.to(CasoExpressPage.GUARDAR_FORMULARIO));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.GUARDAR_FORMULARIO, isVisible()).forNoMoreThan(20).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.GUARDAR_FORMULARIO));
             // Esperar a que la página procese el guardado y se recargue completamente
             // La página hace reload dentro del iframe, necesitamos dar tiempo para que termine
             Thread.sleep(500);
         } catch (Throwable e) {
             System.out.println("  [FillCasoExpressFormInOrder] Intento 1 de guardado falló, intentando fallback...");
             try {
-                actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Formulario_FALLBACK, isVisible()).forNoMoreThan(10).seconds());
-                actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Formulario_FALLBACK));
+                actor.attemptsTo(WaitUntil.the(CasoExpressPage.GUARDAR_FORMULARIO_FALLBACK, isVisible()).forNoMoreThan(10).seconds());
+                actor.attemptsTo(Click.on(CasoExpressPage.GUARDAR_FORMULARIO_FALLBACK));
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ie) {
@@ -689,25 +689,25 @@ public class FillCasoExpressFormInOrder implements Interaction {
         actor.attemptsTo(Click.on(combo));
 
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownSearch, isVisible()).forNoMoreThan(3).seconds());
-            actor.attemptsTo(Enter.theValue(valor).into(CasoCreatePage.CustomDropdownSearch));
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.CustomDropdownListItem.of(valor)));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.CustomDropdownSearch, isVisible()).forNoMoreThan(3).seconds());
+            actor.attemptsTo(Enter.theValue(valor).into(CasoExpressPage.CustomDropdownSearch));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.CustomDropdownListItem.of(valor)));
             return;
         } catch (Throwable ignore) {
             // Si no existe búsqueda custom, continuar con opciones visibles.
         }
 
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista.of(valor), isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista.of(valor)));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.Opcion_Lista.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.Opcion_Lista.of(valor)));
             return;
         } catch (Throwable ignore) {
             // Ignorar y probar la opción por texto parcial.
         }
 
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista_Contiene.of(valor), isVisible()).forNoMoreThan(10).seconds());
-        actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista_Contiene.of(valor)));
+        actor.attemptsTo(WaitUntil.the(CasoExpressPage.Opcion_Lista_Contiene.of(valor), isVisible()).forNoMoreThan(10).seconds());
+        actor.attemptsTo(Click.on(CasoExpressPage.Opcion_Lista_Contiene.of(valor)));
     }
 
     /**

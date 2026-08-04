@@ -2,7 +2,7 @@ package com.sara.automation.tasks;
 
 import com.sara.automation.interactions.FillCasoExpressFormInOrder;
 import com.sara.automation.interactions.SwitchToOneScriptIframe;
-import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.ui.CasoExpressPage;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -109,11 +109,11 @@ public class ClickCasoExpress implements Task {
 
     private <T extends Actor> void abrirCasoExpress(T actor) {
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Caso_Express, isVisible()).forNoMoreThan(8).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Caso_Express));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.BOTON_CASO_EXPRESS, isVisible()).forNoMoreThan(8).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.BOTON_CASO_EXPRESS));
         } catch (Throwable e) {
             try {
-                actor.attemptsTo(Click.on(CasoCreatePage.Caso_Express_FALLBACK));
+                actor.attemptsTo(Click.on(CasoExpressPage.BOTON_CASO_EXPRESS_FALLBACK));
             } catch (Throwable ex) {
                 throw new RuntimeException("No se pudo abrir el menu 'Caso Express'", ex);
             }
@@ -122,8 +122,8 @@ public class ClickCasoExpress implements Task {
 
     private <T extends Actor> void seleccionarFormularioAsistencia(T actor) {
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Formulario_Creacion_ASISTENCIA, isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Formulario_Creacion_ASISTENCIA));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.FORMULARIO_ASISTENCIA, isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.FORMULARIO_ASISTENCIA));
         } catch (Throwable e) {
             throw new RuntimeException("No se pudo seleccionar 'Formulario Creacion de Casos (ASISTENCIA)'", e);
         }

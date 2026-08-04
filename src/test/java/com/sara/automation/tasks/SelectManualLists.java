@@ -1,6 +1,6 @@
 package com.sara.automation.tasks;
 
-import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.ui.CasoExpressPage;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -42,20 +42,20 @@ public class SelectManualLists implements Task {
         // Esta tarea asume que ya estamos dentro del iframe OneScript.
 
         // 1) Seccion General
-        seleccionar(actor, CasoCreatePage.Departamento_Solicita_Combo, departamento);
-        seleccionar(actor, CasoCreatePage.Municipio_Solicita_Combo, municipio);
+        seleccionar(actor, CasoExpressPage.DEPARTAMENTO_COMBO_CUSTOM, departamento);
+        seleccionar(actor, CasoExpressPage.MUNICIPIO_COMBO_CUSTOM, municipio);
 
         if (serviciosEspeciales != null && !serviciosEspeciales.isEmpty()) {
-            seleccionar(actor, CasoCreatePage.Servicios_Especiales_Combo, serviciosEspeciales);
+            seleccionar(actor, CasoExpressPage.COMBO_SERVICIOS_ESPECIALES.toString(), serviciosEspeciales);
         }
 
         // 2) Seccion Asignacion
-        actor.attemptsTo(Scroll.to(CasoCreatePage.Seccion_Asignacion));
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Gestor_Coordinacion_Combo, isVisible()).forNoMoreThan(15).seconds());
+        actor.attemptsTo(Scroll.to(CasoExpressPage.SECCION_ASIGNACION));
+        actor.attemptsTo(WaitUntil.the(CasoExpressPage.GESTOR_COMBO_CUSTOM, isVisible()).forNoMoreThan(15).seconds());
 
-        seleccionar(actor, CasoCreatePage.Gestor_Coordinacion_Combo, gestor);
-        seleccionar(actor, CasoCreatePage.Linea_Combo, linea);
-        seleccionar(actor, CasoCreatePage.Servicio_Combo, servicio);
+        seleccionar(actor, CasoExpressPage.GESTOR_COMBO_CUSTOM, gestor);
+        seleccionar(actor, CasoExpressPage.LINEA_COMBO_CUSTOM, linea);
+        seleccionar(actor, CasoExpressPage.SERVICIO_COMBO_CUSTOM, servicio);
     }
 
     private <T extends Actor> void seleccionar(T actor, Target combo, String valor) {
@@ -63,21 +63,21 @@ public class SelectManualLists implements Task {
         actor.attemptsTo(Click.on(combo));
 
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownSearch, isVisible()).forNoMoreThan(3).seconds());
-            actor.attemptsTo(Enter.theValue(valor).into(CasoCreatePage.CustomDropdownSearch));
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.CustomDropdownListItem.of(valor)));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.CUSTOM_DROPDOWN_SEARCH, isVisible()).forNoMoreThan(3).seconds());
+            actor.attemptsTo(Enter.theValue(valor).into(CasoExpressPage.CUSTOM_DROPDOWN_SEARCH));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.CUSTOM_DROPDOWN_ITEM.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.CUSTOM_DROPDOWN_ITEM.of(valor)));
             return;
         } catch (Exception ignore) {
             // Continua a estrategia estandar.
         }
 
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista.of(valor), isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista.of(valor)));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.OPCION_LISTA.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.OPCION_LISTA.of(valor)));
         } catch (Exception e) {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Opcion_Lista_Contiene.of(valor), isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Opcion_Lista_Contiene.of(valor)));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.OPCION_LISTA_CONTIENE.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.OPCION_LISTA_CONTIENE.of(valor)));
         }
     }
 }

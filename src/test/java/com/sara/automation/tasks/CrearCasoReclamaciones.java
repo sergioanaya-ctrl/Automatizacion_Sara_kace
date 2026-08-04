@@ -1,7 +1,7 @@
 package com.sara.automation.tasks;
 
 import com.sara.automation.interactions.SwitchToOneScriptIframe;
-import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.ui.CasoExpressPage;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -74,15 +74,15 @@ public class CrearCasoReclamaciones implements Task {
         abrirCasoExpress(actor);
 
         // 2. Seleccionar el formulario de RECLAMACIONES.
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Formulario_Creacion_RECLAMACIONES, isVisible()).forNoMoreThan(15).seconds());
-        actor.attemptsTo(Click.on(CasoCreatePage.Formulario_Creacion_RECLAMACIONES));
+        actor.attemptsTo(WaitUntil.the(CasoExpressPage.Formulario_Creacion_RECLAMACIONES, isVisible()).forNoMoreThan(15).seconds());
+        actor.attemptsTo(Click.on(CasoExpressPage.Formulario_Creacion_RECLAMACIONES));
         System.out.println("  [CrearCasoReclamaciones] ✓ Formulario RECLAMACIONES seleccionado");
 
         // 3. Entrar al iframe del formulario.
         actor.attemptsTo(SwitchToOneScriptIframe.required());
         driver.switchTo().defaultContent();
         new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(CasoCreatePage.Form_OneScript_Iframe_By));
+                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(CasoExpressPage.Form_OneScript_Iframe_By));
         new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.visibilityOfElementLocated(CAMPO_NOMBRE));
         System.out.println("  [CrearCasoReclamaciones] ✓ Iframe y formulario de reclamaciones listos");
@@ -144,11 +144,11 @@ public class CrearCasoReclamaciones implements Task {
 
     private <T extends Actor> void abrirCasoExpress(T actor) {
         try {
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Caso_Express, isVisible()).forNoMoreThan(15).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Caso_Express));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.Caso_Express, isVisible()).forNoMoreThan(15).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.Caso_Express));
         } catch (Throwable e) {
             try {
-                actor.attemptsTo(Click.on(CasoCreatePage.Caso_Express_FALLBACK));
+                actor.attemptsTo(Click.on(CasoExpressPage.Caso_Express_FALLBACK));
             } catch (Throwable ex) {
                 throw new RuntimeException("No se pudo abrir el menú 'Caso Express'", ex);
             }

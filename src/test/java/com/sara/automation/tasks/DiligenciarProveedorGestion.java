@@ -2,7 +2,7 @@ package com.sara.automation.tasks;
 
 import com.sara.automation.interactions.SwitchToOneScriptIframe;
 import com.sara.automation.interactions.OneScriptDynamicElements;
-import com.sara.automation.ui.CasoCreatePage;
+import com.sara.automation.ui.CasoExpressPage;
 
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
@@ -141,7 +141,7 @@ public class DiligenciarProveedorGestion implements Task {
             OneScriptDynamicElements.clickVisibleButtonByText(driver, "Crear");
         } catch (Exception e) {
             System.out.println("  [DiligenciarProveedorGestion] Fallback a locator de Crear Proveedor");
-            actor.attemptsTo(Click.on(CasoCreatePage.Boton_Crear_Proveedor));
+            actor.attemptsTo(Click.on(CasoExpressPage.Boton_Crear_Proveedor));
         }
 
         OneScriptDynamicElements.waitForProveedorSection(driver, Duration.ofSeconds(20));
@@ -150,7 +150,7 @@ public class DiligenciarProveedorGestion implements Task {
         OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-nombre", nombreProveedor);
 
         // Estos campos se habilitan después de elegir la respuesta del proveedor (ej. TOMA SERVICIO).
-        llenarCampo(actor, CasoCreatePage.Tiempo_Monitoreo_Sitio_Minutos, TIEMPO_MONITOREO_SITIO_DEFAULT);
+        llenarCampo(actor, CasoExpressPage.Tiempo_Monitoreo_Sitio_Minutos, TIEMPO_MONITOREO_SITIO_DEFAULT);
         
         // Escribir campos dinámicos por ID directo (SOLUCIÓN VALIDADA)
         llenarCamposConNavegacionTab(actor);
@@ -160,8 +160,8 @@ public class DiligenciarProveedorGestion implements Task {
         WebElement iframeAfterFill = driver.findElement(By.id("form_onescript_iframe"));
         driver.switchTo().frame(iframeAfterFill);
 
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_Proveedor, isVisible()).forNoMoreThan(20).seconds());
-        actor.attemptsTo(Click.on(CasoCreatePage.Guardar_Proveedor));
+        actor.attemptsTo(WaitUntil.the(CasoExpressPage.Guardar_Proveedor, isVisible()).forNoMoreThan(20).seconds());
+        actor.attemptsTo(Click.on(CasoExpressPage.Guardar_Proveedor));
 
         // Esperar a que el diálogo de proveedor se cierre y volver al contexto principal.
         waitForProveedorDialogToClose(driver, Duration.ofSeconds(5));
@@ -197,8 +197,8 @@ public class DiligenciarProveedorGestion implements Task {
         // Segundo intento: Screenplay con locator estándar
         try {
             System.out.println("  [DiligenciarProveedorGestion] Intento 2: Guardar con Screenplay (Guardar_General_Flotante)...");
-            actor.attemptsTo(WaitUntil.the(CasoCreatePage.Guardar_General_Flotante, isVisible()).forNoMoreThan(5).seconds());
-            actor.attemptsTo(Click.on(CasoCreatePage.Guardar_General_Flotante));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.Guardar_General_Flotante, isVisible()).forNoMoreThan(5).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.Guardar_General_Flotante));
             System.out.println("  [DiligenciarProveedorGestion] ✓ Guardado general clickeado OK");
             return true;
         } catch (Exception e) {
@@ -370,8 +370,8 @@ public class DiligenciarProveedorGestion implements Task {
         actor.attemptsTo(WaitUntil.the(searchInput, isVisible()).forNoMoreThan(10).seconds());
         actor.attemptsTo(Enter.theValue(valor).into(searchInput));
 
-        actor.attemptsTo(WaitUntil.the(CasoCreatePage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
-        actor.attemptsTo(Click.on(CasoCreatePage.CustomDropdownListItem.of(valor)));
+        actor.attemptsTo(WaitUntil.the(CasoExpressPage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
+        actor.attemptsTo(Click.on(CasoExpressPage.CustomDropdownListItem.of(valor)));
     }
 
     
