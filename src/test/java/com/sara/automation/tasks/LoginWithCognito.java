@@ -88,7 +88,7 @@ public class LoginWithCognito implements Task {
             //    abortaríamos el intercambio del token y la sesión quedaría sin autenticar
             //    (síntoma: el botón "Caso Express" nunca aparece en el paso siguiente).
             new WebDriverWait(driver, Duration.ofSeconds(30)).until(
-                d -> d.getCurrentUrl().contains("sura-konecta.com")
+                d -> d.getCurrentUrl().contains("kace-cloudtest.com")
                   && !d.getCurrentUrl().contains("/auth?")
                   && !d.getCurrentUrl().contains("amazoncognito.com")
             );

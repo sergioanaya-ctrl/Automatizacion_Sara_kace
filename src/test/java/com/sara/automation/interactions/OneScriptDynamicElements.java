@@ -18,33 +18,47 @@ public final class OneScriptDynamicElements {
         new WebDriverWait(driver, timeout).until(d -> {
             Object found = ((JavascriptExecutor) d).executeScript(
                     "const normalize = text => text.replace(/\\s+/g, ' ').trim().toLowerCase();"
+                            + "const renderizado = el => !!el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;"
                             + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
                             + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
-                            + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => b.offsetParent !== null && normalize(b.textContent).includes('guardar'));"
-                            + "return (nombre && respuesta) || (nombre && saveBtn) || null;"
+                            + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => renderizado(b) && normalize(b.textContent).includes('guardar'));"
+                            + "return (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn) || null;"
             );
             return found != null;
         });
+        sleep(200); // deja asentar el reflow/animación del modal antes de interactuar con sus controles
     }
 
     public static void clickVisibleButtonByText(WebDriver driver, String text) {
-        Object clicked = ((JavascriptExecutor) driver).executeScript(
+        Object candidate = ((JavascriptExecutor) driver).executeScript(
                 "const wanted = arguments[0].toLowerCase();"
                         + "const buttons = Array.from(document.querySelectorAll('button'));"
                         + "const visible = buttons.filter(b => b.offsetParent !== null);"
                         + "const prioritized = visible.find(b => (b.getAttribute('ref') || '').toLowerCase().includes('gestion_proveedor') && b.textContent.trim().toLowerCase().includes(wanted));"
-                        + "const candidate = prioritized || visible.find(b => b.textContent.trim().toLowerCase().includes(wanted));"
-                        + "if (!candidate) return false;"
-                        + "candidate.scrollIntoView({block:'center', inline:'nearest'});"
-                        + "candidate.dispatchEvent(new MouseEvent('mousedown', {bubbles:true}));"
-                        + "candidate.dispatchEvent(new MouseEvent('mouseup', {bubbles:true}));"
-                        + "candidate.click();"
-                        + "return true;",
+                        + "const found = prioritized || visible.find(b => b.textContent.trim().toLowerCase().includes(wanted));"
+                        + "if (found) { found.scrollIntoView({block:'center', inline:'nearest'}); }"
+                        + "return found || null;",
                 text
         );
 
-        if (!(clicked instanceof Boolean) || !((Boolean) clicked)) {
+        if (!(candidate instanceof WebElement)) {
             throw new NoSuchElementException("No se encontró botón visible con texto: " + text);
+        }
+
+        // Clic NATIVO (isTrusted=true) primero: un editGrid "addRow" disparado con evento
+        // sintético puede abrir el modal visualmente sin inicializar bien los componentes de la
+        // nueva fila (mismo patrón detectado en la carga de opciones del dropdown y en el guardado
+        // general). Cae a JS solo si el clic nativo falla (p. ej. elemento tapado).
+        WebElement button = (WebElement) candidate;
+        try {
+            button.click();
+        } catch (Exception e) {
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].dispatchEvent(new MouseEvent('mousedown', {bubbles:true}));"
+                            + "arguments[0].dispatchEvent(new MouseEvent('mouseup', {bubbles:true}));"
+                            + "arguments[0].click();",
+                    button
+            );
         }
     }
 
@@ -73,11 +87,21 @@ public final class OneScriptDynamicElements {
         // garantizando que el filtrado se aplique.
         WebElement search = waitForSearchInput(driver, componentClass, scope, Duration.ofSeconds(5));
         if (search != null) {
-            setInputValue(driver, search, value);
-            // Sin sleep fijo: findOptionByText espera activamente a que aparezca la opción filtrada.
+            escribirEnBusqueda(driver, componentClass, scope, search, value);
         }
 
-        WebElement option = findOptionByText(driver, value);
+        // Espera ACTIVA a que aparezca la opción: la búsqueda es asíncrona contra el backend y
+        // puede tardar de forma variable. Mientras espera, re-verifica que el input de búsqueda
+        // conserve el valor escrito (Form.io puede re-renderizarlo y perderlo) y lo reescribe si
+        // hace falta, en vez de depender de un timeout fijo adivinado.
+        WebElement option;
+        try {
+            option = findOptionByText(driver, value, componentClass, scope);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            throw new NoSuchElementException(
+                    "No se encontró la opción '" + value + "' del dropdown '" + componentClass + "'. "
+                            + diagnosticoDropdown(driver, componentClass, scope), e);
+        }
         if (option == null) {
             throw new NoSuchElementException("No se encontró la opción del dropdown: " + value);
         }
@@ -179,13 +203,30 @@ public final class OneScriptDynamicElements {
      */
     private static void abrirDropdown(WebDriver driver, String componentClass, String scope, WebElement control) {
         try {
-            clickWithJs(driver, control);
+            clickReal(driver, control);
         } catch (StaleElementReferenceException e) {
             WebElement fresco = waitForDropdownControl(driver, componentClass, scope, Duration.ofSeconds(5));
             if (fresco == null) {
                 throw new NoSuchElementException("El dropdown control quedó stale y no reapareció: " + componentClass);
             }
-            clickWithJs(driver, fresco);
+            clickReal(driver, fresco);
+        }
+    }
+
+    /**
+     * Clic NATIVO de Selenium (no sintético vía JS): algunos componentes solo disparan la carga
+     * asíncrona de opciones ante un evento de usuario "trusted" (isTrusted=true). El click vía
+     * JavascriptExecutor (dispatchEvent/candidate.click()) es isTrusted=false y puede abrir el
+     * dropdown visualmente sin disparar esa carga, dejando la lista vacía indefinidamente.
+     * Cae a clic por JS solo si el nativo falla (p. ej. elemento tapado por otro overlay).
+     */
+    private static void clickReal(WebDriver driver, WebElement element) {
+        try {
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].scrollIntoView({block:'center', inline:'nearest'});", element);
+            element.click();
+        } catch (Exception e) {
+            clickWithJs(driver, element);
         }
     }
 
@@ -248,8 +289,52 @@ public final class OneScriptDynamicElements {
         return element instanceof WebElement ? (WebElement) element : null;
     }
 
-    private static WebElement findOptionByText(WebDriver driver, String value) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    /**
+     * Recolecta info de diagnóstico cuando no se encuentra una opción: si el input de búsqueda
+     * existe y qué valor quedó escrito, y el texto de las opciones actualmente visibles.
+     * Solo se usa para enriquecer el mensaje de error, no afecta el flujo normal.
+     */
+    private static String diagnosticoDropdown(WebDriver driver, String componentClass, String scope) {
+        try {
+            Object info = ((JavascriptExecutor) driver).executeScript(
+                    "const scope = arguments[1] ? (arguments[1] + ' ') : '';"
+                            + "const base = document.querySelector(scope + 'div.formio-component-custom-select.' + arguments[0]);"
+                            + "const search = base ? base.querySelector('input.custom-dropdown-search, input[placeholder*=\\\"uscar\\\"]') : null;"
+                            + "const items = Array.from(document.querySelectorAll('ul.custom-dropdown-list li, div.custom-dropdown-item, div[role=\\\"option\\\"]'))"
+                            + "  .filter(el => el.offsetParent !== null)"
+                            + "  .map(el => el.textContent.trim())"
+                            + "  .slice(0, 20);"
+                            + "return 'search_input_encontrado=' + (!!search) + ', valor_actual=\"' + (search ? search.value : '') "
+                            + "  + '\", opciones_visibles=[' + items.join(' | ') + ']';",
+                    componentClass, scope
+            );
+            return String.valueOf(info);
+        } catch (Exception ex) {
+            return "(no se pudo obtener diagnóstico: " + ex.getMessage() + ")";
+        }
+    }
+
+    /**
+     * Escribe el valor en el input de búsqueda del dropdown, relocalizándolo si Form.io lo
+     * re-renderiza (stale) justo al escribir.
+     */
+    private static void escribirEnBusqueda(WebDriver driver, String componentClass, String scope,
+                                            WebElement search, String value) {
+        try {
+            setInputValue(driver, search, value);
+        } catch (StaleElementReferenceException e) {
+            WebElement searchFresco = waitForSearchInput(driver, componentClass, scope, Duration.ofSeconds(5));
+            if (searchFresco != null) {
+                setInputValue(driver, searchFresco, value);
+            }
+        }
+    }
+
+    private static WebElement findOptionByText(WebDriver driver, String value, String componentClass, String scope) {
+        // La lista se llena vía búsqueda asíncrona contra el backend: no hay un tiempo fijo
+        // confiable, así que se espera activamente hasta que aparezca (con un techo de
+        // seguridad), reescribiendo el valor de búsqueda si el input lo perdió en el camino.
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(60));
         return wait.until(d -> {
             Object found = ((JavascriptExecutor) d).executeScript(
                     "const wanted = arguments[0].toLowerCase();"
@@ -260,7 +345,19 @@ public final class OneScriptDynamicElements {
                             + "return visible.find(el => el.textContent.trim().toLowerCase().includes(wanted)) || null;",
                     value
             );
-            return found instanceof WebElement ? (WebElement) found : null;
+            if (found instanceof WebElement) {
+                return (WebElement) found;
+            }
+            // Reafirma el valor de búsqueda por si el input se limpió o quedó stale a mitad de espera.
+            try {
+                WebElement search = getSearchInput(d, componentClass, scope);
+                if (search != null && !value.equalsIgnoreCase(search.getAttribute("value"))) {
+                    escribirEnBusqueda(d, componentClass, scope, search, value);
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // Se reintenta en la próxima vuelta del poll.
+            }
+            return null;
         });
     }
 

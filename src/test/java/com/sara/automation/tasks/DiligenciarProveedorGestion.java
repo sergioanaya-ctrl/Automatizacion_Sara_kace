@@ -146,8 +146,8 @@ public class DiligenciarProveedorGestion implements Task {
 
         OneScriptDynamicElements.waitForProveedorSection(driver, Duration.ofSeconds(20));
 
-        OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-nombre", nombreProveedor);
         OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-respuesta_de_proveedor", servicio);
+        OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-nombre", nombreProveedor);
 
         // Estos campos se habilitan después de elegir la respuesta del proveedor (ej. TOMA SERVICIO).
         llenarCampo(actor, CasoCreatePage.Tiempo_Monitoreo_Sitio_Minutos, TIEMPO_MONITOREO_SITIO_DEFAULT);

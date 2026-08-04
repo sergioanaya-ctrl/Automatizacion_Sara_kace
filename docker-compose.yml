@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   # ============================================================
-  # SARA3 - Batch Tests 8 Paralelo
+  # SARA3 - Batch Tests 8 Paralelo con Chrome en ESPAÑOL
   # ============================================================
   sara3-batch:
     build:
@@ -10,22 +10,31 @@ services:
       dockerfile: Dockerfile
     image: sara3:latest
     container_name: sara3-batch-tests
-    
-    # Variables de entorno
+
+    # Variables de entorno - Chrome en ESPAÑOL + Config
     environment:
-      DISPLAY: ""
+      DISPLAY: ":99"
       QT_QPA_PLATFORM: "offscreen"
       JAVA_OPTS: "-Xmx2048m -Xms512m"
-      CHROME_BIN: "/usr/bin/chromium-browser"
+      CHROME_BIN: "/usr/bin/google-chrome"
+      CHROME_DBUS_STUB_ONLY: "1"
+      CHROME_HEADLESS: "1"
+      DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/run/dbus/system_bus_socket"
+      # ESPAÑOL
+      LANG: "es_ES.UTF-8"
+      LANGUAGE: "es_ES:es"
+      LC_ALL: "es_ES.UTF-8"
+      LC_CTYPE: "es_ES.UTF-8"
+      TZ: "America/Bogota"
       maxParallelForks: "8"
-    
+
     # Volúmenes
     volumes:
       # Montar reporte generado en el host
       - ./target/reports:/app/target/reports
       - ./target/site:/app/target/site
       - ./logs:/app/logs
-    
+
     # Recursos
     resources:
       limits:
@@ -34,21 +43,21 @@ services:
       reservations:
         cpus: '1'
         memory: 2G
-    
+
     # Restarts
     restart_policy:
       condition: on-failure
       delay: 5s
       max_attempts: 3
       window: 120s
-    
+
     # Logs
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    
+
     # Comando
     command: ./batch_test_8p.sh
 
@@ -61,18 +70,28 @@ services:
       dockerfile: Dockerfile
     image: sara3:latest
     container_name: sara3-interactive
-    
+
+    # Variables de entorno - Chrome en ESPAÑOL + Config
     environment:
-      DISPLAY: ""
+      DISPLAY: ":99"
       QT_QPA_PLATFORM: "offscreen"
       JAVA_OPTS: "-Xmx2048m -Xms512m"
-      CHROME_BIN: "/usr/bin/chromium-browser"
-    
+      CHROME_BIN: "/usr/bin/google-chrome"
+      CHROME_DBUS_STUB_ONLY: "1"
+      CHROME_HEADLESS: "1"
+      DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/run/dbus/system_bus_socket"
+      # ESPAÑOL
+      LANG: "es_ES.UTF-8"
+      LANGUAGE: "es_ES:es"
+      LC_ALL: "es_ES.UTF-8"
+      LC_CTYPE: "es_ES.UTF-8"
+      TZ: "America/Bogota"
+
     volumes:
       - ./target/reports:/app/target/reports
       - ./target/site:/app/target/site
       - ./logs:/app/logs
-    
+
     resources:
       limits:
         cpus: '2'
@@ -80,13 +99,13 @@ services:
       reservations:
         cpus: '1'
         memory: 2G
-    
+
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    
+
     # Menú interactivo
     stdin_open: true
     tty: true
@@ -101,19 +120,29 @@ services:
       dockerfile: Dockerfile
     image: sara3:latest
     container_name: sara3-single-test
-    
+
+    # Variables de entorno - Chrome en ESPAÑOL + Config
     environment:
-      DISPLAY: ""
+      DISPLAY: ":99"
       QT_QPA_PLATFORM: "offscreen"
       JAVA_OPTS: "-Xmx2048m -Xms512m"
-      CHROME_BIN: "/usr/bin/chromium-browser"
+      CHROME_BIN: "/usr/bin/google-chrome"
+      CHROME_DBUS_STUB_ONLY: "1"
+      CHROME_HEADLESS: "1"
+      DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/run/dbus/system_bus_socket"
+      # ESPAÑOL
+      LANG: "es_ES.UTF-8"
+      LANGUAGE: "es_ES:es"
+      LC_ALL: "es_ES.UTF-8"
+      LC_CTYPE: "es_ES.UTF-8"
+      TZ: "America/Bogota"
       TEST_NUM: "01"  # Cambiar número de test
-    
+
     volumes:
       - ./target/reports:/app/target/reports
       - ./target/site:/app/target/site
       - ./logs:/app/logs
-    
+
     resources:
       limits:
         cpus: '1'
@@ -121,13 +150,13 @@ services:
       reservations:
         cpus: '0.5'
         memory: 1G
-    
+
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    
+
     # Ejecutar test individual
     command: bash -c "./gradlew test --tests 'com.sara.automation.runners.CasesRunner$${TEST_NUM}'"
 

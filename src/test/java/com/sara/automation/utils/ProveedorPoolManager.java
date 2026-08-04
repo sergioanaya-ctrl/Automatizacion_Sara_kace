@@ -59,16 +59,20 @@ public class ProveedorPoolManager {
         if (nombreFormulario == null || nombreFormulario.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del proveedor del feature está vacío.");
         }
-        String usuario = nombreFormulario.trim().split("\\s+")[0].toLowerCase();
+        // Login puede ser multi-palabra (ej. "PROVEEDOR PRUEBA") o un solo token duplicado
+        // en el formulario (ej. login 'pruebas40' -> formulario 'PRUEBAS40 PRUEBAS40').
+        String nombreNormalizado = nombreFormulario.trim().toLowerCase();
+        String primerToken = nombreNormalizado.split("\\s+")[0];
         for (Proveedor p : proveedores) {
-            if (p.getUsuario().equalsIgnoreCase(usuario)) {
+            String usuarioLower = p.getUsuario().toLowerCase();
+            if (usuarioLower.equals(nombreNormalizado) || usuarioLower.equals(primerToken)) {
                 System.out.println("[ProveedorPoolManager] Proveedor del feature: " + nombreFormulario
                         + " -> login " + p.getUsuario());
                 return p;
             }
         }
-        throw new IllegalArgumentException("El proveedor '" + nombreFormulario + "' (login '" + usuario
-                + "') no está en el pool. Define su credencial en credentials.properties (proveedor_usuarioN). "
+        throw new IllegalArgumentException("El proveedor '" + nombreFormulario + "' no está en el pool. "
+                + "Define su credencial en credentials.properties (proveedor_usuarioN). "
                 + "Disponibles: " + usuariosDisponibles());
     }
 

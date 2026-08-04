@@ -36,7 +36,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
     // Su responsabilidad es solo diligenciar y guardar.
 
     private static final Random RANDOM = new Random();
-    private static final String UBICACION_SERVICIO_DEFAULT = "produccion";
+    private static final String UBICACION_SERVICIO_DEFAULT = "Release_Asistencia";
     private static final String[] NOMBRES = {
             "Andrés", "Camila", "Sofía", "Daniel", "Valentina", "Juan", "María", "Carlos",
             "Laura", "Javier", "Ana", "Sebastián", "Paula", "Alejandro", "Sara", "David",

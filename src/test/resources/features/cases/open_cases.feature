@@ -11,7 +11,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio |
-      | PRUEBAS40 PRUEBAS40 | TOMA SERVICIO |
+      |  PROVEEDOR PRUEBA | TOMA SERVICIO |
     And creamos una novedad
     And diligenciamos la finalizacion
     And diligenciamos la documentacion cnm
@@ -1274,3 +1274,20 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And navega a agent
     And creamos un caso de reclamaciones
     And gestionamos la reclamacion
+
+  @batch76
+  Scenario: CASO-76 · Autos / Grua · Antioquia – Medellin (hasta Finalizado, sin reingreso de proveedor)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PROVEEDOR PRUEBA | TOMA SERVICIO |
+    And creamos una novedad
+    And diligenciamos la finalizacion
+    And diligenciamos la documentacion cnm
+    And transicionamos los estados del caso

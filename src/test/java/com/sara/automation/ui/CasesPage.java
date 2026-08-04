@@ -1,7 +1,7 @@
 package com.sara.automation.ui;
 
 public class CasesPage {
-    public static final String URL = "https://us-east-1s66ymlwwk.auth.us-east-1.amazoncognito.com/login?client_id=2hfo5293cfbh1h9fbe9m7g07dn&response_type=code&scope=email+openid+profile&redirect_uri=https%3A%2F%2Fasistenciaapp.kit.sura-konecta.com%2Fauth";
+    public static final String URL = "https://us-east-19gjum8s1z.auth.us-east-1.amazoncognito.com/login?redirect_uri=https%3A%2F%2Frelease-asistencia.kace-cloudtest.com%2Fauth&response_type=code&client_id=761l8390vd1uq3en0n0gt8u2qa";
 
     private CasesPage() {}
 }
