@@ -1,9 +1,36 @@
-# Impact Analysis: Sara3 Test Automation Flows
+# Impact Analysis & Refactoring Progress: Sara3 Test Automation Flows
 
 ## Executive Summary
 - **Single Feature File**: `open_cases.feature` with 76+ scenarios
 - **Two Main Workflows**: Caso Express (CASO-01 to CASO-50, CASO-76) + Reclamaciones (Batch 51-75)
 - **Step Definition**: `CasesStepDefinitions.java` orchestrates all steps
+
+## ✅ Completed Modules (This Session)
+
+### 1. Caso Express Module
+- **Status**: ✅ COMPLETE - Modular, documented, working
+- **Components**:
+  - Page Object: `CasoExpressPage.java` (consolidated, unified)
+  - Tasks: `AbrirMenuCasoExpress`, `SeleccionarFormularioAsistencia`, `CrearCasoExpressAsistencia`
+  - Interactions: `EntrarAlIframeFormulario`, `HabilitarFormularioCasoExpress`, `RellenarCampoTexto`, `SeleccionarOpcionCombo`, `GuardarFormularioCasoExpress`
+
+### 2. Estado Transitions Module
+- **Status**: ✅ COMPLETE - Refactored to eliminate duplication
+- **Components**:
+  - **Unified Interaction**: `CambiarEstadoCaso.a(String nombreEstado)` (generic for ALL state changes)
+  - **Step Definitions** (4 independent steps):
+    - `cambiaAEstadoProgramado()`
+    - `cambiaAEstadoAceptadoDesplazamiento()`
+    - `cambiaAEstadoConcluido()`
+    - `cambiaAEstadoFinalizado()`
+- **Benefit**: Eliminated 4 duplicate classes (`ClickEstado*.java`), replaced with 1 generic Interaction
+- **Feature Usage**:
+  ```gherkin
+  And cambia a estado programado
+  And cambia a estado aceptado y en desplazamiento
+  And cambia a estado concluido
+  And cambia a estado finalizado
+  ```
 
 ---
 
