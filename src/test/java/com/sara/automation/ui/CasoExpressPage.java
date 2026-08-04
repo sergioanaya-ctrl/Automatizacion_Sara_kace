@@ -42,6 +42,14 @@ public class CasoExpressPage {
     public static final Target FORMULARIO_ASISTENCIA = Target.the("Formulario Creación de Casos (ASISTENCIA)")
             .locatedBy("//button[contains(normalize-space(.), 'Formulario Creación de Casos (ASISTENCIA)')]");
 
+    /**
+     * Opción "Formulario Creación de Casos (RECLAMACIONES)" en el dropdown.
+     * Se selecciona después de abrir el menú Caso Express.
+     * CONTEXTO: Fuera del iframe - dentro del dropdown del menú
+     */
+    public static final Target FORMULARIO_CREACION_RECLAMACIONES = Target.the("Formulario Creación de Casos (RECLAMACIONES)")
+            .locatedBy("//button[contains(normalize-space(.), 'Formulario Creación de Casos (RECLAMACIONES)')]");
+
     // ============================================================
     // SECCIÓN 2: IFRAME
     // El contenedor que encapsula el formulario dinámico
@@ -92,6 +100,14 @@ public class CasoExpressPage {
      * PRECONDICIÓN: driver.switchTo().frameToBeAvailableAndSwitchToIt(IFRAME_ONESCRIPT)
      */
     public static final By BOTON_GUARDAR_FORMULARIO = By.cssSelector("button[name='data[kaceCustomSubmit]']");
+
+    /**
+     * Botón "Guardar" - fallback con Target para casos donde el By anterior no funciona.
+     * Usado con Screenplay para operaciones de Wait/Click.
+     * CONTEXTO: DENTRO del iframe
+     */
+    public static final Target GUARDAR_FORMULARIO_FALLBACK = Target.the("Guardar Formulario (Fallback)")
+            .locatedBy("//button[contains(normalize-space(.), 'Guardar') and contains(@class, 'btn-primary')]");
 
     // ============================================================
     // SECCIÓN 3A: CAMPOS BÁSICOS (DENTRO DEL IFRAME)
@@ -297,6 +313,13 @@ public class CasoExpressPage {
      * CONTEXTO: DENTRO del iframe
      */
     public static final By COMBO_SERVICIOS_ESPECIALES = By.cssSelector("select[name='data[servicios_especiales]'], input[name='data[servicios_especiales]'], div[data-name='servicios_especiales']");
+
+    /**
+     * Target wrapper para Servicios especiales.
+     * Usado por: Scroll.to(), WaitUntil.the(), Click.on()
+     */
+    public static final Target SERVICIOS_ESPECIALES_COMBO = Target.the("Servicios Especiales")
+            .located(By.cssSelector("select[name='data[servicios_especiales]'], input[name='data[servicios_especiales]'], div[data-name='servicios_especiales']"));
 
     // ============================================================
     // SECCIÓN 7: CUSTOM DROPDOWN SELECTORS (PARA FORMIO DIALOGS)

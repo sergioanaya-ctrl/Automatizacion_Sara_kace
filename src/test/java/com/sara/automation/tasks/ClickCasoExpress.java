@@ -138,7 +138,8 @@ public class ClickCasoExpress implements Task {
         driver.switchTo().defaultContent();
         try {
             new WebDriverWait(driver, Duration.ofSeconds(20))
-                    .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                    .until(ExpectedConditions.presenceOfElementLocated(By.id("form_onescript_iframe")));
+                driver.switchTo().frame(driver.findElement(By.id("form_onescript_iframe")));
             System.out.println("  Switched to iframe OK");
         } catch (Exception e) {
             throw new RuntimeException("[habilitarFormulario] No se pudo cambiar al iframe form_onescript_iframe", e);

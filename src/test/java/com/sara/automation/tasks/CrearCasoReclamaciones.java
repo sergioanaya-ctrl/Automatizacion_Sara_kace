@@ -74,15 +74,16 @@ public class CrearCasoReclamaciones implements Task {
         abrirCasoExpress(actor);
 
         // 2. Seleccionar el formulario de RECLAMACIONES.
-        actor.attemptsTo(WaitUntil.the(CasoExpressPage.Formulario_Creacion_RECLAMACIONES, isVisible()).forNoMoreThan(15).seconds());
-        actor.attemptsTo(Click.on(CasoExpressPage.Formulario_Creacion_RECLAMACIONES));
+        actor.attemptsTo(WaitUntil.the(CasoExpressPage.FORMULARIO_CREACION_RECLAMACIONES, isVisible()).forNoMoreThan(15).seconds());
+        actor.attemptsTo(Click.on(CasoExpressPage.FORMULARIO_CREACION_RECLAMACIONES));
         System.out.println("  [CrearCasoReclamaciones] ✓ Formulario RECLAMACIONES seleccionado");
 
         // 3. Entrar al iframe del formulario.
         actor.attemptsTo(SwitchToOneScriptIframe.required());
         driver.switchTo().defaultContent();
         new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(CasoExpressPage.Form_OneScript_Iframe_By));
+                .until(ExpectedConditions.presenceOfElementLocated(CasoExpressPage.IFRAME_ONESCRIPT));
+        driver.switchTo().frame(driver.findElement(CasoExpressPage.IFRAME_ONESCRIPT));
         new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.visibilityOfElementLocated(CAMPO_NOMBRE));
         System.out.println("  [CrearCasoReclamaciones] ✓ Iframe y formulario de reclamaciones listos");
@@ -144,11 +145,11 @@ public class CrearCasoReclamaciones implements Task {
 
     private <T extends Actor> void abrirCasoExpress(T actor) {
         try {
-            actor.attemptsTo(WaitUntil.the(CasoExpressPage.Caso_Express, isVisible()).forNoMoreThan(15).seconds());
-            actor.attemptsTo(Click.on(CasoExpressPage.Caso_Express));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.BOTON_CASO_EXPRESS, isVisible()).forNoMoreThan(15).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.BOTON_CASO_EXPRESS));
         } catch (Throwable e) {
             try {
-                actor.attemptsTo(Click.on(CasoExpressPage.Caso_Express_FALLBACK));
+                actor.attemptsTo(Click.on(CasoExpressPage.BOTON_CASO_EXPRESS_FALLBACK));
             } catch (Throwable ex) {
                 throw new RuntimeException("No se pudo abrir el menú 'Caso Express'", ex);
             }

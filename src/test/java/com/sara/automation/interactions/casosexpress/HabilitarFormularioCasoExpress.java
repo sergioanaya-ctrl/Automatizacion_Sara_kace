@@ -75,7 +75,8 @@ public class HabilitarFormularioCasoExpress implements Interaction {
         driver.switchTo().defaultContent();
         try {
             new WebDriverWait(driver, Duration.ofSeconds(10))
-                    .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(CasoExpressPage.IFRAME_ONESCRIPT));
+                    .until(ExpectedConditions.presenceOfElementLocated(CasoExpressPage.IFRAME_ONESCRIPT));
+                driver.switchTo().frame(driver.findElement(CasoExpressPage.IFRAME_ONESCRIPT));
             System.out.println("[HabilitarFormularioCasoExpress]   ✓ Estamos dentro del iframe");
         } catch (Exception e) {
             throw new RuntimeException("[HabilitarFormularioCasoExpress] No se pudo volver al iframe", e);

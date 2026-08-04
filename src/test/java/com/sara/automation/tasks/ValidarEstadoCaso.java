@@ -47,7 +47,8 @@ public class ValidarEstadoCaso implements Task {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
             
             // Entrar al iframe (mismo patrón que usan los demás estados)
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("form_onescript_iframe")));
+                driver.switchTo().frame(driver.findElement(By.id("form_onescript_iframe")));
             
             WebElement botón = null;
             String botónEncontrado = null;

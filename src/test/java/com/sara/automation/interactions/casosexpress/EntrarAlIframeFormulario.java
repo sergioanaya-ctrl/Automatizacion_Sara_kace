@@ -79,7 +79,8 @@ public class EntrarAlIframeFormulario implements Interaction {
         System.out.println("[EntrarAlIframeFormulario] PASO 2: Esperando iframe con ID 'form_onescript_iframe'...");
         try {
             new WebDriverWait(driver, Duration.ofSeconds(TIMEOUT_SEGUNDOS))
-                    .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(CasoExpressPage.IFRAME_ONESCRIPT));
+                    .until(ExpectedConditions.presenceOfElementLocated(CasoExpressPage.IFRAME_ONESCRIPT));
+                driver.switchTo().frame(driver.findElement(CasoExpressPage.IFRAME_ONESCRIPT));
             System.out.println("[EntrarAlIframeFormulario]   ✓ Iframe encontrado e iframe cambiado correctamente");
         } catch (Exception e) {
             throw new RuntimeException(

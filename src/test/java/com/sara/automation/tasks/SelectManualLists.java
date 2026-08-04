@@ -46,7 +46,7 @@ public class SelectManualLists implements Task {
         seleccionar(actor, CasoExpressPage.MUNICIPIO_COMBO_CUSTOM, municipio);
 
         if (serviciosEspeciales != null && !serviciosEspeciales.isEmpty()) {
-            seleccionar(actor, CasoExpressPage.COMBO_SERVICIOS_ESPECIALES.toString(), serviciosEspeciales);
+            seleccionar(actor, CasoExpressPage.SERVICIOS_ESPECIALES_COMBO, serviciosEspeciales);
         }
 
         // 2) Seccion Asignacion

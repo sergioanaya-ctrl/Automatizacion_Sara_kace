@@ -33,7 +33,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And gestionamos la reclamacion
 
   @batch3
-  Scenario: CASO-76 · Autos / Grua · Antioquia – Medellin (hasta Finalizado, sin reingreso de proveedor)
+  Scenario: CASO 03 · Autos / Grua · Antioquia – Medellin (hasta Finalizado, sin reingreso de proveedor)
     Given el actor tiene un navegador disponible
     When abre la pagina de casos
     And realiza login con credenciales

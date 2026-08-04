@@ -78,7 +78,8 @@ public class GuardarFormularioCasoExpress implements Interaction {
         driver.switchTo().defaultContent();
         try {
             new WebDriverWait(driver, Duration.ofSeconds(10))
-                    .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(CasoExpressPage.IFRAME_ONESCRIPT));
+                    .until(ExpectedConditions.presenceOfElementLocated(CasoExpressPage.IFRAME_ONESCRIPT));
+                driver.switchTo().frame(driver.findElement(CasoExpressPage.IFRAME_ONESCRIPT));
             System.out.println("[GuardarFormularioCasoExpress]   ✓ Estamos dentro del iframe");
         } catch (Exception e) {
             throw new RuntimeException("[GuardarFormularioCasoExpress] No se pudo entrar al iframe", e);
@@ -136,7 +137,7 @@ public class GuardarFormularioCasoExpress implements Interaction {
                     .until(d -> {
                         try {
                             d.switchTo().defaultContent();
-                            d.switchTo().frameToBeAvailableAndSwitchToIt(CasoExpressPage.IFRAME_ONESCRIPT);
+                            d.switchTo().frame(d.findElement(CasoExpressPage.IFRAME_ONESCRIPT));
                             // Si llegamos aquí, el iframe aún existe
                             return false;
                         } catch (Exception e) {

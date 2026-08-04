@@ -13,7 +13,6 @@ import com.sara.automation.tasks.GoToAgentPage;
 import com.sara.automation.tasks.LoginWithCognito;
 import com.sara.automation.tasks.LogoutFromUserMenu;
 import com.sara.automation.tasks.OpenCasesPage;
-import com.sara.automation.tasks.TransicionarEstadosCaso;
 import com.sara.automation.tasks.ValidarEstadoCaso;
 import com.sara.automation.utils.CredentialsReader;
 import com.sara.automation.utils.ExpedienteContext;
@@ -244,18 +243,6 @@ public class CasesStepDefinitions {
             }
         }
         throw new IllegalArgumentException("Falta valor requerido en feature. Llaves esperadas: " + String.join(", ", keys));
-    }
-
-    @When("transicionamos los estados del caso")
-    public void transicionamosLosEstadosDelCaso() {
-        // Transiciona el caso a través de: Programado -> Aceptado y en desplazamiento -> Concluido -> Finalizado
-        actor.attemptsTo(TransicionarEstadosCaso.completarSecuencia());
-    }
-
-    @When("transicionamos los estados del caso hasta concluido")
-    public void transicionamosLosEstadosDelCasoHastaConcluido() {
-        // Transiciona hasta 'Concluido' y se detiene (no ejecuta 'Finalizado').
-        actor.attemptsTo(TransicionarEstadosCaso.hastaConcluido());
     }
 
     @When("cambia a estado {string}")

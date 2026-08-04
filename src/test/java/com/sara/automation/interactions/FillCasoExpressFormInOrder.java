@@ -86,7 +86,8 @@ public class FillCasoExpressFormInOrder implements Interaction {
         WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
         driver.switchTo().defaultContent();
         new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                .until(ExpectedConditions.presenceOfElementLocated(CasoExpressPage.IFRAME_ONESCRIPT));
+        driver.switchTo().frame(driver.findElement(CasoExpressPage.IFRAME_ONESCRIPT));
         System.out.println("[FillCasoExpressFormInOrder] Switched to iframe OK");
 
         // Orden global de ejecucion dentro del iframe, siguiendo la UI:
@@ -132,7 +133,8 @@ public class FillCasoExpressFormInOrder implements Interaction {
         // Re-asegura que estamos en el iframe
         driver.switchTo().defaultContent();
         new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("form_onescript_iframe")));
+                driver.switchTo().frame(driver.findElement(By.id("form_onescript_iframe")));
         System.out.println("  Driver en iframe OK");
 
         // Esperar a que campos sean visibles
@@ -246,7 +248,8 @@ public class FillCasoExpressFormInOrder implements Interaction {
                 if (driver.findElements(controlBy).isEmpty()) {
                     driver.switchTo().defaultContent();
                     new WebDriverWait(driver, Duration.ofSeconds(20))
-                            .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                            .until(ExpectedConditions.presenceOfElementLocated(By.id("form_onescript_iframe")));
+                driver.switchTo().frame(driver.findElement(By.id("form_onescript_iframe")));
                 }
                 long tFrame = System.currentTimeMillis();
 
@@ -440,7 +443,8 @@ public class FillCasoExpressFormInOrder implements Interaction {
                 // Asegurar iframe en cada intento para evitar referencias obsoletas
                 driver.switchTo().defaultContent();
                 new WebDriverWait(driver, Duration.ofSeconds(20))
-                        .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                        .until(ExpectedConditions.presenceOfElementLocated(By.id("form_onescript_iframe")));
+                driver.switchTo().frame(driver.findElement(By.id("form_onescript_iframe")));
 
                 // 1) Clic en el combo Servicio
                 WebElement combo = waitShort.until(ExpectedConditions.elementToBeClickable(By.xpath(comboXpath)));
@@ -584,8 +588,8 @@ public class FillCasoExpressFormInOrder implements Interaction {
         // Bloque de direcciones respetando la vista del formulario.
         llenarCampo(actor, CasoExpressPage.DIRECCION_SERVICIO, direccionServicio);
         llenarCampo(actor, CasoExpressPage.DIRECCION_DESTINO, direccionDestino);
-        llenarCampo(actor, CasoExpressPage.Detalle_DIRECCION_DESTINO, detalleDireccionDestino);
-        llenarCampo(actor, CasoExpressPage.Detalle_DIRECCION_SERVICIO, detalleDireccionServicio);
+        llenarCampo(actor, CasoExpressPage.DETALLE_DIRECCION_DESTINO, detalleDireccionDestino);
+        llenarCampo(actor, CasoExpressPage.DETALLE_DIRECCION_SERVICIO, detalleDireccionServicio);
         // NO llenamos "Marca de vehículo": al diligenciarla se habilita el campo requerido
         // 'data[clase_vehiculo]', que quedaría vacío y bloquearía el guardado. Marca es opcional,
         // así que se omite para no disparar esa dependencia.
@@ -680,7 +684,8 @@ public class FillCasoExpressFormInOrder implements Interaction {
         WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
         driver.switchTo().defaultContent();
         new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("form_onescript_iframe")));
+                .until(ExpectedConditions.presenceOfElementLocated(By.id("form_onescript_iframe")));
+                driver.switchTo().frame(driver.findElement(By.id("form_onescript_iframe")));
     }
 
     private <T extends Actor> void seleccionar(T actor, Target combo, String valor) {
@@ -689,25 +694,25 @@ public class FillCasoExpressFormInOrder implements Interaction {
         actor.attemptsTo(Click.on(combo));
 
         try {
-            actor.attemptsTo(WaitUntil.the(CasoExpressPage.CustomDropdownSearch, isVisible()).forNoMoreThan(3).seconds());
-            actor.attemptsTo(Enter.theValue(valor).into(CasoExpressPage.CustomDropdownSearch));
-            actor.attemptsTo(WaitUntil.the(CasoExpressPage.CustomDropdownListItem.of(valor), isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoExpressPage.CustomDropdownListItem.of(valor)));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.CUSTOM_DROPDOWN_SEARCH, isVisible()).forNoMoreThan(3).seconds());
+            actor.attemptsTo(Enter.theValue(valor).into(CasoExpressPage.CUSTOM_DROPDOWN_SEARCH));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.CUSTOM_DROPDOWN_ITEM.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.CUSTOM_DROPDOWN_ITEM.of(valor)));
             return;
         } catch (Throwable ignore) {
             // Si no existe búsqueda custom, continuar con opciones visibles.
         }
 
         try {
-            actor.attemptsTo(WaitUntil.the(CasoExpressPage.Opcion_Lista.of(valor), isVisible()).forNoMoreThan(10).seconds());
-            actor.attemptsTo(Click.on(CasoExpressPage.Opcion_Lista.of(valor)));
+            actor.attemptsTo(WaitUntil.the(CasoExpressPage.OPCION_LISTA.of(valor), isVisible()).forNoMoreThan(10).seconds());
+            actor.attemptsTo(Click.on(CasoExpressPage.OPCION_LISTA.of(valor)));
             return;
         } catch (Throwable ignore) {
             // Ignorar y probar la opción por texto parcial.
         }
 
-        actor.attemptsTo(WaitUntil.the(CasoExpressPage.Opcion_Lista_Contiene.of(valor), isVisible()).forNoMoreThan(10).seconds());
-        actor.attemptsTo(Click.on(CasoExpressPage.Opcion_Lista_Contiene.of(valor)));
+        actor.attemptsTo(WaitUntil.the(CasoExpressPage.OPCION_LISTA_CONTIENE.of(valor), isVisible()).forNoMoreThan(10).seconds());
+        actor.attemptsTo(Click.on(CasoExpressPage.OPCION_LISTA_CONTIENE.of(valor)));
     }
 
     /**
