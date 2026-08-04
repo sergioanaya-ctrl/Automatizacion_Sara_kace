@@ -30,10 +30,29 @@ import java.util.List;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
+/**
+ * TASK: Diligenciar Gestión de Proveedores
+ *
+ * Flujo completo dentro del módulo de Proveedores:
+ * 1. Abrir tab "Gestión de Proveedores"
+ * 2. Crear nuevo proveedor (abre dialog modal)
+ * 3. Seleccionar nombre del proveedor (custom dropdown search)
+ * 4. Seleccionar respuesta/servicio (custom dropdown search)
+ * 5. Llenar datos: tiempos monitoreo + celular técnico
+ * 6. Guardar proveedor
+ * 7. Guardar general (flotante)
+ *
+ * Parámetros:
+ * - nombreProveedor: Nombre a buscar/seleccionar (ej. "PRUEBAS40 PRUEBAS40")
+ * - servicio: Servicio/respuesta a seleccionar (ej. "Asistencia 24h")
+ *
+ * Usar: actor.attemptsTo(DiligenciarProveedorGestion.conDatos("PRUEBAS40 PRUEBAS40", "Asistencia 24h"))
+ */
 public class DiligenciarProveedorGestion implements Task {
 
-    private static final String TIEMPO_MONITOREO_SITIO_DEFAULT = "60";
-    private static final String TIEMPO_MONITOREO_DESTINO_DEFAULT = "120";
+    // Valores por defecto para campos numéricos
+    private static final String TIEMPO_MONITOREO_SITIO_DEFAULT = "60";          // minutos
+    private static final String TIEMPO_MONITOREO_DESTINO_DEFAULT = "120";       // minutos
     private static final String CELULAR_TECNICO_DEFAULT = "3103904286";
 
     private final String nombreProveedor;
