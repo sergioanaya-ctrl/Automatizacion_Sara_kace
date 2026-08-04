@@ -47,4 +47,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And creamos una novedad
     And diligenciamos la finalizacion
     And diligenciamos la documentacion cnm
-    And transicionamos los estados del caso
+    And cambia a estado "programado"
+    And cambia a estado "Aceptado  y desplazmaiendo"
+     And cambia a estado "conlcuido"
+     And cambia a estado "Finalizado"

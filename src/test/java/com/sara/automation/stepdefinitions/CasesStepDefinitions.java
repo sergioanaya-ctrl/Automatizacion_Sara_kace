@@ -258,28 +258,11 @@ public class CasesStepDefinitions {
         actor.attemptsTo(TransicionarEstadosCaso.hastaConcluido());
     }
 
-    @When("cambia a estado programado")
-    public void cambiaAEstadoProgramado() {
-        // Cambio independiente de estado: Programado
-        actor.attemptsTo(CambiarEstadoCaso.a("Programado"));
-    }
-
-    @When("cambia a estado aceptado y en desplazamiento")
-    public void cambiaAEstadoAceptadoDesplazamiento() {
-        // Cambio independiente de estado: Aceptado y en desplazamiento
-        actor.attemptsTo(CambiarEstadoCaso.a("Aceptado y en desplazamiento"));
-    }
-
-    @When("cambia a estado concluido")
-    public void cambiaAEstadoConcluido() {
-        // Cambio independiente de estado: Concluido
-        actor.attemptsTo(CambiarEstadoCaso.a("Concluido"));
-    }
-
-    @When("cambia a estado finalizado")
-    public void cambiaAEstadoFinalizado() {
-        // Cambio independiente de estado: Finalizado
-        actor.attemptsTo(CambiarEstadoCaso.a("Finalizado"));
+    @When("cambia a estado {string}")
+    public void cambiaAEstado(String nombreEstado) {
+        // Cambio parametrizado de estado: permite cualquier nombre
+        // Ejemplos: "programado", "Aceptado y en desplazamiento", "Concluido", "Finalizado"
+        actor.attemptsTo(CambiarEstadoCaso.a(nombreEstado));
     }
 
     @When("cerramos sesion del usuario")
