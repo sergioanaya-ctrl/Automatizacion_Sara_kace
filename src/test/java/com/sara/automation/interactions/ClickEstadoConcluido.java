@@ -15,9 +15,15 @@ import java.time.Duration;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 /**
+ * @deprecated Use {@link com.sara.automation.interactions.estadoscaso.CambiarEstadoCaso#a(String)} instead
+ *
  * Interaction para clickear el estado "Concluido" dentro del iframe OneScript
  * Busca botón con XPath simple, clickea y guarda
+ *
+ * Esta clase se mantiene solo para compatibilidad con TransicionarEstadosCaso.
+ * Para nuevas transiciones o para cambios independientes de estado, usa CambiarEstadoCaso.a(estado)
  */
+@Deprecated(since = "2026-01", forRemoval = true)
 public class ClickEstadoConcluido implements Interaction {
 
     public static ClickEstadoConcluido clickEstadoConcluido() {

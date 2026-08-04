@@ -18,16 +18,32 @@ import java.util.List;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 /**
- * Task para transicionar el caso a través de estados con lógica adaptativa:
- * 
+ * Task para transicionar el caso a través de MÚLTIPLES estados en una sola orquestación.
+ *
+ * ⚠️ NOTA: Esta Task está en transición hacia un enfoque más modular.
+ *
  * RUTA 1 (Si existe "Aceptado y en desplazamiento"):
  * Programado -> Aceptado y Desplazamiento -> Concluido -> Finalizado
- * 
+ *
  * RUTA 2 (Si existe solo "Aceptado"):
  * Programado -> Aceptado -> Finalizado
- * 
+ *
  * La Task detecta qué opción está disponible después de cada estado
  * y ejecuta el flujo correspondiente.
+ *
+ * PARA PASOS INDEPENDIENTES Y SECUENCIALES:
+ * ==========================================
+ * Si necesitas cambiar estados uno por uno (en lugar de de golpe),
+ * usa {@link com.sara.automation.interactions.estadoscaso.CambiarEstadoCaso#a(String)}
+ *
+ * Ejemplo (Feature file):
+ *   And cambia a estado "Programado"
+ *   And cambia a estado "Aceptado y en desplazamiento"
+ *   And cambia a estado "Concluido"
+ *   And cambia a estado "Finalizado"
+ *
+ * Esto es más flexible porque permite validar cada paso independientemente
+ * y hacer acciones entre ellos (p.ej. diligenciar proveedores entre estados).
  */
 public class TransicionarEstadosCaso implements Task {
 
