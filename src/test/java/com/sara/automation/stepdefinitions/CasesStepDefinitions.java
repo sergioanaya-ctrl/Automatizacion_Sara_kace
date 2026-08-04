@@ -1,5 +1,6 @@
 package com.sara.automation.stepdefinitions;
 
+import com.sara.automation.interactions.estadoscaso.CambiarEstadoCaso;
 import com.sara.automation.tasks.BuscarExpediente;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.CrearCasoReclamaciones;
@@ -255,6 +256,30 @@ public class CasesStepDefinitions {
     public void transicionamosLosEstadosDelCasoHastaConcluido() {
         // Transiciona hasta 'Concluido' y se detiene (no ejecuta 'Finalizado').
         actor.attemptsTo(TransicionarEstadosCaso.hastaConcluido());
+    }
+
+    @When("cambia a estado programado")
+    public void cambiaAEstadoProgramado() {
+        // Cambio independiente de estado: Programado
+        actor.attemptsTo(CambiarEstadoCaso.a("Programado"));
+    }
+
+    @When("cambia a estado aceptado y en desplazamiento")
+    public void cambiaAEstadoAceptadoDesplazamiento() {
+        // Cambio independiente de estado: Aceptado y en desplazamiento
+        actor.attemptsTo(CambiarEstadoCaso.a("Aceptado y en desplazamiento"));
+    }
+
+    @When("cambia a estado concluido")
+    public void cambiaAEstadoConcluido() {
+        // Cambio independiente de estado: Concluido
+        actor.attemptsTo(CambiarEstadoCaso.a("Concluido"));
+    }
+
+    @When("cambia a estado finalizado")
+    public void cambiaAEstadoFinalizado() {
+        // Cambio independiente de estado: Finalizado
+        actor.attemptsTo(CambiarEstadoCaso.a("Finalizado"));
     }
 
     @When("cerramos sesion del usuario")
