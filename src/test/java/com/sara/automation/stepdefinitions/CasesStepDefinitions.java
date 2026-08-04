@@ -247,8 +247,9 @@ public class CasesStepDefinitions {
 
     @When("cambia a estado {string}")
     public void cambiaAEstado(String nombreEstado) {
-        // Cambio parametrizado de estado: permite cualquier nombre
-        // Ejemplos: "programado", "Aceptado y en desplazamiento", "Concluido", "Finalizado"
+        // Cambio parametrizado de estado
+        // Selectores centralizados en EstadosCasoPage; selector es generado dinámicamente
+        // Ejemplos: "Programado", "Aceptado y en desplazamiento", "Concluido", "Finalizado"
         actor.attemptsTo(CambiarEstadoCaso.a(nombreEstado));
     }
 
