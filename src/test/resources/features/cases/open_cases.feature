@@ -15,7 +15,11 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And creamos una novedad
     And diligenciamos la finalizacion
     And diligenciamos la documentacion cnm
-    And transicionamos los estados del caso hasta concluido
+    And diligenciamos escalamientos sura
+    And cambia a estado "Programado"
+    And cambia a estado "Aceptado y en desplazamiento"
+    And cambia a estado "Concluido"
+    And cambia a estado "Finalizado"
     And cerramos sesion del usuario
     And reingresamos como el proveedor asignado
     And buscamos el expediente guardado y abrimos su edicion
@@ -47,7 +51,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And creamos una novedad
     And diligenciamos la finalizacion
     And diligenciamos la documentacion cnm
-    And cambia a estado "programado"
-    And cambia a estado "Aceptado  y desplazmaiendo"
-     And cambia a estado "conlcuido"
+    And diligenciamos escalamientos sura
+    And cambia a estado "Programado"
+    And cambia a estado "Aceptado y en desplazamiento"
+     And cambia a estado "Concluido"
      And cambia a estado "Finalizado"

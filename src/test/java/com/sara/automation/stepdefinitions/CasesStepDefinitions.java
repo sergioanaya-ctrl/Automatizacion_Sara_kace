@@ -293,6 +293,12 @@ public class CasesStepDefinitions {
         actor.attemptsTo(GestionConceptosProveedor.now());
     }
 
+    @When("diligenciamos escalamientos sura")
+    public void diligenciamosEscalamientosSura() {
+        // Pestaña Escalamientos sura → Crear → primera opción de cada dropdown + observación → guardar.
+        actor.attemptsTo(CrearRegistroEnTab.en("#escalamientosSura", "Escalamientos sura"));
+    }
+
     @Then("Se valida que quede en estado {string}")
     public void seValidaQueQuedeEnEstado(String estado) {
         // Valida que el caso haya finalizado en el estado esperado
