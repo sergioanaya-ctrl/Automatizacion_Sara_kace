@@ -1,6 +1,7 @@
 package com.sara.automation.tasks;
 
 import com.sara.automation.interactions.OneScriptDynamicElements;
+import com.sara.automation.utils.ResilientFormActions;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -71,14 +72,24 @@ public class CrearRegistroEnTab implements Task {
         System.out.println("\n  [CrearRegistroEnTab:" + nombre + "] ==================== INICIO ====================");
 
         // 1. Entrar al iframe y abrir la pestaña.
+        // Cada submódulo (Finalización, Documentación CNM, Escalamientos Sura, ...) es
+        // INDEPENDIENTE: el paso previo puede haber recargado el DOM justo antes de este punto,
+        // por eso localizamos y hacemos clic dentro del mismo ciclo de reintento (re-localiza por
+        // selector si el elemento queda stale) en vez de reutilizar una referencia ya obtenida.
         entrarAlFrameConTab(driver, wait, tabBy);
-        clickResiliente(js, wait.until(ExpectedConditions.elementToBeClickable(tabBy)));
+        ResilientFormActions.clickConReintentoStaleSafe(driver, tabBy, tabBy, 20, 3);
         System.out.println("  [CrearRegistroEnTab:" + nombre + "] ✓ Pestaña abierta");
         sleep(800);
 
+        // CRÍTICO: Esperar a que el editGrid DENTRO de la pestaña activa esté verdaderamente listo.
+        // Form.io editGrid sufre un glitch ocasional: durante la primera carga, muestra simultáneamente
+        // una fila en modo edición inline Y un diálogo cuando debería mostrar solo la tabla.
+        // Este wait previene ese double-render esperando a que no haya filas en edición inline.
+        esperarEditGridListoEnPestanaActiva(driver, wait);
+        System.out.println("  [CrearRegistroEnTab:" + nombre + "] ✓ EditGrid listo (sin doble-render)");
+
         // 2. Clic en "Crear" (de la pestaña activa).
-        WebElement crear = esperarClickable(driver, BTN_CREAR_ACTIVO, BTN_CREAR_FALLBACK, 20);
-        clickResiliente(js, crear);
+        ResilientFormActions.clickConReintentoStaleSafe(driver, BTN_CREAR_ACTIVO, BTN_CREAR_FALLBACK, 20, 3);
         System.out.println("  [CrearRegistroEnTab:" + nombre + "] ✓ Click en 'Crear'");
 
         // 3. Esperar el dialog y diligenciar TODOS los dropdowns (primera opción) + observación.
@@ -88,16 +99,13 @@ public class CrearRegistroEnTab implements Task {
         llenarObservacion(driver, js);
 
         // 4. Guardar el dialog y esperar a que cierre.
-        WebElement btnGuardar = esperarClickable(driver, BTN_GUARDAR_DIALOG, BTN_GUARDAR_DIALOG_FALLBACK, 15);
-        clickResiliente(js, btnGuardar);
+        ResilientFormActions.clickConReintentoStaleSafe(driver, BTN_GUARDAR_DIALOG, BTN_GUARDAR_DIALOG_FALLBACK, 15, 3);
         new WebDriverWait(driver, Duration.ofSeconds(15)).until(d ->
                 d.findElements(By.cssSelector(SCOPE_DIALOG)).stream().noneMatch(WebElement::isDisplayed));
         System.out.println("  [CrearRegistroEnTab:" + nombre + "] ✓ Registro guardado (dialog cerrado)");
 
         // 5. Guardado general + espera de recarga.
-        WebElement btnGeneral = esperarPresencia(driver, BTN_GUARDAR_GENERAL, BTN_GUARDAR_GENERAL_FALLBACK, 20);
-        js.executeScript("arguments[0].scrollIntoView({block:'center'});", btnGeneral);
-        clickResiliente(js, btnGeneral);
+        ResilientFormActions.clickConReintentoStaleSafe(driver, BTN_GUARDAR_GENERAL, BTN_GUARDAR_GENERAL_FALLBACK, 20, 3);
         System.out.println("  [CrearRegistroEnTab:" + nombre + "] ✓ Guardado general");
 
         driver.switchTo().defaultContent();
@@ -194,26 +202,6 @@ public class CrearRegistroEnTab implements Task {
         }
     }
 
-    private WebElement esperarClickable(WebDriver driver, By principal, By fallback, int segundos) {
-        try {
-            return new WebDriverWait(driver, Duration.ofSeconds(segundos))
-                    .until(ExpectedConditions.elementToBeClickable(principal));
-        } catch (Exception e) {
-            return new WebDriverWait(driver, Duration.ofSeconds(segundos))
-                    .until(ExpectedConditions.elementToBeClickable(fallback));
-        }
-    }
-
-    private WebElement esperarPresencia(WebDriver driver, By principal, By fallback, int segundos) {
-        try {
-            return new WebDriverWait(driver, Duration.ofSeconds(segundos))
-                    .until(ExpectedConditions.presenceOfElementLocated(principal));
-        } catch (Exception e) {
-            return new WebDriverWait(driver, Duration.ofSeconds(segundos))
-                    .until(ExpectedConditions.presenceOfElementLocated(fallback));
-        }
-    }
-
     private void setReactTextareaValue(JavascriptExecutor js, WebElement textarea, String valor) {
         js.executeScript(
                 "var el = arguments[0]; var val = arguments[1];"
@@ -229,24 +217,40 @@ public class CrearRegistroEnTab implements Task {
                 textarea, valor);
     }
 
-    private void clickResiliente(JavascriptExecutor js, WebElement el) {
-        try {
-            js.executeScript("arguments[0].scrollIntoView({block:'center'});", el);
-        } catch (Exception ignored) {
-        }
-        try {
-            el.click();
-        } catch (Exception e1) {
-            try {
-                js.executeScript("arguments[0].click();", el);
-            } catch (Exception e2) {
-                js.executeScript(
-                        "var el=arguments[0];"
-                      + "el.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,cancelable:true,view:window}));"
-                      + "el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true,cancelable:true,view:window}));"
-                      + "el.click();", el);
+    /**
+     * Espera a que el editGrid dentro de la pestaña activa esté "verdaderamente listo":
+     * tabla visible, sin filas en modo edición inline (previene el doble-render de Form.io).
+     */
+    private void esperarEditGridListoEnPestanaActiva(WebDriver driver, WebDriverWait wait) {
+        wait.until(d -> {
+            // Buscar la pestaña activa
+            java.util.List<WebElement> tabActive = d.findElements(
+                    By.cssSelector(".tab-pane.active, [role='tabpanel'][style*='display: block']"));
+            if (tabActive.isEmpty()) {
+                return false;
             }
-        }
+            WebElement tab = tabActive.get(0);
+
+            try {
+                // Dentro de la pestaña activa, debe haber un editGrid con tabla
+                java.util.List<WebElement> tablas = tab.findElements(By.cssSelector("table.table"));
+                if (tablas.isEmpty() || !tablas.get(0).isDisplayed()) {
+                    return false;
+                }
+
+                // NO debe haber filas en modo edición inline (con botones Guardar/Cancelar)
+                java.util.List<WebElement> filasConEdicion = tab.findElements(
+                        By.cssSelector("tbody tr:has(button.btn[title*='Guardar']), tbody tr:has(button.btn[title*='Cancelar'])"));
+                if (!filasConEdicion.isEmpty()) {
+                    // Filas en edición inline detectadas; esperar a que desaparezcan
+                    return false;
+                }
+
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        });
     }
 
     private void sleep(long ms) {

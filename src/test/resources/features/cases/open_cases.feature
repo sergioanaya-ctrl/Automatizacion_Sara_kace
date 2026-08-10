@@ -45,14 +45,14 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And diligencia caso express completo desde feature
       | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
       | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
-    And diligenciamos el proveedor
-      | Nombre del proveedor | Servicio |
-      | PROVEEDOR PRUEBA | TOMA SERVICIO |
-    And creamos una novedad
+     And creamos una novedad
     And diligenciamos la finalizacion
     And diligenciamos la documentacion cnm
     And diligenciamos escalamientos sura
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PROVEEDOR PRUEBA | TOMA SERVICIO |
     And cambia a estado "Programado"
     And cambia a estado "Aceptado y en desplazamiento"
-     And cambia a estado "Concluido"
-     And cambia a estado "Finalizado"
+    And cambia a estado "Concluido"
+    And cambia a estado "Finalizado"

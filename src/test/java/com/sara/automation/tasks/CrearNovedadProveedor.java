@@ -1,6 +1,7 @@
 package com.sara.automation.tasks;
 
 import com.sara.automation.interactions.OneScriptDynamicElements;
+import com.sara.automation.utils.ResilientFormActions;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
 import net.serenitybdd.screenplay.Task;
@@ -72,14 +73,24 @@ public class CrearNovedadProveedor implements Task {
         System.out.println("\n  [CrearNovedadProveedor] ==================== CREAR NOVEDAD ====================");
 
         // 1. Entrar al iframe del formulario y abrir la pestaña "Novedades".
+        // Cada submódulo es INDEPENDIENTE: el paso anterior puede haber recargado el DOM justo
+        // antes de este punto, así que localizamos y hacemos clic dentro del mismo ciclo de
+        // reintento (re-localiza por selector si el elemento queda stale), en vez de reutilizar
+        // una referencia WebElement obtenida antes.
         entrarAlFrameConTab(driver, wait);
-        WebElement tab = wait.until(ExpectedConditions.elementToBeClickable(TAB_NOVEDADES));
-        clickResiliente(js, tab);
+        ResilientFormActions.clickConReintentoStaleSafe(driver, TAB_NOVEDADES, TAB_NOVEDADES, 20, 3);
         System.out.println("  [CrearNovedadProveedor] ✓ Pestaña 'Novedades' abierta");
+        sleep(800);
+
+        // CRÍTICO: Esperar a que el editGrid de Novedades esté verdaderamente listo.
+        // Form.io editGrid sufre un glitch ocasional: durante la primera carga, muestra simultáneamente
+        // una fila en modo edición inline Y un diálogo cuando debería mostrar solo la tabla.
+        // Este wait previene ese double-render esperando a que no haya filas en edición inline.
+        esperarEditGridNovedadesListo(driver, wait);
+        System.out.println("  [CrearNovedadProveedor] ✓ EditGrid listo (sin doble-render)");
 
         // 2. Clic en "Crear".
-        WebElement crear = esperarClickable(driver, BTN_CREAR, BTN_CREAR_FALLBACK, 20);
-        clickResiliente(js, crear);
+        ResilientFormActions.clickConReintentoStaleSafe(driver, BTN_CREAR, BTN_CREAR_FALLBACK, 20, 3);
         System.out.println("  [CrearNovedadProveedor] ✓ Click en 'Crear'");
 
         // 3. Esperar el dialog y diligenciar los 3 dropdowns (primera opción válida) + observación.
@@ -106,16 +117,13 @@ public class CrearNovedadProveedor implements Task {
         System.out.println("  [CrearNovedadProveedor] ✓ Observación escrita");
 
         // 4. Guardar el dialog y esperar a que cierre.
-        WebElement btnGuardar = esperarClickable(driver, BTN_GUARDAR_DIALOG, BTN_GUARDAR_DIALOG_FALLBACK, 15);
-        clickResiliente(js, btnGuardar);
+        ResilientFormActions.clickConReintentoStaleSafe(driver, BTN_GUARDAR_DIALOG, BTN_GUARDAR_DIALOG_FALLBACK, 15, 3);
         new WebDriverWait(driver, Duration.ofSeconds(15)).until(d ->
                 d.findElements(TEXTAREA_OBS).stream().noneMatch(WebElement::isDisplayed));
         System.out.println("  [CrearNovedadProveedor] ✓ Novedad guardada (dialog cerrado)");
 
         // 5. Guardado general.
-        WebElement btnGeneral = esperarPresencia(driver, BTN_GUARDAR_GENERAL, BTN_GUARDAR_GENERAL_FALLBACK, 20);
-        js.executeScript("arguments[0].scrollIntoView({block:'center'});", btnGeneral);
-        clickResiliente(js, btnGeneral);
+        ResilientFormActions.clickConReintentoStaleSafe(driver, BTN_GUARDAR_GENERAL, BTN_GUARDAR_GENERAL_FALLBACK, 20, 3);
         System.out.println("  [CrearNovedadProveedor] ✓ Click en Guardar general");
 
         // CRÍTICO: el guardado general recarga la página. Si devolvemos el control de inmediato,
@@ -203,24 +211,40 @@ public class CrearNovedadProveedor implements Task {
         System.out.println("  [CrearNovedadProveedor] ✓ Formulario del caso localizado");
     }
 
-    private WebElement esperarClickable(WebDriver driver, By principal, By fallback, int segundos) {
-        try {
-            return new WebDriverWait(driver, Duration.ofSeconds(segundos))
-                    .until(ExpectedConditions.elementToBeClickable(principal));
-        } catch (Exception e) {
-            return new WebDriverWait(driver, Duration.ofSeconds(segundos))
-                    .until(ExpectedConditions.elementToBeClickable(fallback));
-        }
-    }
-
-    private WebElement esperarPresencia(WebDriver driver, By principal, By fallback, int segundos) {
-        try {
-            return new WebDriverWait(driver, Duration.ofSeconds(segundos))
-                    .until(ExpectedConditions.presenceOfElementLocated(principal));
-        } catch (Exception e) {
-            return new WebDriverWait(driver, Duration.ofSeconds(segundos))
-                    .until(ExpectedConditions.presenceOfElementLocated(fallback));
-        }
+    /**
+     * Espera a que el editGrid de Novedades esté "verdaderamente listo":
+     * tabla visible, sin filas en modo edición inline (previene el doble-render de Form.io).
+     */
+    private void esperarEditGridNovedadesListo(WebDriver driver, WebDriverWait wait) {
+        wait.until(d -> {
+            try {
+                // Buscar el editGrid de novedades dentro de cualquier tab-pane
+                java.util.List<WebElement> tabPanes = d.findElements(By.cssSelector(".tab-pane"));
+                for (WebElement tab : tabPanes) {
+                    try {
+                        if (!tab.isDisplayed()) continue;
+                        java.util.List<WebElement> editgrid = tab.findElements(
+                                By.cssSelector(".formio-component-" + EDITGRID));
+                        if (!editgrid.isEmpty()) {
+                            WebElement eg = editgrid.get(0);
+                            // Tabla debe estar visible
+                            java.util.List<WebElement> tabla = eg.findElements(By.cssSelector("table.table"));
+                            if (tabla.isEmpty() || !tabla.get(0).isDisplayed()) {
+                                return false;
+                            }
+                            // NO debe haber filas en edición inline (con botones Guardar/Cancelar)
+                            java.util.List<WebElement> filasEdicion = eg.findElements(
+                                    By.cssSelector("tbody tr:has(button.btn[title*='Guardar']), tbody tr:has(button.btn[title*='Cancelar'])"));
+                            return filasEdicion.isEmpty();
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+                return false;
+            } catch (Exception e) {
+                return false;
+            }
+        });
     }
 
     /** Escribe en un textarea controlado por React/Form.io usando el SETTER NATIVO del prototipo. */
@@ -239,23 +263,4 @@ public class CrearNovedadProveedor implements Task {
                 textarea, valor);
     }
 
-    private void clickResiliente(JavascriptExecutor js, WebElement el) {
-        try {
-            js.executeScript("arguments[0].scrollIntoView({block:'center'});", el);
-        } catch (Exception ignored) {
-        }
-        try {
-            el.click();
-        } catch (Exception e1) {
-            try {
-                js.executeScript("arguments[0].click();", el);
-            } catch (Exception e2) {
-                js.executeScript(
-                        "var el=arguments[0];"
-                      + "el.dispatchEvent(new MouseEvent('mousedown',{bubbles:true,cancelable:true,view:window}));"
-                      + "el.dispatchEvent(new MouseEvent('mouseup',{bubbles:true,cancelable:true,view:window}));"
-                      + "el.click();", el);
-            }
-        }
-    }
 }
