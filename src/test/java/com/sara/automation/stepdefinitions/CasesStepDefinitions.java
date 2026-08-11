@@ -2,6 +2,7 @@ package com.sara.automation.stepdefinitions;
 
 import com.sara.automation.interactions.estadoscaso.CambiarEstadoCaso;
 import com.sara.automation.tasks.BuscarExpediente;
+import com.sara.automation.tasks.ValidarTareasDeMonitoreoCreadas;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.CrearCasoReclamaciones;
 import com.sara.automation.tasks.CrearNovedadProveedor;
@@ -251,6 +252,14 @@ public class CasesStepDefinitions {
         // Selectores centralizados en EstadosCasoPage; selector es generado dinámicamente
         // Ejemplos: "Programado", "Aceptado y en desplazamiento", "Concluido", "Finalizado"
         actor.attemptsTo(CambiarEstadoCaso.a(nombreEstado));
+    }
+
+    @Then("se han creado tareas de monitoreo automáticamente")
+    public void seHanCreadoTareasDeMonitoreoAutomaticamente() {
+        // Validación de negocio: verifica que el sistema haya generado al menos una tarea de monitoreo
+        // Las tareas se crean automáticamente en el backend tras cambios de estado
+        // A veces se crean 3, a veces más; solo validamos que exista al menos una
+        actor.attemptsTo(ValidarTareasDeMonitoreoCreadas.ahora());
     }
 
     @When("cerramos sesion del usuario")

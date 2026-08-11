@@ -54,5 +54,6 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
       | PROVEEDOR PRUEBA | TOMA SERVICIO |
     And cambia a estado "Programado"
     And cambia a estado "Aceptado y en desplazamiento"
+    And se han creado tareas de monitoreo automáticamente
     And cambia a estado "Concluido"
     And cambia a estado "Finalizado"
