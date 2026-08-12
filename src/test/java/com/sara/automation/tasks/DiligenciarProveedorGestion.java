@@ -156,6 +156,24 @@ public class DiligenciarProveedorGestion implements Task {
         WebElement iframeElement = driver.findElement(By.id("form_onescript_iframe"));
         driver.switchTo().frame(iframeElement);
 
+        // ANTES de hacer clic en "Crear": esperar a que los elementos del tab estén realmente disponibles/renderizados
+        System.out.println("  [DiligenciarProveedorGestion] Esperando que los elementos de gestión de proveedor estén listos...");
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(8)).until(d -> {
+                // Buscar el botón "Crear" visible en la página
+                Object btn = ((JavascriptExecutor) d).executeScript(
+                        "const botones = Array.from(document.querySelectorAll('button'));"
+                                + "const renderizado = el => !!el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;"
+                                + "const crearBtn = botones.find(b => renderizado(b) && b.textContent.trim().toLowerCase().includes('crear'));"
+                                + "return crearBtn ? true : null;"
+                );
+                return btn != null;
+            });
+            System.out.println("  [DiligenciarProveedorGestion] ✓ Elementos de gestión listos, procediendo con clic en Crear...");
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] ⚠ Timeout esperando elementos, continuando de todas formas: " + e.getMessage());
+        }
+
         System.out.println("  [DiligenciarProveedorGestion] Clic en Crear para abrir modal de proveedor...");
         try {
             OneScriptDynamicElements.clickVisibleButtonByText(driver, "Crear");
