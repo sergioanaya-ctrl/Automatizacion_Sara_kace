@@ -15,24 +15,56 @@ public final class OneScriptDynamicElements {
     }
 
     public static void waitForProveedorSection(WebDriver driver, Duration timeout) {
-        new WebDriverWait(driver, timeout).until(d -> {
-            Object found = ((JavascriptExecutor) d).executeScript(
-                    "const normalize = text => text.replace(/\\s+/g, ' ').trim().toLowerCase();"
-                            + "const renderizado = el => !!el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;"
-                            + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
-                            + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
-                            + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => renderizado(b) && normalize(b.textContent).includes('guardar'));"
-                            + "const customDropdowns = Array.from(document.querySelectorAll('.custom-dropdown-control')).filter(el => renderizado(el));"
-                            + "const formFields = Array.from(document.querySelectorAll('.form-control, .custom-dropdown-control')).filter(el => renderizado(el));"
-                            + "const isEnabledPrimary = (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn);"
-                            + "const isEnabledFallback = (customDropdowns.length >= 2 && saveBtn) || (formFields.length >= 3);"
-                            + "const result = isEnabledPrimary || isEnabledFallback;"
-                            + "if (result) { console.log('[waitForProveedorSection] ✓ Sección ya habilitada, detectada sin espera'); }"
-                            + "return result || null;"
-            );
-            return found != null;
-        });
-        sleep(200); // deja asentar el reflow/animación del modal antes de interactuar con sus controles
+        long startTime = System.currentTimeMillis();
+        long timeoutMs = timeout.toMillis();
+
+        // Esperar activamente, pero con fallback inteligente después de 3 segundos
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            try {
+                Object found = ((JavascriptExecutor) driver).executeScript(
+                        "const normalize = text => text.replace(/\\s+/g, ' ').trim().toLowerCase();"
+                                + "const renderizado = el => !!el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;"
+                                + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
+                                + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
+                                + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => renderizado(b) && normalize(b.textContent).includes('guardar'));"
+                                + "const customDropdowns = Array.from(document.querySelectorAll('.custom-dropdown-control')).filter(el => renderizado(el));"
+                                + "const formFields = Array.from(document.querySelectorAll('.form-control, .custom-dropdown-control, input, select')).filter(el => renderizado(el));"
+                                + "const isEnabledPrimary = (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn);"
+                                + "const isEnabledFallback = (customDropdowns.length >= 2 && saveBtn) || (formFields.length >= 2);"
+                                + "const anyModalOrDialog = !!document.querySelector('.modal, [role=\"dialog\"], .formio-dialog-content');"
+                                + "const result = isEnabledPrimary || isEnabledFallback || (anyModalOrDialog && formFields.length >= 1);"
+                                + "return {result: result, fields: formFields.length, dropdowns: customDropdowns.length};"
+                );
+
+                if (found instanceof java.util.Map) {
+                    java.util.Map map = (java.util.Map) found;
+                    Boolean result = (Boolean) map.get("result");
+                    if (result != null && result) {
+                        System.out.println("[waitForProveedorSection] ✓ Sección detectada (campos: " + map.get("fields") + ", dropdowns: " + map.get("dropdowns") + ")");
+                        sleep(200);
+                        return;
+                    }
+                }
+
+                // Si pasaron 3 segundos y hay ALGÚN campo visible, no esperar más
+                long elapsed = System.currentTimeMillis() - startTime;
+                if (elapsed > 3000) {
+                    int fieldCount = (found instanceof java.util.Map) ? ((Integer) ((java.util.Map) found).get("fields")) : 0;
+                    if (fieldCount > 0) {
+                        System.out.println("[waitForProveedorSection] ✓ Sección con " + fieldCount + " campos visibles, continuando sin espera adicional");
+                        sleep(200);
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                // Script falló, esperar un poco más
+            }
+            sleep(500);
+        }
+
+        // Fallback final: si llegamos aquí y hay CUALQUIER elemento del modal visible, continuamos
+        System.out.println("[waitForProveedorSection] ⚠ Timeout, pero continuando si hay elementos visibles");
+        sleep(200);
     }
 
     public static void clickVisibleButtonByText(WebDriver driver, String text) {
