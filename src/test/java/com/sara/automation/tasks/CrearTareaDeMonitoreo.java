@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Random;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
@@ -81,6 +82,9 @@ public class CrearTareaDeMonitoreo implements Task {
         System.out.println("  [CrearTareaDeMonitoreo] ✓ Modal abierto");
         sleep(1000);
 
+        // 5.5 Seleccionar clasificación aleatoria
+        seleccionarClasificacionAleatoria(driver, wait);
+
         // 6. Cambiar estado siguiente si se proporciona
         if (estadoSiguiente != null && !estadoSiguiente.isEmpty()) {
             try {
@@ -128,6 +132,37 @@ public class CrearTareaDeMonitoreo implements Task {
         });
         if (!encontrado) {
             throw new AssertionError("No se encontró la pestaña 'Tareas de monitoreo'.");
+        }
+    }
+
+    private void seleccionarClasificacionAleatoria(WebDriver driver, WebDriverWait wait) {
+        try {
+            // Obtener todas las opciones de clasificación (excluyendo la vacía)
+            List<WebElement> opciones = wait.until(d ->
+                    d.findElements(TareasDeMonitoreoPage.OPCIONES_CLASIFICACION));
+
+            if (opciones.isEmpty()) {
+                System.out.println("  [CrearTareaDeMonitoreo] ⚠ No hay opciones de clasificación disponibles");
+                return;
+            }
+
+            // Seleccionar una aleatoria
+            Random random = new Random();
+            WebElement opcionAleatoria = opciones.get(random.nextInt(opciones.size()));
+            String clasificacion = opcionAleatoria.getText();
+
+            // Hacer clic en el dropdown y luego en la opción
+            WebElement dropdown = driver.findElement(TareasDeMonitoreoPage.DROPDOWN_CLASIFICACION);
+            dropdown.click();
+            sleep(500);
+
+            opcionAleatoria.click();
+            sleep(800);
+
+            System.out.println("  [CrearTareaDeMonitoreo] ✓ Clasificación seleccionada: " + clasificacion);
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error seleccionando clasificación aleatoria: " + e.getMessage());
+            // continuar de todas formas
         }
     }
 

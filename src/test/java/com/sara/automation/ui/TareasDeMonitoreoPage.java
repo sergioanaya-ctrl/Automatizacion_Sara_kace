@@ -38,6 +38,10 @@ public class TareasDeMonitoreoPage {
     public static final By MODAL_EDICION = By.cssSelector(".modal, [role='dialog']");
     public static final By MODAL_TITLE = By.id("subcaseModalTitle");
 
+    // ===== DROPDOWN CLASIFICACIÓN (en modal de creación) =====
+    public static final By DROPDOWN_CLASIFICACION = By.id("subcase-classification-select");
+    public static final By OPCIONES_CLASIFICACION = By.cssSelector("#subcase-classification-select option[value!='']");
+
     // ===== SELECT DE ESTADO SIGUIENTE (en el modal) =====
     public static final By DROPDOWN_ESTADO = By.id("subcase-state-select");
     public static final By DROPDOWN_ESTADO_FALLBACK = By.cssSelector(
