@@ -27,41 +27,24 @@ public final class OneScriptDynamicElements {
                                 + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
                                 + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => renderizado(b) && normalize(b.textContent).includes('guardar'));"
                                 + "const selectoresEspecificos = (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn);"
-                                + "const inputsVisibles = Array.from(document.querySelectorAll('input[type=\"text\"], input[type=\"hidden\"], select, textarea, .custom-dropdown-control, .form-control')).filter(el => renderizado(el)).length;"
-                                + "const cualquierElemento = inputsVisibles >= 1;"
-                                + "return {especificos: selectoresEspecificos, inputs: inputsVisibles, ready: cualquierElemento};"
+                                + "return selectoresEspecificos || null;"
                 );
 
-                if (result instanceof java.util.Map) {
-                    java.util.Map map = (java.util.Map) result;
-                    Boolean especificos = (Boolean) map.get("especificos");
-                    Boolean ready = (Boolean) map.get("ready");
-                    Integer inputs = (Integer) map.get("inputs");
-
-                    // CRITERIO 1: si los selectores específicos están listos → retornar inmediatamente
-                    if (especificos != null && especificos) {
-                        System.out.println("[waitForProveedorSection] ✓ SELECTORES ESPECÍFICOS listos");
-                        sleep(200);
-                        return;
-                    }
-
-                    // CRITERIO 2: si hay CUALQUIER elemento visible → CONTINUAR SIN ESPERAR
-                    // OneScript es lento, pero si algo está renderizado, podemos usarlo
-                    if (ready != null && ready && inputs != null && inputs > 0) {
-                        System.out.println("[waitForProveedorSection] ✓ ELEMENTOS VISIBLES detectados (" + inputs + " campos), continuando sin esperar timeout");
-                        sleep(200);
-                        return;
-                    }
+                if (result != null) {
+                    System.out.println("[waitForProveedorSection] ✓ Selectores listos - modal completamente cargada");
+                    sleep(200);
+                    return;
                 }
             } catch (Exception e) {
                 // Script falló, esperar siguiente iteración
             }
 
-            sleep(300); // Reducir a 300ms para detección más rápida
+            sleep(300);
         }
 
-        // Timeout completado: log de advertencia pero continuar SIN BLOQUEAR
-        System.out.println("[waitForProveedorSection] ⚠ Timeout esperando elementos de proveedor, pero continuando de todas formas (OneScript puede ser lento)");
+        // Timeout completado: pero continuar de todas formas
+        // OneScript puede ser lento, así que después de esperar, asumimos que está listo
+        System.out.println("[waitForProveedorSection] ⚠ Timeout esperando selectores, pero la modal debería estar disponible (OneScript lento)");
         sleep(200);
     }
 
