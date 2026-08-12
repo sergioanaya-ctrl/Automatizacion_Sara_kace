@@ -78,6 +78,30 @@ public class TareasDeMonitoreoPage {
     public static final By BTN_GUARDAR_DIALOG = By.xpath(
             "//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]");
 
+    // ===== PANEL: HABILITAR FORMULARIO =====
+    public static final By PANEL_HABILITAR_FORMULARIO = By.cssSelector(".formio-component-habilitar_tarea_monitoreo_panel");
+    public static final By BTN_HABILITAR_FORMULARIO = By.xpath(
+            "//button[contains(text(), 'Habilitar Formulario')]");
+
+    // ===== FORMULARIO DE TAREA (después de habilitar) =====
+    public static final By DROPDOWN_NOMBRE_TAREA = By.id("custom-select-e2cy7mj");
+    public static final By DROPDOWN_USUARIO_ASIGNADO = By.id("custom-select-usuario_asignado_nombre_select");
+    public static final By INPUT_DESCRIPCION_TAREA = By.id("eh8fm45-descripcion_tipo_tarea");
+    public static final By INPUT_FECHA_VENCIMIENTO = By.xpath(
+            "//input[@class='form-control form-control input'][@placeholder='']");
+
+    // ===== EDITGRID DENTRO DEL MODAL: DROPDOWNS PARA CREAR FILA =====
+    public static final By DROPDOWN_MONITOREO_CON_EDITGRID = By.id("custom-select-ehshd4");
+    public static final By DROPDOWN_MOMENTO_SERVICIO_EDITGRID = By.id("custom-select-ecxhl4l");
+    public static final By DROPDOWN_RESPUESTA_MONITOREO_EDITGRID = By.id("custom-select-esi7kdj");
+    public static final By DROPDOWN_QUEJA_EDITGRID = By.id("custom-select-esfdm2m");
+
+    // ===== TEXTAREAS DE OBSERVACIÓN =====
+    public static final By TEXTAREA_OBSERVACION_ASESOR_EDITGRID = By.xpath(
+            "//label[contains(text(), 'Observación Asesor')]/..//textarea");
+    public static final By TEXTAREA_OBSERVACION_PROVEEDOR_EDITGRID = By.xpath(
+            "//label[contains(text(), 'Observación Proveedor')]/..//textarea");
+
     // ===== BOTONES PRINCIPALES DEL MODAL =====
     public static final By BTN_GUARDAR_MODAL = By.xpath(
             "//div[@class='modal-footer']//button[contains(text(), 'Guardar')]");

@@ -8,12 +8,15 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.thucydides.core.annotations.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 
@@ -84,6 +87,19 @@ public class CrearTareaDeMonitoreo implements Task {
 
         // 5.5 Seleccionar clasificación aleatoria
         seleccionarClasificacionAleatoria(driver, wait);
+        sleep(800);
+
+        // 5.6 Habilitar formulario de tarea
+        habilitarFormularioTarea(driver, wait);
+        sleep(1000);
+
+        // 5.7 Llenar formulario con datos aleatorios
+        llenarFormularioTareaAleatorio(driver, wait);
+        sleep(800);
+
+        // 5.8 Crear fila en editGrid (opcional, con datos aleatorios)
+        crearFilaEditGridAleatorio(driver, wait);
+        sleep(1000);
 
         // 6. Cambiar estado siguiente si se proporciona
         if (estadoSiguiente != null && !estadoSiguiente.isEmpty()) {
@@ -98,7 +114,6 @@ public class CrearTareaDeMonitoreo implements Task {
                 sleep(800);
             } catch (Exception e) {
                 System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo cambiar estado a: " + estadoSiguiente);
-                // continuar de todas formas
             }
         }
 
@@ -163,6 +178,107 @@ public class CrearTareaDeMonitoreo implements Task {
         } catch (Exception e) {
             System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error seleccionando clasificación aleatoria: " + e.getMessage());
             // continuar de todas formas
+        }
+    }
+
+    private void habilitarFormularioTarea(WebDriver driver, WebDriverWait wait) {
+        try {
+            WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(
+                    TareasDeMonitoreoPage.BTN_HABILITAR_FORMULARIO));
+            btn.click();
+            System.out.println("  [CrearTareaDeMonitoreo] ✓ Formulario de tarea habilitado");
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo habilitar formulario: " + e.getMessage());
+        }
+    }
+
+    private void llenarFormularioTareaAleatorio(WebDriver driver, WebDriverWait wait) {
+        try {
+            // Nombre tipo de tarea (dropdown aleatorio)
+            List<WebElement> opciones = wait.until(d ->
+                    d.findElements(By.cssSelector("#custom-select-e2cy7mj .custom-dropdown-control")));
+            if (!opciones.isEmpty()) {
+                Random r = new Random();
+                WebElement dropdown = driver.findElement(TareasDeMonitoreoPage.DROPDOWN_NOMBRE_TAREA);
+                dropdown.click();
+                sleep(300);
+                List<WebElement> items = driver.findElements(By.cssSelector("#custom-select-e2cy7mj .custom-option"));
+                if (!items.isEmpty()) {
+                    items.get(r.nextInt(items.size())).click();
+                    System.out.println("  [CrearTareaDeMonitoreo] ✓ Nombre tipo de tarea seleccionado aleatoriamente");
+                }
+            }
+
+            sleep(500);
+
+            // Fecha vencimiento (fecha futura aleatoria: 1-7 días)
+            LocalDateTime fechaFutura = LocalDateTime.now().plusDays(1 + new Random().nextInt(7));
+            String fechaFormato = fechaFutura.format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"));
+            WebElement inputFecha = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    TareasDeMonitoreoPage.INPUT_FECHA_VENCIMIENTO));
+            inputFecha.sendKeys(fechaFormato);
+            System.out.println("  [CrearTareaDeMonitoreo] ✓ Fecha vencimiento: " + fechaFormato);
+
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error llenando formulario: " + e.getMessage());
+        }
+    }
+
+    private void crearFilaEditGridAleatorio(WebDriver driver, WebDriverWait wait) {
+        try {
+            // Clic en "Crear" del editGrid
+            WebElement btnCrearFila = wait.until(ExpectedConditions.elementToBeClickable(
+                    TareasDeMonitoreoPage.BTN_CREAR_FILA_EDITGRID));
+            btnCrearFila.click();
+            System.out.println("  [CrearTareaDeMonitoreo] ✓ Dialog para crear fila abierto");
+            sleep(1500);
+
+            // Seleccionar opciones aleatorias en los 4 dropdowns
+            seleccionarDropdownAleatorio(driver, "#custom-select-ehshd4", "Monitoreo con");
+            sleep(400);
+            seleccionarDropdownAleatorio(driver, "#custom-select-ecxhl4l", "Momento del servicio");
+            sleep(400);
+            seleccionarDropdownAleatorio(driver, "#custom-select-esi7kdj", "Respuesta a monitoreo");
+            sleep(400);
+            seleccionarDropdownAleatorio(driver, "#custom-select-esfdm2m", "Se generó queja");
+            sleep(400);
+
+            // Llenar observaciones con texto simple
+            List<WebElement> textareas = driver.findElements(By.cssSelector(".formio-dialog-content textarea"));
+            if (textareas.size() >= 2) {
+                textareas.get(0).sendKeys("Observación del asesor - generada automáticamente");
+                textareas.get(1).sendKeys("Observación del proveedor - generada automáticamente");
+                System.out.println("  [CrearTareaDeMonitoreo] ✓ Observaciones llenadas");
+            }
+
+            sleep(500);
+
+            // Guardar fila (botón dentro del dialog)
+            WebElement btnGuardarFila = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]")));
+            btnGuardarFila.click();
+            System.out.println("  [CrearTareaDeMonitoreo] ✓ Fila en editGrid creada y guardada");
+            sleep(1000);
+
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error creando fila editGrid: " + e.getMessage());
+        }
+    }
+
+    private void seleccionarDropdownAleatorio(WebDriver driver, String selectorDropdown, String etiqueta) {
+        try {
+            WebElement dropdown = driver.findElement(By.cssSelector(selectorDropdown));
+            dropdown.click();
+            sleep(300);
+
+            List<WebElement> opciones = driver.findElements(By.cssSelector(selectorDropdown + " .custom-option"));
+            if (!opciones.isEmpty()) {
+                Random r = new Random();
+                opciones.get(r.nextInt(opciones.size())).click();
+                System.out.println("  [CrearTareaDeMonitoreo] ✓ " + etiqueta + " seleccionado aleatoriamente");
+            }
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error en dropdown '" + etiqueta + "': " + e.getMessage());
         }
     }
 
