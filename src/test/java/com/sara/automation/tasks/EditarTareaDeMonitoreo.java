@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Random;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
@@ -81,6 +82,11 @@ public class EditarTareaDeMonitoreo implements Task {
         // 6. Esperar modal de edición
         wait.until(d -> !d.findElements(TareasDeMonitoreoPage.MODAL_EDICION).isEmpty());
         System.out.println("  [EditarTareaDeMonitoreo] ✓ Modal de edición abierto");
+        sleep(1000);
+
+        // 6.5 Crear fila en editGrid (opcional, con datos aleatorios)
+        crearFilaEditGridAleatorio(driver, wait);
+        sleep(1000);
 
         // 7. Cambiar estado en dropdown
         try {
@@ -126,6 +132,64 @@ public class EditarTareaDeMonitoreo implements Task {
         });
         if (!encontrado) {
             throw new AssertionError("No se encontró la pestaña 'Tareas de monitoreo'.");
+        }
+    }
+
+    private void crearFilaEditGridAleatorio(WebDriver driver, WebDriverWait wait) {
+        try {
+            // Clic en "Crear" del editGrid
+            WebElement btnCrearFila = wait.until(ExpectedConditions.elementToBeClickable(
+                    TareasDeMonitoreoPage.BTN_CREAR_FILA_EDITGRID));
+            btnCrearFila.click();
+            System.out.println("  [EditarTareaDeMonitoreo] ✓ Dialog para crear fila abierto");
+            sleep(1500);
+
+            // Seleccionar opciones aleatorias en los 4 dropdowns
+            seleccionarDropdownAleatorio(driver, "#custom-select-ehshd4", "Monitoreo con");
+            sleep(400);
+            seleccionarDropdownAleatorio(driver, "#custom-select-ecxhl4l", "Momento del servicio");
+            sleep(400);
+            seleccionarDropdownAleatorio(driver, "#custom-select-esi7kdj", "Respuesta a monitoreo");
+            sleep(400);
+            seleccionarDropdownAleatorio(driver, "#custom-select-esfdm2m", "Se generó queja");
+            sleep(400);
+
+            // Llenar observaciones con texto simple
+            List<WebElement> textareas = driver.findElements(By.cssSelector(".formio-dialog-content textarea"));
+            if (textareas.size() >= 2) {
+                textareas.get(0).sendKeys("Observación del asesor - editada automáticamente");
+                textareas.get(1).sendKeys("Observación del proveedor - editada automáticamente");
+                System.out.println("  [EditarTareaDeMonitoreo] ✓ Observaciones llenadas");
+            }
+
+            sleep(500);
+
+            // Guardar fila (botón dentro del dialog)
+            WebElement btnGuardarFila = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]")));
+            btnGuardarFila.click();
+            System.out.println("  [EditarTareaDeMonitoreo] ✓ Fila en editGrid creada y guardada");
+            sleep(1000);
+
+        } catch (Exception e) {
+            System.out.println("  [EditarTareaDeMonitoreo] ⚠ Error creando fila editGrid: " + e.getMessage());
+        }
+    }
+
+    private void seleccionarDropdownAleatorio(WebDriver driver, String selectorDropdown, String etiqueta) {
+        try {
+            WebElement dropdown = driver.findElement(By.cssSelector(selectorDropdown));
+            dropdown.click();
+            sleep(300);
+
+            List<WebElement> opciones = driver.findElements(By.cssSelector(selectorDropdown + " .custom-option"));
+            if (!opciones.isEmpty()) {
+                Random r = new Random();
+                opciones.get(r.nextInt(opciones.size())).click();
+                System.out.println("  [EditarTareaDeMonitoreo] ✓ " + etiqueta + " seleccionado aleatoriamente");
+            }
+        } catch (Exception e) {
+            System.out.println("  [EditarTareaDeMonitoreo] ⚠ Error en dropdown '" + etiqueta + "': " + e.getMessage());
         }
     }
 
