@@ -87,9 +87,19 @@ public class DiligenciarProveedorGestion implements Task {
                 diligenciarUnaVez(actor);
             } catch (Exception e) {
                 System.out.println("  [DiligenciarProveedorGestion] ✗ Excepción en intento global " + intentosGlobales
-                        + ": " + e.getMessage() + (intentosGlobales < maxIntentosGlobales ? " - reintentando desde cero..." : " - sin más intentos."));
+                        + ": " + e.getMessage() + (intentosGlobales < maxIntentosGlobales ? " - recargando página y reintentando..." : " - sin más intentos."));
                 if (intentosGlobales >= maxIntentosGlobales) {
                     throw new RuntimeException("Falló diligenciar el proveedor después de " + intentosGlobales + " intentos globales.", e);
+                }
+                // Recargar página antes del siguiente intento para limpiar estado del DOM
+                try {
+                    WebDriver driverRetry = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+                    driverRetry.switchTo().defaultContent();
+                    driverRetry.navigate().refresh();
+                    System.out.println("  [DiligenciarProveedorGestion] Página recargada, esperando estabilización...");
+                    sleep(5000);
+                } catch (Exception reloadEx) {
+                    System.out.println("  [DiligenciarProveedorGestion] ⚠ Error recargando página: " + reloadEx.getMessage());
                 }
                 continue;
             }
@@ -341,8 +351,24 @@ public class DiligenciarProveedorGestion implements Task {
         WebElement iframeAfterFill = driver.findElement(By.id("form_onescript_iframe"));
         driver.switchTo().frame(iframeAfterFill);
 
+        // Cerrar cualquier dropdown abierto que pueda interceptar el clic en Guardar
+        try {
+            ((JavascriptExecutor) driver).executeScript(
+                    "document.body.click();"
+                    + "document.querySelectorAll('ul.custom-dropdown-list').forEach(ul => ul.style.display = 'none');");
+            sleep(400);
+        } catch (Exception ignored) {}
+
         actor.attemptsTo(WaitUntil.the(ProveedorPage.GUARDAR_PROVEEDOR, isVisible()).forNoMoreThan(20).seconds());
-        actor.attemptsTo(Click.on(ProveedorPage.GUARDAR_PROVEEDOR));
+        // Usar JS para el clic en Guardar Proveedor, evitando ElementClickInterceptedException por dropdowns residuales
+        try {
+            WebElement btnGuardar = driver.findElement(By.xpath("//div[@role='dialog']//button[contains(@class, 'btn-primary') and contains(normalize-space(text()), 'Guard')]"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'}); arguments[0].click();", btnGuardar);
+            System.out.println("  [DiligenciarProveedorGestion] ✓ Clic en Guardar Proveedor vía JS");
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] Fallback Screenplay para Guardar Proveedor: " + e.getMessage());
+            actor.attemptsTo(Click.on(ProveedorPage.GUARDAR_PROVEEDOR));
+        }
 
         // Esperar a que el diálogo de proveedor se cierre y volver al contexto principal.
         waitForProveedorDialogToClose(driver, Duration.ofSeconds(5));
