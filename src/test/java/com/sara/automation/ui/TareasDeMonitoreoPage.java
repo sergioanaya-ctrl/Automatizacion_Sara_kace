@@ -35,7 +35,11 @@ public class TareasDeMonitoreoPage {
     public static final By BTN_VER = By.xpath("//button[contains(@title, 'Ver')]");
 
     // ===== MODAL DE EDICIÓN/CREACIÓN =====
-    public static final By MODAL_EDICION = By.cssSelector(".modal, [role='dialog']");
+    // Acotado a ".modal.show" (clase que Bootstrap agrega SOLO al modal activo) para evitar
+    // ambigüedad si queda más de un ".modal" en el DOM (p. ej. uno previo no removido):
+    // tanto la detección de apertura como la de cierre (invisibilityOfElementLocated, que solo
+    // evalúa el PRIMER elemento encontrado) deben apuntar al modal realmente visible.
+    public static final By MODAL_EDICION = By.cssSelector(".modal.show, [role='dialog']");
     public static final By MODAL_TITLE = By.id("subcaseModalTitle");
 
     // ===== DROPDOWN CLASIFICACIÓN (en modal de creación) =====
@@ -110,17 +114,21 @@ public class TareasDeMonitoreoPage {
             "//label[contains(text(), 'Observación Proveedor')]/..//textarea");
 
     // ===== BOTONES PRINCIPALES DEL MODAL =====
-    // IMPORTANTE: ambos selectores están ACOTADOS al modal "Crear Subcaso" (ancestro de
-    // #subcaseModalTitle). El fallback anterior (`//button[contains(text(),'Guardar') and
-    // contains(@class,'btn-primary')]`) era demasiado genérico: podía coincidir con el botón
-    // "Guardar" general flotante (name="data[kaceCustomSubmit]") en vez del botón del modal,
-    // provocando que se guardara el formulario general ANTES de guardar la tarea del modal,
-    // dejando la tarea sin persistir.
+    // IMPORTANTE: ambos selectores están ACOTADOS al modal Bootstrap VISIBLE (class contiene
+    // 'modal' Y 'show'/'d-block' — el estado que Bootstrap aplica SOLO al modal activo).
+    // Antes se anclaba por ancestro de "#subcaseModalTitle", pero ese id puede aparecer
+    // duplicado en el DOM (modales previos que no se removieron), y el XPath podía resolver
+    // al modal equivocado/oculto, dejando la espera de "clickable" bloqueada indefinidamente
+    // sobre un botón que nunca se muestra. Anclar por la clase 'show' evita ese ambiguo.
+    // El fallback también excluye explícitamente el botón "Guardar" general flotante
+    // (name="data[kaceCustomSubmit]"), para no guardar el formulario general antes de tiempo.
     public static final By BTN_GUARDAR_MODAL = By.xpath(
-            "//div[@id='subcaseModalTitle']/ancestor::div[contains(@class,'modal-content')]"
+            "//div[contains(concat(' ', normalize-space(@class), ' '), ' modal ')"
+                    + " and contains(concat(' ', normalize-space(@class), ' '), ' show ')]"
                     + "//div[@class='modal-footer']//button[contains(text(), 'Guardar')]");
     public static final By BTN_GUARDAR_MODAL_FALLBACK = By.xpath(
-            "//div[@id='subcaseModalTitle']/ancestor::div[contains(@class,'modal-content')]"
+            "//div[contains(concat(' ', normalize-space(@class), ' '), ' modal ')"
+                    + " and contains(concat(' ', normalize-space(@class), ' '), ' show ')]"
                     + "//button[contains(text(), 'Guardar') and contains(@class, 'btn-primary')"
                     + " and not(contains(@name, 'kaceCustomSubmit'))]");
     public static final By BTN_CANCELAR_MODAL = By.xpath(

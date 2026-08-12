@@ -122,27 +122,31 @@ public class CrearTareaDeMonitoreo implements Task {
         llenarDescripcionSubcaso(driver, wait);
         sleep(500);
 
-        // 7. Clic en "Guardar" del modal
-        ResilientFormActions.clickConReintentoStaleSafe(driver, TareasDeMonitoreoPage.BTN_GUARDAR_MODAL, TareasDeMonitoreoPage.BTN_GUARDAR_MODAL_FALLBACK, 20, 3);
-        System.out.println("  [CrearTareaDeMonitoreo] ✓ Clic en 'Guardar' del modal 'Crear Subcaso'");
+        // 7. Guardar el modal "Crear Subcaso" por teclado: Tab, Tab, Enter desde el campo
+        // Descripción hasta el botón Guardar. Sin fallback de clic ni reintentos: se confirmó
+        // que agregar más lógica aquí (reselección, clic directo, reintentos) termina
+        // interfiriendo con el flujo posterior de cambio de estados.
+        intentarGuardarModalConTeclado(driver);
+        System.out.println("  [CrearTareaDeMonitoreo] Enviado Tab, Tab, Enter para guardar el modal");
 
-        // 8. Esperar a que el modal REALMENTE se cierre antes de continuar. Dar clic en el
-        // Guardar del modal y en el Guardar general casi al mismo tiempo provoca que la página
-        // se recargue sin persistir nada (igual que en los demás submódulos: primero se guarda
-        // el modal/dialog interno, y SOLO cuando ese ya cerró, se hace el guardado general).
-        boolean modalCerrado = esperarCierreModal(driver, Duration.ofSeconds(15));
-        System.out.println("  [CrearTareaDeMonitoreo] ¿Modal 'Crear Subcaso' cerrado? " + modalCerrado);
-
+        // 8. Tras el Enter el modal solo se CIERRA (no hay recarga de página todavía);
+        // esperar un momento a que termine de cerrarse antes de ir al Guardar general.
+        sleep(2000);
         driver.switchTo().defaultContent();
 
-        // 9. Solo después de confirmar el cierre del modal, clic en el "Guardar" general
-        // (el mismo botón flotante que usan los demás submódulos: name="data[kaceCustomSubmit]").
-        if (modalCerrado) {
-            actor.attemptsTo(ClickGuardarEnIframe.clickGuardarEnIframe());
-            System.out.println("  [CrearTareaDeMonitoreo] ✓ Clic en 'Guardar' general realizado");
-        } else {
-            System.out.println("  [CrearTareaDeMonitoreo] ⚠ El modal no confirmó su cierre; se omite el 'Guardar' general para evitar el reload en falso");
-        }
+        // 9. Clic en el "Guardar" general (el mismo botón flotante que usan los demás submódulos).
+        actor.attemptsTo(ClickGuardarEnIframe.clickGuardarEnIframe());
+        System.out.println("  [CrearTareaDeMonitoreo] ✓ Clic en 'Guardar' general realizado");
+
+        // 10. ESPERA CRÍTICA: el guardado general dispara un reload de la página (toast "Guardado
+        // exitoso" + recarga del panel de Estados). Si el siguiente paso (cambiar de estado) se
+        // ejecuta mientras esa recarga sigue en curso, ambos compiten por el mismo botón y el
+        // clic de estado se pierde ("Timeout al cambiar estado"). Se espera a que la página
+        // termine de asentarse ANTES de devolver el control al siguiente step, igual que hace
+        // DiligenciarProveedorGestion tras su propio guardado general.
+        System.out.println("  [CrearTareaDeMonitoreo] Esperando a que la página se recargue completamente tras el guardado general...");
+        sleep(15000);
+        System.out.println("  [CrearTareaDeMonitoreo] Página recargada, lista para el siguiente paso");
 
         System.out.println("  [CrearTareaDeMonitoreo] ==================== ✓ FIN ====================\n");
     }
@@ -167,6 +171,30 @@ public class CrearTareaDeMonitoreo implements Task {
             System.out.println("  [CrearTareaDeMonitoreo] ✓ Descripción del subcaso llenada: \"" + texto + "\"");
         } catch (Exception e) {
             System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo llenar la descripción del subcaso: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Enfoca el campo "Descripción" (foco NATIVO, no vía JS, para que los eventos de teclado
+     * sean "trusted") y envía Tab, Tab, Enter para llegar al botón "Guardar" del modal por
+     * navegación de teclado y activarlo con Enter, evitando depender de localizar ese botón
+     * por selector (que ha demostrado ser frágil ante modales/ids duplicados en el DOM).
+     * Devuelve true si el modal confirmó su cierre tras el envío de teclas.
+     */
+    private boolean intentarGuardarModalConTeclado(WebDriver driver) {
+        try {
+            WebElement descripcion = driver.findElement(By.cssSelector("div[contenteditable='true'][data-placeholder]"));
+            descripcion.click();
+            new org.openqa.selenium.interactions.Actions(driver)
+                    .sendKeys(org.openqa.selenium.Keys.TAB)
+                    .sendKeys(org.openqa.selenium.Keys.TAB)
+                    .sendKeys(org.openqa.selenium.Keys.ENTER)
+                    .perform();
+            System.out.println("  [CrearTareaDeMonitoreo] Enviado Tab, Tab, Enter desde el campo 'Descripción'");
+            return esperarCierreModal(driver, Duration.ofSeconds(8));
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error enviando Tab/Enter: " + e.getMessage());
+            return false;
         }
     }
 
@@ -208,7 +236,10 @@ public class CrearTareaDeMonitoreo implements Task {
         }
     }
 
-    private void seleccionarClasificacionAleatoria(WebDriver driver, WebDriverWait wait) {
+    /**
+     * @return el "value" de la opción de clasificación seleccionada, o null si no se pudo seleccionar.
+     */
+    private String seleccionarClasificacionAleatoria(WebDriver driver, WebDriverWait wait) {
         try {
             // subcase-classification-select es un <select> nativo: usar la clase Select de Selenium,
             // NO simular clics manuales (click en el select + click en <option> es inestable en Chrome).
@@ -224,7 +255,7 @@ public class CrearTareaDeMonitoreo implements Task {
 
             if (opcionesValidas.isEmpty()) {
                 System.out.println("  [CrearTareaDeMonitoreo] ⚠ No hay opciones de clasificación disponibles");
-                return;
+                return null;
             }
 
             Random random = new Random();
@@ -236,9 +267,10 @@ public class CrearTareaDeMonitoreo implements Task {
             sleep(800);
 
             System.out.println("  [CrearTareaDeMonitoreo] ✓ Clasificación seleccionada: " + clasificacion);
+            return valor;
         } catch (Exception e) {
             System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error seleccionando clasificación aleatoria: " + e.getMessage());
-            // continuar de todas formas
+            return null;
         }
     }
 

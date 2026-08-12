@@ -100,27 +100,50 @@ public class EditarTareaDeMonitoreo implements Task {
             throw new RuntimeException("No se pudo cambiar el estado a: " + nuevoEstado, e);
         }
 
-        // 8. Clic en Guardar del modal
-        ResilientFormActions.clickConReintentoStaleSafe(driver, TareasDeMonitoreoPage.BTN_GUARDAR_MODAL, TareasDeMonitoreoPage.BTN_GUARDAR_MODAL_FALLBACK, 20, 3);
-        System.out.println("  [EditarTareaDeMonitoreo] ✓ Clic en 'Guardar' del modal de edición");
+        // 8. Guardar el modal por teclado: Tab, Tab, Enter desde el campo Descripción hasta el
+        // botón Guardar. Sin fallback de clic ni reintentos.
+        intentarGuardarModalConTeclado(driver);
+        System.out.println("  [EditarTareaDeMonitoreo] Enviado Tab, Tab, Enter para guardar el modal");
 
-        // 9. Esperar a que el modal REALMENTE se cierre antes de continuar (dar clic en el
-        // Guardar del modal y en el Guardar general casi al mismo tiempo provoca un reload
-        // que descarta los cambios sin persistir nada).
-        boolean modalCerrado = esperarCierreModal(driver, Duration.ofSeconds(15));
-        System.out.println("  [EditarTareaDeMonitoreo] ¿Modal de edición cerrado? " + modalCerrado);
-
+        // 9. Tras el Enter el modal solo se CIERRA (no hay recarga de página todavía);
+        // esperar un momento a que termine de cerrarse antes de ir al Guardar general.
+        sleep(2000);
         driver.switchTo().defaultContent();
 
-        // 10. Solo después de confirmar el cierre del modal, clic en el "Guardar" general.
-        if (modalCerrado) {
-            actor.attemptsTo(ClickGuardarEnIframe.clickGuardarEnIframe());
-            System.out.println("  [EditarTareaDeMonitoreo] ✓ Clic en 'Guardar' general realizado");
-        } else {
-            System.out.println("  [EditarTareaDeMonitoreo] ⚠ El modal no confirmó su cierre; se omite el 'Guardar' general para evitar el reload en falso");
-        }
+        // 10. Clic en el "Guardar" general.
+        actor.attemptsTo(ClickGuardarEnIframe.clickGuardarEnIframe());
+        System.out.println("  [EditarTareaDeMonitoreo] ✓ Clic en 'Guardar' general realizado");
+
+        // 11. ESPERA CRÍTICA: el guardado general dispara un reload de la página. Si el siguiente
+        // paso (cambiar de estado) se ejecuta mientras esa recarga sigue en curso, compiten por el
+        // mismo botón y el clic de estado se pierde ("Timeout al cambiar estado").
+        System.out.println("  [EditarTareaDeMonitoreo] Esperando a que la página se recargue completamente tras el guardado general...");
+        sleep(15000);
+        System.out.println("  [EditarTareaDeMonitoreo] Página recargada, lista para el siguiente paso");
 
         System.out.println("  [EditarTareaDeMonitoreo] ==================== ✓ FIN ====================\n");
+    }
+
+    /**
+     * Enfoca el campo "Descripción" (foco NATIVO, para que los eventos de teclado sean
+     * "trusted") y envía Tab, Tab, Enter para llegar al botón "Guardar" del modal por
+     * navegación de teclado, evitando depender de localizar ese botón por selector.
+     */
+    private boolean intentarGuardarModalConTeclado(WebDriver driver) {
+        try {
+            WebElement descripcion = driver.findElement(By.cssSelector("div[contenteditable='true'][data-placeholder]"));
+            descripcion.click();
+            new org.openqa.selenium.interactions.Actions(driver)
+                    .sendKeys(org.openqa.selenium.Keys.TAB)
+                    .sendKeys(org.openqa.selenium.Keys.TAB)
+                    .sendKeys(org.openqa.selenium.Keys.ENTER)
+                    .perform();
+            System.out.println("  [EditarTareaDeMonitoreo] Enviado Tab, Tab, Enter desde el campo 'Descripción'");
+            return esperarCierreModal(driver, Duration.ofSeconds(8));
+        } catch (Exception e) {
+            System.out.println("  [EditarTareaDeMonitoreo] ⚠ Error enviando Tab/Enter: " + e.getMessage());
+            return false;
+        }
     }
 
     /**
