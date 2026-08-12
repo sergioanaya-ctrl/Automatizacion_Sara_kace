@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/features/cases/open_cases.feature",
         glue = "com.sara.automation.stepdefinitions",
-        tags = "@batch6",
+        tags = "@batch5",
         snippets = CucumberOptions.SnippetType.UNDERSCORE
 )
 public class CasesRunner03 {

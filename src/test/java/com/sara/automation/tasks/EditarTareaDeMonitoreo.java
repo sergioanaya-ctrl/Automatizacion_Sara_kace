@@ -47,6 +47,10 @@ public class EditarTareaDeMonitoreo implements Task {
         return instrumented(EditarTareaDeMonitoreo.class, nuevoEstado);
     }
 
+    public static Performable conEstadoAleatorio() {
+        return instrumented(EditarTareaDeMonitoreo.class, (String) null);
+    }
+
     @Override
     @Step("Editar primera tarea de monitoreo a estado '{nuevoEstado}'")
     public <T extends Actor> void performAs(T actor) {
@@ -90,14 +94,29 @@ public class EditarTareaDeMonitoreo implements Task {
         crearFilaEditGridAleatorio(driver, wait);
         sleep(1000);
 
-        // 7. Cambiar estado en dropdown (subcase-state-select es un <select> nativo)
+        // 7. Cambiar estado en dropdown (subcase-state-select es un <select> nativo).
+        // Si nuevoEstado es null, selecciona una opción válida aleatoria.
         try {
             WebElement selectElement = wait.until(ExpectedConditions.presenceOfElementLocated(TareasDeMonitoreoPage.DROPDOWN_ESTADO));
             org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(selectElement);
-            select.selectByVisibleText(nuevoEstado);
-            System.out.println("  [EditarTareaDeMonitoreo] ✓ Estado cambiado a: " + nuevoEstado);
+            if (nuevoEstado != null && !nuevoEstado.isEmpty()) {
+                select.selectByVisibleText(nuevoEstado);
+                System.out.println("  [EditarTareaDeMonitoreo] ✓ Estado cambiado a: " + nuevoEstado);
+            } else {
+                List<WebElement> opciones = select.getOptions().stream()
+                        .filter(o -> !o.getAttribute("value").isEmpty())
+                        .collect(java.util.stream.Collectors.toList());
+                if (!opciones.isEmpty()) {
+                    WebElement opcion = opciones.get(new Random().nextInt(opciones.size()));
+                    String textoEstado = opcion.getText();
+                    select.selectByVisibleText(textoEstado);
+                    System.out.println("  [EditarTareaDeMonitoreo] ✓ Estado seleccionado aleatoriamente: " + textoEstado);
+                } else {
+                    System.out.println("  [EditarTareaDeMonitoreo] ⚠ No hay opciones de estado disponibles");
+                }
+            }
         } catch (Exception e) {
-            throw new RuntimeException("No se pudo cambiar el estado a: " + nuevoEstado, e);
+            throw new RuntimeException("No se pudo cambiar el estado" + (nuevoEstado != null ? " a: " + nuevoEstado : ""), e);
         }
 
         // 8. Guardar el modal por teclado: Tab, Tab, Enter desde el campo Descripción hasta el
@@ -187,8 +206,7 @@ public class EditarTareaDeMonitoreo implements Task {
     private static final String[][] DROPDOWNS_EDITGRID = {
             {"#custom-select-ehshd4", "Monitoreo con"},
             {"#custom-select-ecxhl4l", "Momento del servicio"},
-            {"#custom-select-esi7kdj", "Respuesta a monitoreo"},
-            {"#custom-select-esfdm2m", "Se generó queja"}
+            {"#custom-select-esi7kdj", "Respuesta a monitoreo"}
     };
 
     private void crearFilaEditGridAleatorio(WebDriver driver, WebDriverWait wait) {
@@ -219,11 +237,16 @@ public class EditarTareaDeMonitoreo implements Task {
                     sleep(400);
                 }
 
+                // "Se generó queja" siempre en "NO" para evitar campo obligatorio "Radicado de la queja"
+                seleccionarOpcionFija(driver, wait, "#custom-select-esfdm2m", "Se generó queja", "NO");
+                sleep(400);
+
                 System.out.println("  [EditarTareaDeMonitoreo] --- Verificación de dropdowns tras selección ---");
                 for (String[] dd : DROPDOWNS_EDITGRID) {
                     String textoActual = leerTextoControl(driver, dd[0]);
                     System.out.println("  [EditarTareaDeMonitoreo]   " + dd[1] + " => \"" + textoActual + "\"");
                 }
+                System.out.println("  [EditarTareaDeMonitoreo]   Se generó queja => \"" + leerTextoControl(driver, "#custom-select-esfdm2m") + "\"");
 
                 // Llenar observaciones con texto simple
                 List<WebElement> textareas = driver.findElements(By.cssSelector(".formio-dialog-content textarea"));
@@ -234,37 +257,6 @@ public class EditarTareaDeMonitoreo implements Task {
                     System.out.println("  [EditarTareaDeMonitoreo] ✓ Observaciones llenadas");
                 } else {
                     System.out.println("  [EditarTareaDeMonitoreo] ⚠ No se encontraron las 2 textareas esperadas");
-                }
-
-                sleep(500);
-
-                // Verificar si "Se generó queja" tiene valor "SÍ", y si es así, llenar "Radicado de la queja"
-                try {
-                    List<WebElement> seGeneroQuejaControls = driver.findElements(
-                            By.cssSelector("div.custom-dropdown-control"));
-                    // Buscar el que muestre "SÍ" (generalmente el cuarto dropdown es "Se generó queja")
-                    boolean quejaEnSi = false;
-                    for (WebElement control : seGeneroQuejaControls) {
-                        String texto = control.getText().trim().toUpperCase();
-                        if (texto.equals("SÍ")) {
-                            quejaEnSi = true;
-                            break;
-                        }
-                    }
-
-                    if (quejaEnSi) {
-                        System.out.println("  [EditarTareaDeMonitoreo] ✓ 'Se generó queja' es SÍ, llenando 'Radicado de la queja'...");
-                        List<WebElement> radicadoInputs = driver.findElements(
-                                By.xpath("//input[contains(@name, 'radicado_de_la_queja')]"));
-                        if (!radicadoInputs.isEmpty()) {
-                            String radicado = "QUEJA-" + System.currentTimeMillis();
-                            radicadoInputs.get(0).clear();
-                            radicadoInputs.get(0).sendKeys(radicado);
-                            System.out.println("  [EditarTareaDeMonitoreo] ✓ Radicado llenado: " + radicado);
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println("  [EditarTareaDeMonitoreo] ⚠ Error verificando/llenando Radicado de la queja: " + e.getMessage());
                 }
 
                 sleep(500);
@@ -352,6 +344,24 @@ public class EditarTareaDeMonitoreo implements Task {
             return texto != null ? texto.toString() : "NULL";
         } catch (Exception e) {
             return "ERROR: " + e.getMessage();
+        }
+    }
+
+    private void seleccionarOpcionFija(WebDriver driver, WebDriverWait wait, String selectorContenedor, String etiqueta, String textoOpcion) {
+        System.out.println("  [EditarTareaDeMonitoreo] >> Dropdown '" + etiqueta + "' => forzando \"" + textoOpcion + "\"");
+        try {
+            WebElement control = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.cssSelector(selectorContenedor + " .custom-dropdown-control")));
+            control.click();
+            sleep(400);
+            WebElement opcion = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(text())='" + textoOpcion + "']")));
+            opcion.click();
+            sleep(300);
+            String textoFinal = leerTextoControl(driver, selectorContenedor);
+            System.out.println("  [EditarTareaDeMonitoreo]    ✓ " + etiqueta + " fijado a \"" + textoFinal + "\"");
+        } catch (Exception e) {
+            System.out.println("  [EditarTareaDeMonitoreo]    ✗ Error fijando '" + etiqueta + "' a \"" + textoOpcion + "\": " + e.getMessage());
         }
     }
 

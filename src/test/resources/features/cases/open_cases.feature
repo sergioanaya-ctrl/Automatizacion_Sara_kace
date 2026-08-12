@@ -96,7 +96,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And se han creado tareas de monitoreo automáticamente
     And editamos la primera tarea de monitoreo a estado "Cerrada"
     And cambia a estado "Concluido"
-
+ And cambia a estado "Finalizado"
+ 
   @batch6
   Scenario: Alt 3 - Flujo minimalista (solo Estados y Monitoreo, sin otros submódulos)
     Given el actor tiene un navegador disponible

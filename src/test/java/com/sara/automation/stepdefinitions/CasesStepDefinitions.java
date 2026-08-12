@@ -278,9 +278,12 @@ public class CasesStepDefinitions {
 
     @When("editamos la primera tarea de monitoreo a estado {string}")
     public void editamosPrimeraTareaDeMonitoreo(String nuevoEstado) {
-        // Edita la primera tarea de monitoreo existente: abre el formulario,
-        // cambia el estado (Cerrada, Cancelada, etc.) y guarda
         actor.attemptsTo(EditarTareaDeMonitoreo.aEstado(nuevoEstado));
+    }
+
+    @When("editamos la primera tarea de monitoreo con estado aleatorio")
+    public void editamosPrimeraTareaDeMonitoreoAleatorio() {
+        actor.attemptsTo(EditarTareaDeMonitoreo.conEstadoAleatorio());
     }
 
     @When("cerramos sesion del usuario")
