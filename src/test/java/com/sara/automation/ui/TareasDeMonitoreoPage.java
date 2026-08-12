@@ -15,40 +15,74 @@ import org.openqa.selenium.By;
  */
 public class TareasDeMonitoreoPage {
 
-    // Pestaña
+    // ===== PESTAÑA =====
     public static final By TAB_TAREAS = By.cssSelector("a[href='#tareasDeMonitoreo']");
 
-    // Tabla de tareas (lista)
+    // ===== TABLA DE TAREAS (lista principal) =====
     public static final By TABLA_TAREAS = By.cssSelector(".data-table__table tbody");
     public static final By FILAS_TABLA = By.cssSelector(".data-table__table tbody tr");
 
-    // Botón Editar de la primera fila
+    // Botón "Crear Tarea" (en la parte superior de la tabla)
+    public static final By BTN_CREAR_TAREA = By.xpath(
+            "//button[contains(text(), 'Crear Tarea') or contains(text(), 'crear tarea')]");
+    public static final By BTN_CREAR_TAREA_FALLBACK = By.cssSelector(".kace-subcases-edit-root button.btn-primary");
+
+    // ===== EDICIÓN: BOTONES EN TABLA =====
     public static final By BTN_EDITAR_PRIMERA = By.cssSelector(".data-table__table tbody tr:first-child button[title='Editar']");
     public static final By BTN_EDITAR_PRIMERA_FALLBACK = By.xpath(
             "//div[contains(@class, 'data-table')]//tbody//tr[1]//button[contains(@title, 'Editar')]");
 
-    // Modal de edición
+    public static final By BTN_VER = By.xpath("//button[contains(@title, 'Ver')]");
+
+    // ===== MODAL DE EDICIÓN/CREACIÓN =====
     public static final By MODAL_EDICION = By.cssSelector(".modal, [role='dialog']");
+    public static final By MODAL_TITLE = By.id("subcaseModalTitle");
 
-    // Dropdown de estado en el modal
-    // Intenta múltiples variantes: select con aria-label, select simple, input
-    public static final By DROPDOWN_ESTADO = By.cssSelector(
-            "select[aria-label*='estado siguiente'], select[aria-label*='estado'], select.form-control");
-    public static final By DROPDOWN_ESTADO_FALLBACK = By.xpath(
-            "//select[contains(@aria-label, 'estado') or contains(@name, 'estado')]");
+    // ===== SELECT DE ESTADO SIGUIENTE (en el modal) =====
+    public static final By DROPDOWN_ESTADO = By.id("subcase-state-select");
+    public static final By DROPDOWN_ESTADO_FALLBACK = By.cssSelector(
+            "select[aria-label*='estado siguiente'], select[aria-label*='estado']");
 
-    // Opciones del dropdown de estado
     public static By opcionEstado(String nombreEstado) {
         return By.xpath("//option[contains(text(), '" + nombreEstado + "')]");
     }
 
-    // Botón Guardar en el modal
-    public static final By BTN_GUARDAR_MODAL = By.xpath(
-            "//button[contains(text(), 'Guardar') and contains(@class, 'btn-primary')]");
-    public static final By BTN_GUARDAR_MODAL_FALLBACK = By.xpath(
-            "//div[contains(@class, 'modal') or @role='dialog']//button[contains(@class, 'btn-primary')]");
+    // ===== PANEL DE TAREAS DE MONITOREO (dentro del modal) =====
+    public static final By PANEL_TAREAS_MONITOREO = By.cssSelector(".formio-component-tareasDeMonitoreo");
+    public static final By PANEL_HEADER = By.cssSelector(".formio-component-tareasDeMonitoreo .card-header");
 
-    // Validación: tabla vacía o con mensaje de "no hay datos"
+    // ===== EDITGRID: BOTÓN CREAR FILA =====
+    public static final By BTN_CREAR_FILA_EDITGRID = By.xpath(
+            "//button[@ref='editgrid-monitoreo_proveedor_asistencia_movilidad-addRow']");
+    public static final By BTN_CREAR_FILA_EDITGRID_FALLBACK = By.xpath(
+            "//div[contains(@class, 'formio-component-monitoreo_proveedor_asistencia_movilidad')]//button[contains(text(), 'Crear')]");
+
+    // ===== DIALOG (modal dentro del modal para crear fila) =====
+    public static final By DIALOG_CONTENIDO = By.cssSelector(".formio-dialog-content");
+    public static final By DIALOG_CLOSE = By.cssSelector(".formio-dialog-close");
+
+    // Campos del dialog para crear fila:
+    public static final By DROPDOWN_MONITOREO_CON = By.id("custom-select-ehshd4");
+    public static final By DROPDOWN_MOMENTO_SERVICIO = By.id("custom-select-ecxhl4l");
+    public static final By DROPDOWN_RESPUESTA_MONITOREO = By.id("custom-select-esi7kdj");
+    public static final By DROPDOWN_QUEJA = By.id("custom-select-esfdm2m");
+    public static final By TEXTAREA_OBSERVACION_ASESOR = By.cssSelector(
+            "textarea[placeholder*='']"); // dentro del dialog
+    public static final By TEXTAREA_OBSERVACION_PROVEEDOR = By.xpath(
+            "//textarea[@placeholder='']");
+
+    public static final By BTN_GUARDAR_DIALOG = By.xpath(
+            "//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]");
+
+    // ===== BOTONES PRINCIPALES DEL MODAL =====
+    public static final By BTN_GUARDAR_MODAL = By.xpath(
+            "//div[@class='modal-footer']//button[contains(text(), 'Guardar')]");
+    public static final By BTN_GUARDAR_MODAL_FALLBACK = By.xpath(
+            "//button[contains(text(), 'Guardar') and contains(@class, 'btn-primary')]");
+    public static final By BTN_CANCELAR_MODAL = By.xpath(
+            "//div[@class='modal-footer']//button[contains(text(), 'Cancelar')]");
+
+    // ===== VALIDACIÓN =====
     public static final By TEXTO_TABLA_VACIA = By.xpath(
             "//*[contains(text(), 'No hay') or contains(text(), 'disponibles')]");
 
