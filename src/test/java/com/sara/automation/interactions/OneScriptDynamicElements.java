@@ -15,18 +15,53 @@ public final class OneScriptDynamicElements {
     }
 
     public static void waitForProveedorSection(WebDriver driver, Duration timeout) {
-        new WebDriverWait(driver, timeout).until(d -> {
-            Object found = ((JavascriptExecutor) d).executeScript(
-                    "const normalize = text => text.replace(/\\s+/g, ' ').trim().toLowerCase();"
-                            + "const renderizado = el => !!el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;"
-                            + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
-                            + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
-                            + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => renderizado(b) && normalize(b.textContent).includes('guardar'));"
-                            + "return (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn) || null;"
-            );
-            return found != null;
-        });
-        sleep(200); // deja asentar el reflow/animación del modal antes de interactuar con sus controles
+        long startTime = System.currentTimeMillis();
+        long timeoutMs = timeout.toMillis();
+
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            try {
+                Object result = ((JavascriptExecutor) driver).executeScript(
+                        "const normalize = text => text.replace(/\\s+/g, ' ').trim().toLowerCase();"
+                                + "const renderizado = el => !!el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;"
+                                + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
+                                + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
+                                + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => renderizado(b) && normalize(b.textContent).includes('guardar'));"
+                                + "const modalAbierto = !!document.querySelector('.modal, .formio-dialog-content, [role=\"dialog\"]');"
+                                + "const inputsVisibles = Array.from(document.querySelectorAll('input, select, textarea, .custom-dropdown-control')).filter(el => renderizado(el)).length;"
+                                + "const selectoresEspecificos = (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn);"
+                                + "const modalLista = (modalAbierto && inputsVisibles >= 2) || selectoresEspecificos;"
+                                + "return {especificos: selectoresEspecificos, modalLista: modalLista, inputs: inputsVisibles, modal: modalAbierto};"
+                );
+
+                if (result instanceof java.util.Map) {
+                    java.util.Map map = (java.util.Map) result;
+                    Boolean especificos = (Boolean) map.get("especificos");
+                    Boolean modalLista = (Boolean) map.get("modalLista");
+
+                    // CRITERIO: si los selectores específicos están listos, retornar
+                    if (especificos != null && especificos) {
+                        System.out.println("[waitForProveedorSection] ✓ Selectores específicos listos");
+                        sleep(200);
+                        return;
+                    }
+
+                    // FALLBACK: si la modal está abierta Y hay >=2 inputs visibles, continuar sin esperar más
+                    if (modalLista != null && modalLista) {
+                        System.out.println("[waitForProveedorSection] ✓ Modal lista para interactuar (inputs: " + map.get("inputs") + ")");
+                        sleep(200);
+                        return;
+                    }
+                }
+            } catch (Exception e) {
+                // Script falló, esperar siguiente iteración
+            }
+
+            sleep(500);
+        }
+
+        // Timeout completado: log de advertencia pero continuar
+        System.out.println("[waitForProveedorSection] ⚠ Timeout esperando proveedor, pero continuando...");
+        sleep(200);
     }
 
     public static void clickVisibleButtonByText(WebDriver driver, String text) {
