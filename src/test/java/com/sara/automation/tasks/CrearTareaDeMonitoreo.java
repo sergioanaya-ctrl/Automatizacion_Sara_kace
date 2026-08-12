@@ -1,5 +1,6 @@
 package com.sara.automation.tasks;
 
+import com.sara.automation.interactions.OneScriptDynamicElements;
 import com.sara.automation.ui.TareasDeMonitoreoPage;
 import com.sara.automation.utils.ResilientFormActions;
 import net.serenitybdd.screenplay.Actor;
@@ -89,42 +90,99 @@ public class CrearTareaDeMonitoreo implements Task {
         seleccionarClasificacionAleatoria(driver, wait);
         sleep(800);
 
-        // 5.6 Habilitar formulario de tarea
-        habilitarFormularioTarea(driver, wait);
-        sleep(1000);
-
-        // 5.7 Llenar formulario con datos aleatorios
-        llenarFormularioTareaAleatorio(driver, wait);
-        sleep(800);
-
-        // 5.8 Crear fila en editGrid (opcional, con datos aleatorios)
-        crearFilaEditGridAleatorio(driver, wait);
-        sleep(1000);
-
-        // 6. Cambiar estado siguiente si se proporciona
+        // 5.6 Cambiar estado siguiente si se proporciona (DEBE ir antes de habilitar el formulario,
+        // pues el modal exige elegir el estado siguiente primero).
+        // subcase-state-select es un <select> nativo: usar la clase Select de Selenium.
         if (estadoSiguiente != null && !estadoSiguiente.isEmpty()) {
             try {
-                WebElement dropdown = wait.until(ExpectedConditions.presenceOfElementLocated(TareasDeMonitoreoPage.DROPDOWN_ESTADO));
-                dropdown.click();
-                sleep(500);
-
-                WebElement opcion = driver.findElement(TareasDeMonitoreoPage.opcionEstado(estadoSiguiente));
-                opcion.click();
+                WebElement selectElement = wait.until(ExpectedConditions.presenceOfElementLocated(TareasDeMonitoreoPage.DROPDOWN_ESTADO));
+                org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(selectElement);
+                select.selectByVisibleText(estadoSiguiente);
                 System.out.println("  [CrearTareaDeMonitoreo] ✓ Estado cambiado a: " + estadoSiguiente);
                 sleep(800);
             } catch (Exception e) {
-                System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo cambiar estado a: " + estadoSiguiente);
+                System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo cambiar estado a: " + estadoSiguiente + " - " + e.getMessage());
             }
         }
 
+        // 5.7 Habilitar formulario de tarea
+        habilitarFormularioTarea(driver, wait);
+        sleep(1000);
+
+        // 5.8 Llenar formulario con datos aleatorios
+        llenarFormularioTareaAleatorio(driver, wait);
+        sleep(800);
+
+        // 5.9 Crear fila en editGrid (opcional, con datos aleatorios)
+        crearFilaEditGridAleatorio(driver, wait);
+        sleep(1000);
+
+        // 6. Llenar "Descripción" del subcaso (contenteditable, requerido) - si no se llena,
+        // el modal "Crear Subcaso" no persiste nada aunque se le dé clic en Guardar.
+        llenarDescripcionSubcaso(driver, wait);
+        sleep(500);
+
         // 7. Clic en "Guardar" del modal
         ResilientFormActions.clickConReintentoStaleSafe(driver, TareasDeMonitoreoPage.BTN_GUARDAR_MODAL, TareasDeMonitoreoPage.BTN_GUARDAR_MODAL_FALLBACK, 20, 3);
-        System.out.println("  [CrearTareaDeMonitoreo] ✓ Tarea guardada");
+        System.out.println("  [CrearTareaDeMonitoreo] ✓ Clic en 'Guardar' del modal 'Crear Subcaso'");
 
-        // 8. Esperar a que modal se cierre
-        sleep(2000);
+        // 8. Esperar a que el modal REALMENTE se cierre antes de continuar. Dar clic en el
+        // Guardar del modal y en el Guardar general casi al mismo tiempo provoca que la página
+        // se recargue sin persistir nada (igual que en los demás submódulos: primero se guarda
+        // el modal/dialog interno, y SOLO cuando ese ya cerró, se hace el guardado general).
+        boolean modalCerrado = esperarCierreModal(driver, Duration.ofSeconds(15));
+        System.out.println("  [CrearTareaDeMonitoreo] ¿Modal 'Crear Subcaso' cerrado? " + modalCerrado);
+
         driver.switchTo().defaultContent();
+
+        // 9. Solo después de confirmar el cierre del modal, clic en el "Guardar" general
+        // (el mismo botón flotante que usan los demás submódulos: name="data[kaceCustomSubmit]").
+        if (modalCerrado) {
+            actor.attemptsTo(ClickGuardarEnIframe.clickGuardarEnIframe());
+            System.out.println("  [CrearTareaDeMonitoreo] ✓ Clic en 'Guardar' general realizado");
+        } else {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ El modal no confirmó su cierre; se omite el 'Guardar' general para evitar el reload en falso");
+        }
+
         System.out.println("  [CrearTareaDeMonitoreo] ==================== ✓ FIN ====================\n");
+    }
+
+    /**
+     * Llena el campo "Descripción" (contenteditable, requerido) del modal "Crear Subcaso".
+     * No es un <input>/<textarea> normal: es un div[contenteditable="true"], por lo que se
+     * escribe con JS (textContent + evento 'input') en vez de sendKeys.
+     */
+    private void llenarDescripcionSubcaso(WebDriver driver, WebDriverWait wait) {
+        System.out.println("  [CrearTareaDeMonitoreo] Buscando campo 'Descripción' del subcaso (contenteditable)...");
+        try {
+            WebElement descripcion = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.cssSelector("div[contenteditable='true'][data-placeholder]")));
+            String texto = "Tarea de monitoreo generada automáticamente - " + System.currentTimeMillis();
+            ((JavascriptExecutor) driver).executeScript(
+                    "arguments[0].focus();"
+                            + "arguments[0].textContent = arguments[1];"
+                            + "arguments[0].dispatchEvent(new Event('input', {bubbles:true}));"
+                            + "arguments[0].dispatchEvent(new Event('blur', {bubbles:true}));",
+                    descripcion, texto);
+            System.out.println("  [CrearTareaDeMonitoreo] ✓ Descripción del subcaso llenada: \"" + texto + "\"");
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo llenar la descripción del subcaso: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Espera activamente a que el modal "Crear Subcaso" desaparezca del DOM/visibilidad,
+     * en vez de un sleep fijo, para no disparar el guardado general antes de tiempo.
+     */
+    private boolean esperarCierreModal(WebDriver driver, Duration timeout) {
+        try {
+            new WebDriverWait(driver, timeout).until(
+                    ExpectedConditions.invisibilityOfElementLocated(TareasDeMonitoreoPage.MODAL_EDICION));
+            return true;
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Timeout esperando cierre del modal: " + e.getMessage());
+            return false;
+        }
     }
 
     private void entrarAlIframe(WebDriver driver, WebDriverWait wait) {
@@ -152,26 +210,29 @@ public class CrearTareaDeMonitoreo implements Task {
 
     private void seleccionarClasificacionAleatoria(WebDriver driver, WebDriverWait wait) {
         try {
-            // Obtener todas las opciones de clasificación (excluyendo la vacía)
-            List<WebElement> opciones = wait.until(d ->
-                    d.findElements(TareasDeMonitoreoPage.OPCIONES_CLASIFICACION));
+            // subcase-classification-select es un <select> nativo: usar la clase Select de Selenium,
+            // NO simular clics manuales (click en el select + click en <option> es inestable en Chrome).
+            WebElement selectElement = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    TareasDeMonitoreoPage.DROPDOWN_CLASIFICACION));
+            org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(selectElement);
 
-            if (opciones.isEmpty()) {
+            List<WebElement> opciones = select.getOptions();
+            // Excluir la opción vacía ("-- Seleccione una clasificación --", value="")
+            List<WebElement> opcionesValidas = opciones.stream()
+                    .filter(o -> !o.getAttribute("value").isEmpty())
+                    .collect(java.util.stream.Collectors.toList());
+
+            if (opcionesValidas.isEmpty()) {
                 System.out.println("  [CrearTareaDeMonitoreo] ⚠ No hay opciones de clasificación disponibles");
                 return;
             }
 
-            // Seleccionar una aleatoria
             Random random = new Random();
-            WebElement opcionAleatoria = opciones.get(random.nextInt(opciones.size()));
+            WebElement opcionAleatoria = opcionesValidas.get(random.nextInt(opcionesValidas.size()));
             String clasificacion = opcionAleatoria.getText();
+            String valor = opcionAleatoria.getAttribute("value");
 
-            // Hacer clic en el dropdown y luego en la opción
-            WebElement dropdown = driver.findElement(TareasDeMonitoreoPage.DROPDOWN_CLASIFICACION);
-            dropdown.click();
-            sleep(500);
-
-            opcionAleatoria.click();
+            select.selectByValue(valor);
             sleep(800);
 
             System.out.println("  [CrearTareaDeMonitoreo] ✓ Clasificación seleccionada: " + clasificacion);
@@ -182,103 +243,279 @@ public class CrearTareaDeMonitoreo implements Task {
     }
 
     private void habilitarFormularioTarea(WebDriver driver, WebDriverWait wait) {
+        // PASO 1: expandir el panel colapsable "Habilitar formulario de la tarea de monitoreo"
+        // (es solo una extensión/acordeón, NO habilita nada por sí sola).
+        try {
+            WebElement panelHeader = wait.until(ExpectedConditions.elementToBeClickable(
+                    TareasDeMonitoreoPage.PANEL_HEADER_HABILITAR));
+            panelHeader.click();
+            System.out.println("  [CrearTareaDeMonitoreo] ✓ Panel 'Habilitar formulario de la tarea de monitoreo' expandido");
+            sleep(600);
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo expandir el panel (puede que ya esté expandido): " + e.getMessage());
+        }
+
+        // PASO 2: clic en el botón "Habilitar Formulario" que SÍ habilita los campos del formulario.
         try {
             WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(
                     TareasDeMonitoreoPage.BTN_HABILITAR_FORMULARIO));
             btn.click();
             System.out.println("  [CrearTareaDeMonitoreo] ✓ Formulario de tarea habilitado");
         } catch (Exception e) {
-            System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo habilitar formulario: " + e.getMessage());
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Botón principal falló (" + e.getMessage() + "), probando fallback...");
+            try {
+                WebElement btnFallback = wait.until(ExpectedConditions.elementToBeClickable(
+                        TareasDeMonitoreoPage.BTN_HABILITAR_FORMULARIO_FALLBACK));
+                btnFallback.click();
+                System.out.println("  [CrearTareaDeMonitoreo] ✓ Formulario de tarea habilitado (fallback)");
+            } catch (Exception e2) {
+                System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo habilitar formulario: " + e2.getMessage());
+            }
         }
     }
 
     private void llenarFormularioTareaAleatorio(WebDriver driver, WebDriverWait wait) {
+        System.out.println("  [CrearTareaDeMonitoreo] ---- Llenando formulario de tarea habilitado ----");
         try {
-            // Nombre tipo de tarea (dropdown aleatorio)
-            List<WebElement> opciones = wait.until(d ->
-                    d.findElements(By.cssSelector("#custom-select-e2cy7mj .custom-dropdown-control")));
-            if (!opciones.isEmpty()) {
-                Random r = new Random();
-                WebElement dropdown = driver.findElement(TareasDeMonitoreoPage.DROPDOWN_NOMBRE_TAREA);
-                dropdown.click();
-                sleep(300);
-                List<WebElement> items = driver.findElements(By.cssSelector("#custom-select-e2cy7mj .custom-option"));
-                if (!items.isEmpty()) {
-                    items.get(r.nextInt(items.size())).click();
-                    System.out.println("  [CrearTareaDeMonitoreo] ✓ Nombre tipo de tarea seleccionado aleatoriamente");
-                }
-            }
+            // Nombre tipo de tarea (custom dropdown con buscador aleatorio)
+            seleccionarOpcionCustomDropdown(driver, wait, "#custom-select-e2cy7mj", "Nombre tipo de tarea");
 
             sleep(500);
 
-            // Fecha vencimiento (fecha futura aleatoria: 1-7 días)
+            // Description nombre de tarea: campo de texto con valor por defecto "tarea de monitoreo - ",
+            // se completa con texto adicional (no está deshabilitado en el formulario habilitado).
+            System.out.println("  [CrearTareaDeMonitoreo] Buscando campo 'Description nombre de tarea'...");
+            try {
+                List<WebElement> descripcionInputs = driver.findElements(TareasDeMonitoreoPage.INPUT_DESCRIPCION_TAREA);
+                if (!descripcionInputs.isEmpty()) {
+                    WebElement descripcionInput = descripcionInputs.get(0);
+                    String valorActual = descripcionInput.getAttribute("value");
+                    System.out.println("  [CrearTareaDeMonitoreo] ✓ Campo encontrado (displayed=" + descripcionInput.isDisplayed()
+                            + ", enabled=" + descripcionInput.isEnabled() + "), valor actual: \"" + valorActual + "\"");
+                    if (descripcionInput.isEnabled()) {
+                        descripcionInput.sendKeys("automatizada " + System.currentTimeMillis());
+                        System.out.println("  [CrearTareaDeMonitoreo] ✓ Descripción de tarea completada");
+                    } else {
+                        System.out.println("  [CrearTareaDeMonitoreo] ⚠ Campo deshabilitado, se deja el valor por defecto");
+                    }
+                } else {
+                    System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se encontró el campo 'Description nombre de tarea'");
+                }
+            } catch (Exception e) {
+                System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error llenando descripción de tarea: " + e.getMessage());
+            }
+
+            // Fecha vencimiento (fecha futura aleatoria: 1-7 días).
+            // El input visible está controlado por flatpickr y normalmente no acepta sendKeys
+            // directo (queda "disabled" hasta que el propio flatpickr lo habilita); se fija el valor
+            // usando la API de flatpickr sobre el input real (oculto), que dispara los eventos
+            // que Form.io necesita para registrar el cambio.
+            System.out.println("  [CrearTareaDeMonitoreo] Fijando fecha de vencimiento...");
             LocalDateTime fechaFutura = LocalDateTime.now().plusDays(1 + new Random().nextInt(7));
             String fechaFormato = fechaFutura.format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"));
-            WebElement inputFecha = wait.until(ExpectedConditions.presenceOfElementLocated(
-                    TareasDeMonitoreoPage.INPUT_FECHA_VENCIMIENTO));
-            inputFecha.sendKeys(fechaFormato);
-            System.out.println("  [CrearTareaDeMonitoreo] ✓ Fecha vencimiento: " + fechaFormato);
+            boolean fechaFijada = fijarFechaVencimientoConFlatpickr(driver, wait, fechaFormato);
+            if (fechaFijada) {
+                System.out.println("  [CrearTareaDeMonitoreo] ✓ Fecha vencimiento fijada vía flatpickr: " + fechaFormato);
+            } else {
+                System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se pudo fijar la fecha vía flatpickr, probando sendKeys directo...");
+                try {
+                    WebElement inputFecha = wait.until(ExpectedConditions.presenceOfElementLocated(
+                            TareasDeMonitoreoPage.INPUT_FECHA_VENCIMIENTO));
+                    System.out.println("  [CrearTareaDeMonitoreo]   Campo encontrado (displayed=" + inputFecha.isDisplayed()
+                            + ", enabled=" + inputFecha.isEnabled() + ")");
+                    inputFecha.sendKeys(fechaFormato);
+                    System.out.println("  [CrearTareaDeMonitoreo] ✓ Fecha vencimiento escrita por sendKeys: " + fechaFormato);
+                } catch (Exception e) {
+                    System.out.println("  [CrearTareaDeMonitoreo] ✗ Fallback sendKeys también falló: " + e.getMessage());
+                }
+            }
 
         } catch (Exception e) {
             System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error llenando formulario: " + e.getMessage());
         }
+        System.out.println("  [CrearTareaDeMonitoreo] ---- FIN llenado de formulario de tarea ----");
     }
 
-    private void crearFilaEditGridAleatorio(WebDriver driver, WebDriverWait wait) {
+    /**
+     * Fija la fecha de vencimiento usando la instancia flatpickr adjunta al input real
+     * (id="...-fecha_hora_vencimiento", tipo hidden). flatpickr expone la instancia como
+     * `elemento._flatpickr` y su `setDate(valor, triggerChange)` dispara los eventos de
+     * change necesarios para que Form.io detecte el nuevo valor, evitando el problema de
+     * "element not interactable" del input visible (que flatpickr mantiene no-editable).
+     */
+    private boolean fijarFechaVencimientoConFlatpickr(WebDriver driver, WebDriverWait wait, String fechaFormato) {
         try {
-            // Clic en "Crear" del editGrid
-            WebElement btnCrearFila = wait.until(ExpectedConditions.elementToBeClickable(
-                    TareasDeMonitoreoPage.BTN_CREAR_FILA_EDITGRID));
-            btnCrearFila.click();
-            System.out.println("  [CrearTareaDeMonitoreo] ✓ Dialog para crear fila abierto");
-            sleep(1500);
-
-            // Seleccionar opciones aleatorias en los 4 dropdowns
-            seleccionarDropdownAleatorio(driver, "#custom-select-ehshd4", "Monitoreo con");
-            sleep(400);
-            seleccionarDropdownAleatorio(driver, "#custom-select-ecxhl4l", "Momento del servicio");
-            sleep(400);
-            seleccionarDropdownAleatorio(driver, "#custom-select-esi7kdj", "Respuesta a monitoreo");
-            sleep(400);
-            seleccionarDropdownAleatorio(driver, "#custom-select-esfdm2m", "Se generó queja");
-            sleep(400);
-
-            // Llenar observaciones con texto simple
-            List<WebElement> textareas = driver.findElements(By.cssSelector(".formio-dialog-content textarea"));
-            if (textareas.size() >= 2) {
-                textareas.get(0).sendKeys("Observación del asesor - generada automáticamente");
-                textareas.get(1).sendKeys("Observación del proveedor - generada automáticamente");
-                System.out.println("  [CrearTareaDeMonitoreo] ✓ Observaciones llenadas");
-            }
-
-            sleep(500);
-
-            // Guardar fila (botón dentro del dialog)
-            WebElement btnGuardarFila = wait.until(ExpectedConditions.elementToBeClickable(
-                    By.xpath("//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]")));
-            btnGuardarFila.click();
-            System.out.println("  [CrearTareaDeMonitoreo] ✓ Fila en editGrid creada y guardada");
-            sleep(1000);
-
+            wait.until(d -> !d.findElements(By.id("e2x0n6r-fecha_hora_vencimiento")).isEmpty());
+            Object resultado = ((JavascriptExecutor) driver).executeScript(
+                    "const hidden = document.getElementById('e2x0n6r-fecha_hora_vencimiento');"
+                            + "if (hidden && hidden._flatpickr) {"
+                            + "  hidden._flatpickr.setDate(arguments[0], true);"
+                            + "  return true;"
+                            + "}"
+                            + "return false;",
+                    fechaFormato);
+            return resultado instanceof Boolean && (Boolean) resultado;
         } catch (Exception e) {
-            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error creando fila editGrid: " + e.getMessage());
+            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error fijando fecha vía flatpickr: " + e.getMessage());
+            return false;
         }
     }
 
-    private void seleccionarDropdownAleatorio(WebDriver driver, String selectorDropdown, String etiqueta) {
+    private static final String[][] DROPDOWNS_EDITGRID = {
+            {"#custom-select-ehshd4", "Monitoreo con"},
+            {"#custom-select-ecxhl4l", "Momento del servicio"},
+            {"#custom-select-esi7kdj", "Respuesta a monitoreo"},
+            {"#custom-select-esfdm2m", "Se generó queja"}
+    };
+
+    private void crearFilaEditGridAleatorio(WebDriver driver, WebDriverWait wait) {
+        System.out.println("  [CrearTareaDeMonitoreo] ---- INICIO editGrid: crear fila ----");
+
+        int intentos = 0;
+        boolean guardadoSinErrores = false;
+
+        while (intentos < 2 && !guardadoSinErrores) {
+            intentos++;
+            System.out.println("  [CrearTareaDeMonitoreo] editGrid intento " + intentos + "/2");
+
+            try {
+                // Clic en "Crear" del editGrid (solo en el primer intento; en reintento el dialog ya está abierto)
+                if (intentos == 1) {
+                    // Cerrar cualquier dropdown que haya quedado abierto (p. ej. "Nombre tipo de tarea"),
+                    // pues su lista de opciones puede tapar el botón "Crear" e interceptar el clic.
+                    cerrarDropdownsAbiertos(driver);
+                    System.out.println("  [CrearTareaDeMonitoreo] Buscando botón 'Crear' del editGrid...");
+                    WebElement btnCrearFila = wait.until(ExpectedConditions.elementToBeClickable(
+                            TareasDeMonitoreoPage.BTN_CREAR_FILA_EDITGRID));
+                    System.out.println("  [CrearTareaDeMonitoreo] ✓ Botón 'Crear' encontrado, clic...");
+                    btnCrearFila.click();
+                    sleep(1500);
+                    boolean dialogAbierto = !driver.findElements(TareasDeMonitoreoPage.DIALOG_CONTENIDO).isEmpty();
+                    System.out.println("  [CrearTareaDeMonitoreo] ¿Dialog de fila abierto? " + dialogAbierto);
+                }
+
+                // Seleccionar opciones aleatorias en los 4 dropdowns, con verificación posterior
+                for (String[] dd : DROPDOWNS_EDITGRID) {
+                    seleccionarOpcionCustomDropdown(driver, wait, dd[0], dd[1]);
+                    sleep(400);
+                }
+
+                // Log de verificación: leer el texto actual de cada control tras la selección
+                System.out.println("  [CrearTareaDeMonitoreo] --- Verificación de dropdowns tras selección ---");
+                for (String[] dd : DROPDOWNS_EDITGRID) {
+                    String textoActual = leerTextoControl(driver, dd[0]);
+                    System.out.println("  [CrearTareaDeMonitoreo]   " + dd[1] + " => \"" + textoActual + "\"");
+                }
+
+                // Llenar observaciones con texto simple
+                List<WebElement> textareas = driver.findElements(By.cssSelector(".formio-dialog-content textarea"));
+                System.out.println("  [CrearTareaDeMonitoreo] Textareas encontradas en dialog: " + textareas.size());
+                if (textareas.size() >= 2) {
+                    textareas.get(0).sendKeys("Observación del asesor - generada automáticamente");
+                    textareas.get(1).sendKeys("Observación del proveedor - generada automáticamente");
+                    System.out.println("  [CrearTareaDeMonitoreo] ✓ Observaciones llenadas");
+                } else {
+                    System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se encontraron las 2 textareas esperadas");
+                }
+
+                sleep(500);
+
+                // Guardar fila (botón dentro del dialog)
+                System.out.println("  [CrearTareaDeMonitoreo] Buscando botón 'Guardar' del dialog...");
+                WebElement btnGuardarFila = wait.until(ExpectedConditions.elementToBeClickable(
+                        By.xpath("//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]")));
+                btnGuardarFila.click();
+                System.out.println("  [CrearTareaDeMonitoreo] ✓ Clic en 'Guardar' del dialog");
+                sleep(1000);
+
+                // Verificar si el dialog mostró un banner de validación ("Por favor corrige...")
+                List<WebElement> banners = driver.findElements(
+                        By.xpath("//*[contains(text(), 'Por favor corrige')]"));
+                if (!banners.isEmpty()) {
+                    List<WebElement> erroresLi = driver.findElements(
+                            By.xpath("//*[contains(text(), 'Por favor corrige')]/following::li"));
+                    System.out.println("  [CrearTareaDeMonitoreo] ⚠ Banner de validación detectado tras guardar. Campos con error:");
+                    for (WebElement li : erroresLi) {
+                        System.out.println("  [CrearTareaDeMonitoreo]     - " + li.getText());
+                    }
+                    if (intentos < 2) {
+                        System.out.println("  [CrearTareaDeMonitoreo] Reintentando llenar el dialog...");
+                        sleep(800);
+                        continue;
+                    } else {
+                        System.out.println("  [CrearTareaDeMonitoreo] ✗ Se agotaron los reintentos, el editGrid pudo quedar sin guardar correctamente");
+                    }
+                } else {
+                    guardadoSinErrores = true;
+                    System.out.println("  [CrearTareaDeMonitoreo] ✓ Fila en editGrid creada y guardada sin errores de validación");
+                }
+
+            } catch (Exception e) {
+                System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error creando fila editGrid (intento " + intentos + "): " + e.getMessage());
+            }
+        }
+
+        System.out.println("  [CrearTareaDeMonitoreo] ---- FIN editGrid: crear fila (éxito=" + guardadoSinErrores + ") ----");
+    }
+
+    /**
+     * Lee el texto actualmente mostrado en el control del custom-select (para verificar si
+     * realmente quedó seleccionada una opción, en vez de asumirlo solo porque se hizo clic).
+     */
+    private String leerTextoControl(WebDriver driver, String selectorContenedor) {
         try {
-            WebElement dropdown = driver.findElement(By.cssSelector(selectorDropdown));
-            dropdown.click();
+            Object texto = ((JavascriptExecutor) driver).executeScript(
+                    "const el = document.querySelector(arguments[0] + ' .custom-dropdown-control');"
+                            + "return el ? el.textContent.trim() : 'CONTROL_NO_ENCONTRADO';",
+                    selectorContenedor);
+            return texto != null ? texto.toString() : "NULL";
+        } catch (Exception e) {
+            return "ERROR: " + e.getMessage();
+        }
+    }
+
+    /**
+     * Selecciona una opción VÁLIDA (no vacía, no "sin resultados") en un "custom-select" con buscador,
+     * reutilizando la misma utilidad ya probada para Departamento/Municipio en creación de casos
+     * (OneScriptDynamicElements.selectFirstOptionOfControl): abre el control con clic NATIVO (no JS,
+     * porque estos componentes solo cargan opciones de forma asíncrona ante eventos "trusted"), y
+     * espera activamente a que aparezca al menos una opción real antes de elegirla.
+     */
+    private void seleccionarOpcionCustomDropdown(WebDriver driver, WebDriverWait wait, String selectorContenedor, String etiqueta) {
+        System.out.println("  [CrearTareaDeMonitoreo] >> Dropdown '" + etiqueta + "' (" + selectorContenedor + ")");
+        try {
+            System.out.println("  [CrearTareaDeMonitoreo]    Buscando control .custom-dropdown-control...");
+            WebElement control = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.cssSelector(selectorContenedor + " .custom-dropdown-control")));
+            System.out.println("  [CrearTareaDeMonitoreo]    ✓ Control encontrado, texto actual: \"" + control.getText() + "\"");
+
+            String seleccionado = OneScriptDynamicElements.selectFirstOptionOfControl(driver, control);
             sleep(300);
 
-            List<WebElement> opciones = driver.findElements(By.cssSelector(selectorDropdown + " .custom-option"));
-            if (!opciones.isEmpty()) {
-                Random r = new Random();
-                opciones.get(r.nextInt(opciones.size())).click();
-                System.out.println("  [CrearTareaDeMonitoreo] ✓ " + etiqueta + " seleccionado aleatoriamente");
+            String textoFinal = leerTextoControl(driver, selectorContenedor);
+            System.out.println("  [CrearTareaDeMonitoreo]    Opción elegida: \"" + seleccionado + "\" | control ahora muestra: \"" + textoFinal + "\"");
+            if (textoFinal.equalsIgnoreCase("Elige una opción") || textoFinal.contains("CONTROL_NO_ENCONTRADO")) {
+                System.out.println("  [CrearTareaDeMonitoreo]    ✗ ADVERTENCIA: tras el clic el control sigue mostrando \"" + textoFinal + "\" - la selección NO se aplicó");
+            } else {
+                System.out.println("  [CrearTareaDeMonitoreo]    ✓ " + etiqueta + " seleccionado y confirmado: \"" + textoFinal + "\"");
             }
         } catch (Exception e) {
-            System.out.println("  [CrearTareaDeMonitoreo] ⚠ Error en dropdown '" + etiqueta + "': " + e.getMessage());
+            System.out.println("  [CrearTareaDeMonitoreo]    ✗ Error en dropdown '" + etiqueta + "': " + e.getMessage());
+        }
+    }
+
+    /**
+     * Cierra cualquier lista de custom-dropdown que haya quedado abierta (haciendo clic en un punto
+     * neutro del body), para evitar que un <li> visible intercepte el clic sobre otro botón
+     * (p. ej. "Crear" del editGrid quedaba tapado por la lista de "Nombre tipo de tarea" abierta).
+     */
+    private void cerrarDropdownsAbiertos(WebDriver driver) {
+        try {
+            ((JavascriptExecutor) driver).executeScript(
+                    "document.body.click();"
+                            + "document.querySelectorAll('ul.custom-dropdown-list').forEach(ul => ul.style.display = 'none');");
+            sleep(300);
+        } catch (Exception ignored) {
         }
     }
 

@@ -70,7 +70,60 @@ public class DiligenciarProveedorGestion implements Task {
     @Override
     @Step("Gestionar proveedor: abrir tab, crear, seleccionar nombre/respuesta y guardar")
     public <T extends Actor> void performAs(T actor) {
-        
+
+        int intentosGlobales = 0;
+        boolean proveedorConfirmado = false;
+
+        while (intentosGlobales < 2 && !proveedorConfirmado) {
+            intentosGlobales++;
+            System.out.println("  [DiligenciarProveedorGestion] ==== Intento global " + intentosGlobales + " de diligenciar proveedor ====");
+            diligenciarUnaVez(actor);
+
+            WebDriver driverCheck = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
+            proveedorConfirmado = validarProveedorAsignado(driverCheck);
+
+            if (!proveedorConfirmado) {
+                System.out.println("  [DiligenciarProveedorGestion] ⚠ No se detectó proveedor asignado en el editGrid tras guardar. "
+                        + (intentosGlobales < 2 ? "Reintentando..." : "Se agotaron los intentos."));
+            } else {
+                System.out.println("  [DiligenciarProveedorGestion] ✓ Proveedor confirmado en editGrid");
+            }
+        }
+
+        if (!proveedorConfirmado) {
+            throw new RuntimeException("No se pudo confirmar que el proveedor quedó asignado (editGrid vacío) después de "
+                    + intentosGlobales + " intentos.");
+        }
+    }
+
+    /**
+     * Verifica que la tabla de gestión de proveedores (editGrid) tenga al menos una fila,
+     * es decir, que el guardado del proveedor realmente haya persistido datos.
+     */
+    private boolean validarProveedorAsignado(WebDriver driver) {
+        try {
+            driver.switchTo().defaultContent();
+            List<WebElement> iframes = driver.findElements(By.id("form_onescript_iframe"));
+            if (!iframes.isEmpty()) {
+                driver.switchTo().frame(iframes.get(0));
+            }
+            List<WebElement> filas = driver.findElements(
+                    By.cssSelector("tr[ref='editgrid-gestion_proveedor_asistencia_movilidad-row']"));
+            boolean tieneFilas = !filas.isEmpty();
+            driver.switchTo().defaultContent();
+            return tieneFilas;
+        } catch (Exception e) {
+            System.out.println("  [DiligenciarProveedorGestion] Error validando proveedor asignado: " + e.getMessage());
+            try {
+                driver.switchTo().defaultContent();
+            } catch (Exception ignored) {
+            }
+            return false;
+        }
+    }
+
+    private <T extends Actor> void diligenciarUnaVez(T actor) {
+
         // Este paso ocurre dentro del formulario OneScript luego de crear el caso.
         actor.attemptsTo(SwitchToOneScriptIframe.required());
 

@@ -1,5 +1,6 @@
 package com.sara.automation.tasks;
 
+import com.sara.automation.interactions.OneScriptDynamicElements;
 import com.sara.automation.ui.TareasDeMonitoreoPage;
 import com.sara.automation.utils.ResilientFormActions;
 import net.serenitybdd.screenplay.Actor;
@@ -8,6 +9,7 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.thucydides.core.annotations.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -88,28 +90,52 @@ public class EditarTareaDeMonitoreo implements Task {
         crearFilaEditGridAleatorio(driver, wait);
         sleep(1000);
 
-        // 7. Cambiar estado en dropdown
+        // 7. Cambiar estado en dropdown (subcase-state-select es un <select> nativo)
         try {
-            WebElement dropdown = wait.until(ExpectedConditions.presenceOfElementLocated(TareasDeMonitoreoPage.DROPDOWN_ESTADO));
-            dropdown.click();
-            sleep(500);
-
-            // Buscar opción en dropdown
-            WebElement opcion = driver.findElement(TareasDeMonitoreoPage.opcionEstado(nuevoEstado));
-            opcion.click();
-            System.out.println("  [EditarTareaDeMonitoreo] ✓ Estado cambidao a: " + nuevoEstado);
+            WebElement selectElement = wait.until(ExpectedConditions.presenceOfElementLocated(TareasDeMonitoreoPage.DROPDOWN_ESTADO));
+            org.openqa.selenium.support.ui.Select select = new org.openqa.selenium.support.ui.Select(selectElement);
+            select.selectByVisibleText(nuevoEstado);
+            System.out.println("  [EditarTareaDeMonitoreo] ✓ Estado cambiado a: " + nuevoEstado);
         } catch (Exception e) {
             throw new RuntimeException("No se pudo cambiar el estado a: " + nuevoEstado, e);
         }
 
-        // 8. Clic en Guardar
+        // 8. Clic en Guardar del modal
         ResilientFormActions.clickConReintentoStaleSafe(driver, TareasDeMonitoreoPage.BTN_GUARDAR_MODAL, TareasDeMonitoreoPage.BTN_GUARDAR_MODAL_FALLBACK, 20, 3);
-        System.out.println("  [EditarTareaDeMonitoreo] ✓ Tarea guardada");
+        System.out.println("  [EditarTareaDeMonitoreo] ✓ Clic en 'Guardar' del modal de edición");
 
-        // 9. Esperar a que modal se cierre
-        sleep(2000);
+        // 9. Esperar a que el modal REALMENTE se cierre antes de continuar (dar clic en el
+        // Guardar del modal y en el Guardar general casi al mismo tiempo provoca un reload
+        // que descarta los cambios sin persistir nada).
+        boolean modalCerrado = esperarCierreModal(driver, Duration.ofSeconds(15));
+        System.out.println("  [EditarTareaDeMonitoreo] ¿Modal de edición cerrado? " + modalCerrado);
+
         driver.switchTo().defaultContent();
+
+        // 10. Solo después de confirmar el cierre del modal, clic en el "Guardar" general.
+        if (modalCerrado) {
+            actor.attemptsTo(ClickGuardarEnIframe.clickGuardarEnIframe());
+            System.out.println("  [EditarTareaDeMonitoreo] ✓ Clic en 'Guardar' general realizado");
+        } else {
+            System.out.println("  [EditarTareaDeMonitoreo] ⚠ El modal no confirmó su cierre; se omite el 'Guardar' general para evitar el reload en falso");
+        }
+
         System.out.println("  [EditarTareaDeMonitoreo] ==================== ✓ FIN ====================\n");
+    }
+
+    /**
+     * Espera activamente a que el modal de edición desaparezca del DOM/visibilidad,
+     * en vez de un sleep fijo, para no disparar el guardado general antes de tiempo.
+     */
+    private boolean esperarCierreModal(WebDriver driver, Duration timeout) {
+        try {
+            new WebDriverWait(driver, timeout).until(
+                    ExpectedConditions.invisibilityOfElementLocated(TareasDeMonitoreoPage.MODAL_EDICION));
+            return true;
+        } catch (Exception e) {
+            System.out.println("  [EditarTareaDeMonitoreo] ⚠ Timeout esperando cierre del modal: " + e.getMessage());
+            return false;
+        }
     }
 
     private void entrarAlIframe(WebDriver driver, WebDriverWait wait) {
@@ -135,61 +161,143 @@ public class EditarTareaDeMonitoreo implements Task {
         }
     }
 
+    private static final String[][] DROPDOWNS_EDITGRID = {
+            {"#custom-select-ehshd4", "Monitoreo con"},
+            {"#custom-select-ecxhl4l", "Momento del servicio"},
+            {"#custom-select-esi7kdj", "Respuesta a monitoreo"},
+            {"#custom-select-esfdm2m", "Se generó queja"}
+    };
+
     private void crearFilaEditGridAleatorio(WebDriver driver, WebDriverWait wait) {
-        try {
-            // Clic en "Crear" del editGrid
-            WebElement btnCrearFila = wait.until(ExpectedConditions.elementToBeClickable(
-                    TareasDeMonitoreoPage.BTN_CREAR_FILA_EDITGRID));
-            btnCrearFila.click();
-            System.out.println("  [EditarTareaDeMonitoreo] ✓ Dialog para crear fila abierto");
-            sleep(1500);
+        System.out.println("  [EditarTareaDeMonitoreo] ---- INICIO editGrid: crear fila ----");
 
-            // Seleccionar opciones aleatorias en los 4 dropdowns
-            seleccionarDropdownAleatorio(driver, "#custom-select-ehshd4", "Monitoreo con");
-            sleep(400);
-            seleccionarDropdownAleatorio(driver, "#custom-select-ecxhl4l", "Momento del servicio");
-            sleep(400);
-            seleccionarDropdownAleatorio(driver, "#custom-select-esi7kdj", "Respuesta a monitoreo");
-            sleep(400);
-            seleccionarDropdownAleatorio(driver, "#custom-select-esfdm2m", "Se generó queja");
-            sleep(400);
+        int intentos = 0;
+        boolean guardadoSinErrores = false;
 
-            // Llenar observaciones con texto simple
-            List<WebElement> textareas = driver.findElements(By.cssSelector(".formio-dialog-content textarea"));
-            if (textareas.size() >= 2) {
-                textareas.get(0).sendKeys("Observación del asesor - editada automáticamente");
-                textareas.get(1).sendKeys("Observación del proveedor - editada automáticamente");
-                System.out.println("  [EditarTareaDeMonitoreo] ✓ Observaciones llenadas");
+        while (intentos < 2 && !guardadoSinErrores) {
+            intentos++;
+            System.out.println("  [EditarTareaDeMonitoreo] editGrid intento " + intentos + "/2");
+
+            try {
+                if (intentos == 1) {
+                    cerrarDropdownsAbiertos(driver);
+                    System.out.println("  [EditarTareaDeMonitoreo] Buscando botón 'Crear' del editGrid...");
+                    WebElement btnCrearFila = wait.until(ExpectedConditions.elementToBeClickable(
+                            TareasDeMonitoreoPage.BTN_CREAR_FILA_EDITGRID));
+                    System.out.println("  [EditarTareaDeMonitoreo] ✓ Botón 'Crear' encontrado, clic...");
+                    btnCrearFila.click();
+                    sleep(1500);
+                    boolean dialogAbierto = !driver.findElements(TareasDeMonitoreoPage.DIALOG_CONTENIDO).isEmpty();
+                    System.out.println("  [EditarTareaDeMonitoreo] ¿Dialog de fila abierto? " + dialogAbierto);
+                }
+
+                for (String[] dd : DROPDOWNS_EDITGRID) {
+                    seleccionarOpcionCustomDropdown(driver, wait, dd[0], dd[1]);
+                    sleep(400);
+                }
+
+                System.out.println("  [EditarTareaDeMonitoreo] --- Verificación de dropdowns tras selección ---");
+                for (String[] dd : DROPDOWNS_EDITGRID) {
+                    String textoActual = leerTextoControl(driver, dd[0]);
+                    System.out.println("  [EditarTareaDeMonitoreo]   " + dd[1] + " => \"" + textoActual + "\"");
+                }
+
+                // Llenar observaciones con texto simple
+                List<WebElement> textareas = driver.findElements(By.cssSelector(".formio-dialog-content textarea"));
+                System.out.println("  [EditarTareaDeMonitoreo] Textareas encontradas en dialog: " + textareas.size());
+                if (textareas.size() >= 2) {
+                    textareas.get(0).sendKeys("Observación del asesor - editada automáticamente");
+                    textareas.get(1).sendKeys("Observación del proveedor - editada automáticamente");
+                    System.out.println("  [EditarTareaDeMonitoreo] ✓ Observaciones llenadas");
+                } else {
+                    System.out.println("  [EditarTareaDeMonitoreo] ⚠ No se encontraron las 2 textareas esperadas");
+                }
+
+                sleep(500);
+
+                System.out.println("  [EditarTareaDeMonitoreo] Buscando botón 'Guardar' del dialog...");
+                WebElement btnGuardarFila = wait.until(ExpectedConditions.elementToBeClickable(
+                        By.xpath("//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]")));
+                btnGuardarFila.click();
+                System.out.println("  [EditarTareaDeMonitoreo] ✓ Clic en 'Guardar' del dialog");
+                sleep(1000);
+
+                List<WebElement> banners = driver.findElements(
+                        By.xpath("//*[contains(text(), 'Por favor corrige')]"));
+                if (!banners.isEmpty()) {
+                    List<WebElement> erroresLi = driver.findElements(
+                            By.xpath("//*[contains(text(), 'Por favor corrige')]/following::li"));
+                    System.out.println("  [EditarTareaDeMonitoreo] ⚠ Banner de validación detectado tras guardar. Campos con error:");
+                    for (WebElement li : erroresLi) {
+                        System.out.println("  [EditarTareaDeMonitoreo]     - " + li.getText());
+                    }
+                    if (intentos < 2) {
+                        System.out.println("  [EditarTareaDeMonitoreo] Reintentando llenar el dialog...");
+                        sleep(800);
+                        continue;
+                    } else {
+                        System.out.println("  [EditarTareaDeMonitoreo] ✗ Se agotaron los reintentos, el editGrid pudo quedar sin guardar correctamente");
+                    }
+                } else {
+                    guardadoSinErrores = true;
+                    System.out.println("  [EditarTareaDeMonitoreo] ✓ Fila en editGrid creada y guardada sin errores de validación");
+                }
+
+            } catch (Exception e) {
+                System.out.println("  [EditarTareaDeMonitoreo] ⚠ Error creando fila editGrid (intento " + intentos + "): " + e.getMessage());
             }
+        }
 
-            sleep(500);
+        System.out.println("  [EditarTareaDeMonitoreo] ---- FIN editGrid: crear fila (éxito=" + guardadoSinErrores + ") ----");
+    }
 
-            // Guardar fila (botón dentro del dialog)
-            WebElement btnGuardarFila = wait.until(ExpectedConditions.elementToBeClickable(
-                    By.xpath("//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]")));
-            btnGuardarFila.click();
-            System.out.println("  [EditarTareaDeMonitoreo] ✓ Fila en editGrid creada y guardada");
-            sleep(1000);
+    /**
+     * Selecciona una opción VÁLIDA en un "custom-select" con buscador, reutilizando la misma
+     * utilidad ya probada para Departamento/Municipio en creación de casos
+     * (OneScriptDynamicElements.selectFirstOptionOfControl).
+     */
+    private void seleccionarOpcionCustomDropdown(WebDriver driver, WebDriverWait wait, String selectorContenedor, String etiqueta) {
+        System.out.println("  [EditarTareaDeMonitoreo] >> Dropdown '" + etiqueta + "' (" + selectorContenedor + ")");
+        try {
+            System.out.println("  [EditarTareaDeMonitoreo]    Buscando control .custom-dropdown-control...");
+            WebElement control = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.cssSelector(selectorContenedor + " .custom-dropdown-control")));
+            System.out.println("  [EditarTareaDeMonitoreo]    ✓ Control encontrado, texto actual: \"" + control.getText() + "\"");
 
+            String seleccionado = OneScriptDynamicElements.selectFirstOptionOfControl(driver, control);
+            sleep(300);
+
+            String textoFinal = leerTextoControl(driver, selectorContenedor);
+            System.out.println("  [EditarTareaDeMonitoreo]    Opción elegida: \"" + seleccionado + "\" | control ahora muestra: \"" + textoFinal + "\"");
+            if (textoFinal.equalsIgnoreCase("Elige una opción") || textoFinal.contains("CONTROL_NO_ENCONTRADO")) {
+                System.out.println("  [EditarTareaDeMonitoreo]    ✗ ADVERTENCIA: tras el clic el control sigue mostrando \"" + textoFinal + "\" - la selección NO se aplicó");
+            } else {
+                System.out.println("  [EditarTareaDeMonitoreo]    ✓ " + etiqueta + " seleccionado y confirmado: \"" + textoFinal + "\"");
+            }
         } catch (Exception e) {
-            System.out.println("  [EditarTareaDeMonitoreo] ⚠ Error creando fila editGrid: " + e.getMessage());
+            System.out.println("  [EditarTareaDeMonitoreo]    ✗ Error en dropdown '" + etiqueta + "': " + e.getMessage());
         }
     }
 
-    private void seleccionarDropdownAleatorio(WebDriver driver, String selectorDropdown, String etiqueta) {
+    private void cerrarDropdownsAbiertos(WebDriver driver) {
         try {
-            WebElement dropdown = driver.findElement(By.cssSelector(selectorDropdown));
-            dropdown.click();
+            ((JavascriptExecutor) driver).executeScript(
+                    "document.body.click();"
+                            + "document.querySelectorAll('ul.custom-dropdown-list').forEach(ul => ul.style.display = 'none');");
             sleep(300);
+        } catch (Exception ignored) {
+        }
+    }
 
-            List<WebElement> opciones = driver.findElements(By.cssSelector(selectorDropdown + " .custom-option"));
-            if (!opciones.isEmpty()) {
-                Random r = new Random();
-                opciones.get(r.nextInt(opciones.size())).click();
-                System.out.println("  [EditarTareaDeMonitoreo] ✓ " + etiqueta + " seleccionado aleatoriamente");
-            }
+    private String leerTextoControl(WebDriver driver, String selectorContenedor) {
+        try {
+            Object texto = ((JavascriptExecutor) driver).executeScript(
+                    "const el = document.querySelector(arguments[0] + ' .custom-dropdown-control');"
+                            + "return el ? el.textContent.trim() : 'CONTROL_NO_ENCONTRADO';",
+                    selectorContenedor);
+            return texto != null ? texto.toString() : "NULL";
         } catch (Exception e) {
-            System.out.println("  [EditarTareaDeMonitoreo] ⚠ Error en dropdown '" + etiqueta + "': " + e.getMessage());
+            return "ERROR: " + e.getMessage();
         }
     }
 

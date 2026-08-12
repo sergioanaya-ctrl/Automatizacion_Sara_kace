@@ -79,9 +79,16 @@ public class TareasDeMonitoreoPage {
             "//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]");
 
     // ===== PANEL: HABILITAR FORMULARIO =====
+    // Hay DOS acciones distintas de "habilitar": 1) expandir el panel colapsable (PANEL_HEADER_HABILITAR),
+    // 2) el botón que realmente habilita los campos del formulario (BTN_HABILITAR_FORMULARIO).
     public static final By PANEL_HABILITAR_FORMULARIO = By.cssSelector(".formio-component-habilitar_tarea_monitoreo_panel");
-    public static final By BTN_HABILITAR_FORMULARIO = By.xpath(
-            "//button[contains(text(), 'Habilitar Formulario')]");
+    public static final By PANEL_HEADER_HABILITAR = By.xpath(
+            "//span[contains(@class,'card-title')][contains(., 'Habilitar formulario de la tarea de monitoreo')]");
+    // Selector por atributo name (exacto y estable) en vez de texto, ya que el botón tiene un <span> interno.
+    public static final By BTN_HABILITAR_FORMULARIO = By.cssSelector(
+            "button[name=\"data[habilitar_tarea_monitoreo]\"]");
+    public static final By BTN_HABILITAR_FORMULARIO_FALLBACK = By.xpath(
+            "//button[contains(., 'Habilitar Formulario')]");
 
     // ===== FORMULARIO DE TAREA (después de habilitar) =====
     public static final By DROPDOWN_NOMBRE_TAREA = By.id("custom-select-e2cy7mj");
