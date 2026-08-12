@@ -110,10 +110,19 @@ public class TareasDeMonitoreoPage {
             "//label[contains(text(), 'Observación Proveedor')]/..//textarea");
 
     // ===== BOTONES PRINCIPALES DEL MODAL =====
+    // IMPORTANTE: ambos selectores están ACOTADOS al modal "Crear Subcaso" (ancestro de
+    // #subcaseModalTitle). El fallback anterior (`//button[contains(text(),'Guardar') and
+    // contains(@class,'btn-primary')]`) era demasiado genérico: podía coincidir con el botón
+    // "Guardar" general flotante (name="data[kaceCustomSubmit]") en vez del botón del modal,
+    // provocando que se guardara el formulario general ANTES de guardar la tarea del modal,
+    // dejando la tarea sin persistir.
     public static final By BTN_GUARDAR_MODAL = By.xpath(
-            "//div[@class='modal-footer']//button[contains(text(), 'Guardar')]");
+            "//div[@id='subcaseModalTitle']/ancestor::div[contains(@class,'modal-content')]"
+                    + "//div[@class='modal-footer']//button[contains(text(), 'Guardar')]");
     public static final By BTN_GUARDAR_MODAL_FALLBACK = By.xpath(
-            "//button[contains(text(), 'Guardar') and contains(@class, 'btn-primary')]");
+            "//div[@id='subcaseModalTitle']/ancestor::div[contains(@class,'modal-content')]"
+                    + "//button[contains(text(), 'Guardar') and contains(@class, 'btn-primary')"
+                    + " and not(contains(@name, 'kaceCustomSubmit'))]");
     public static final By BTN_CANCELAR_MODAL = By.xpath(
             "//div[@class='modal-footer']//button[contains(text(), 'Cancelar')]");
 

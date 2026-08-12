@@ -74,17 +74,32 @@ public class DiligenciarProveedorGestion implements Task {
         int intentosGlobales = 0;
         boolean proveedorConfirmado = false;
 
-        while (intentosGlobales < 2 && !proveedorConfirmado) {
+        int maxIntentosGlobales = 3;
+        while (intentosGlobales < maxIntentosGlobales && !proveedorConfirmado) {
             intentosGlobales++;
-            System.out.println("  [DiligenciarProveedorGestion] ==== Intento global " + intentosGlobales + " de diligenciar proveedor ====");
-            diligenciarUnaVez(actor);
+            System.out.println("  [DiligenciarProveedorGestion] ==== Intento global " + intentosGlobales + "/" + maxIntentosGlobales + " de diligenciar proveedor ====");
+
+            // CRÍTICO: diligenciarUnaVez puede lanzar excepción (p. ej. si el modal de proveedor
+            // no terminó de renderizar y algún dropdown no existe). Antes esa excepción escapaba
+            // del bucle y abortaba todo el intento global, sin darle a este retry la oportunidad
+            // de recargar la página y empezar de nuevo desde cero.
+            try {
+                diligenciarUnaVez(actor);
+            } catch (Exception e) {
+                System.out.println("  [DiligenciarProveedorGestion] ✗ Excepción en intento global " + intentosGlobales
+                        + ": " + e.getMessage() + (intentosGlobales < maxIntentosGlobales ? " - reintentando desde cero..." : " - sin más intentos."));
+                if (intentosGlobales >= maxIntentosGlobales) {
+                    throw new RuntimeException("Falló diligenciar el proveedor después de " + intentosGlobales + " intentos globales.", e);
+                }
+                continue;
+            }
 
             WebDriver driverCheck = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
             proveedorConfirmado = validarProveedorAsignado(driverCheck);
 
             if (!proveedorConfirmado) {
                 System.out.println("  [DiligenciarProveedorGestion] ⚠ No se detectó proveedor asignado en el editGrid tras guardar. "
-                        + (intentosGlobales < 2 ? "Reintentando..." : "Se agotaron los intentos."));
+                        + (intentosGlobales < maxIntentosGlobales ? "Reintentando..." : "Se agotaron los intentos."));
             } else {
                 System.out.println("  [DiligenciarProveedorGestion] ✓ Proveedor confirmado en editGrid");
             }
@@ -229,11 +244,12 @@ public class DiligenciarProveedorGestion implements Task {
 
         System.out.println("  [DiligenciarProveedorGestion] Clic en Crear para abrir modal de proveedor...");
         int intentosClic = 0;
+        int maxIntentosClic = 3;
         boolean modalListOK = false;
 
-        while (intentosClic < 2 && !modalListOK) {
+        while (intentosClic < maxIntentosClic && !modalListOK) {
             intentosClic++;
-            System.out.println("  [DiligenciarProveedorGestion] Intento " + intentosClic + " de abrir modal de proveedor...");
+            System.out.println("  [DiligenciarProveedorGestion] Intento " + intentosClic + "/" + maxIntentosClic + " de abrir modal de proveedor...");
 
             // CRÍTICO: después de recargar página, usar búsqueda dinámica, no WebElement capturado antes
             boolean clickExitoso = false;
@@ -266,7 +282,7 @@ public class DiligenciarProveedorGestion implements Task {
             if (selectoresLisosOTimeouts) {
                 modalListOK = true;
                 System.out.println("  [DiligenciarProveedorGestion] ✓ Modal lista en intento " + intentosClic);
-            } else if (intentosClic < 2) {
+            } else if (intentosClic < maxIntentosClic) {
                 // Modal abierta pero no renderizó bien - RECARGAR PÁGINA
                 System.out.println("  [DiligenciarProveedorGestion] ⚠ Modal vacía en intento " + intentosClic + ", recargar página para reintentar...");
                 driver.switchTo().defaultContent();
@@ -302,7 +318,13 @@ public class DiligenciarProveedorGestion implements Task {
         }
 
         if (!modalListOK) {
-            System.out.println("  [DiligenciarProveedorGestion] ⚠ Modal no cargó bien después de " + intentosClic + " intentos, continuando de todas formas...");
+            // Antes se "continuaba de todas formas", lo que garantizaba un NoSuchElementException
+            // más abajo al intentar seleccionar un dropdown que nunca renderizó, y esa excepción
+            // escapaba sin darle al intento global la chance de recargar la página desde cero.
+            // Se lanza aquí explícitamente para que el llamador (performAs) lo capture y reintente
+            // todo el flujo de diligenciarUnaVez con una página fresca.
+            throw new RuntimeException("El modal de proveedor no terminó de renderizar ('nombre'/'respuesta_de_proveedor' "
+                    + "no aparecieron) después de " + intentosClic + " intentos de apertura+recarga.");
         }
 
         OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-respuesta_de_proveedor", servicio);

@@ -25,12 +25,14 @@ public final class OneScriptDynamicElements {
         while (System.currentTimeMillis() - startTime < timeoutMs) {
             try {
                 Object result = ((JavascriptExecutor) driver).executeScript(
-                        "const normalize = text => text.replace(/\\s+/g, ' ').trim().toLowerCase();"
-                                + "const renderizado = el => !!el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;"
+                        "const renderizado = el => !!el && el.offsetParent !== null && el.getBoundingClientRect().width > 0;"
                                 + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
                                 + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
-                                + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => renderizado(b) && normalize(b.textContent).includes('guardar'));"
-                                + "const selectoresEspecificos = (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn);"
+                                // Se EXIGEN ambos controles renderizados. Antes bastaba "nombre" + un botón "Guardar"
+                                // visible para dar el modal por lista, pero eso daba falsos positivos: el botón
+                                // "Guardar" pertenece al modal padre y puede estar visible aunque "respuesta_de_proveedor"
+                                // no haya terminado de renderizar, dejando ese dropdown sin controlar más adelante.
+                                + "const selectoresEspecificos = renderizado(nombre) && renderizado(respuesta);"
                                 + "return selectoresEspecificos || null;"
                 );
 
