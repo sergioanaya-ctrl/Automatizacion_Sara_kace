@@ -225,7 +225,26 @@ public class DiligenciarProveedorGestion implements Task {
                 driver.switchTo().defaultContent();
                 WebElement iframe = driver.findElement(By.id("form_onescript_iframe"));
                 driver.switchTo().frame(iframe);
-                System.out.println("  [DiligenciarProveedorGestion] De vuelta en el iframe, reiniciando flujo de proveedor...");
+                System.out.println("  [DiligenciarProveedorGestion] De vuelta en el iframe...");
+
+                // CRÍTICO: después de recargar, BUSCAR Y ABRIR LA PESTAÑA "Gestión de proveedores" nuevamente
+                System.out.println("  [DiligenciarProveedorGestion] Buscando y abriendo pestaña 'Gestión de proveedores'...");
+                try {
+                    Object tabResult = ((JavascriptExecutor) driver).executeScript(
+                            "const tabLink = document.querySelector('a[href=\"#gestionDeProveedores\"], a[href*=\"gestion\"]');"
+                                    + "if (tabLink && tabLink.offsetParent !== null) { tabLink.click(); return true; }"
+                                    + "return false;"
+                    );
+                    if (tabResult instanceof Boolean && (Boolean) tabResult) {
+                        System.out.println("  [DiligenciarProveedorGestion] ✓ Pestaña 'Gestión de proveedores' abierta");
+                        sleep(1500);
+                    } else {
+                        System.out.println("  [DiligenciarProveedorGestion] ⚠ No se pudo abrir la pestaña dinámicamente");
+                    }
+                } catch (Exception e) {
+                    System.out.println("  [DiligenciarProveedorGestion] ⚠ Error abriendo pestaña: " + e.getMessage());
+                }
+                System.out.println("  [DiligenciarProveedorGestion] Flujo de proveedor reiniciado...");
             }
         }
 
