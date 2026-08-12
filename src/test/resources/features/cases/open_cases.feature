@@ -111,5 +111,6 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And cambia a estado "Programado"
     And cambia a estado "Aceptado y en desplazamiento"
     And se han creado tareas de monitoreo automáticamente
+    And creamos una tarea de monitoreo a estado "Cerrada"
     And cambia a estado "Concluido"
     And cambia a estado "Finalizado"
