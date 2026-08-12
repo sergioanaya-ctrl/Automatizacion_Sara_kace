@@ -4,6 +4,7 @@ import com.sara.automation.interactions.estadoscaso.CambiarEstadoCaso;
 import com.sara.automation.tasks.BuscarExpediente;
 import com.sara.automation.tasks.CrearTareaDeMonitoreo;
 import com.sara.automation.tasks.EditarTareaDeMonitoreo;
+import com.sara.automation.tasks.ValidarMonitoreoProveedor;
 import com.sara.automation.tasks.ValidarTareasDeMonitoreoCreadas;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.CrearCasoReclamaciones;
@@ -284,6 +285,11 @@ public class CasesStepDefinitions {
     @When("editamos la primera tarea de monitoreo con estado aleatorio")
     public void editamosPrimeraTareaDeMonitoreoAleatorio() {
         actor.attemptsTo(EditarTareaDeMonitoreo.conEstadoAleatorio());
+    }
+
+    @Then("validamos el registro en monitoreo proveedor")
+    public void validamosRegistroEnMonitoreoProveedor() {
+        actor.attemptsTo(ValidarMonitoreoProveedor.ahora());
     }
 
     @When("cerramos sesion del usuario")
