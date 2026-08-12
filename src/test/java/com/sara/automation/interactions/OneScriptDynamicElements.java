@@ -22,7 +22,13 @@ public final class OneScriptDynamicElements {
                             + "const nombre = document.querySelector('#custom-select-e75nu5o .custom-dropdown-control, div.formio-component-custom-select.formio-component-nombre .custom-dropdown-control');"
                             + "const respuesta = document.querySelector('div.formio-component-custom-select.formio-component-respuesta_de_proveedor .custom-dropdown-control');"
                             + "const saveBtn = Array.from(document.querySelectorAll('button')).find(b => renderizado(b) && normalize(b.textContent).includes('guardar'));"
-                            + "return (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn) || null;"
+                            + "const customDropdowns = Array.from(document.querySelectorAll('.custom-dropdown-control')).filter(el => renderizado(el));"
+                            + "const formFields = Array.from(document.querySelectorAll('.form-control, .custom-dropdown-control')).filter(el => renderizado(el));"
+                            + "const isEnabledPrimary = (renderizado(nombre) && renderizado(respuesta)) || (renderizado(nombre) && saveBtn);"
+                            + "const isEnabledFallback = (customDropdowns.length >= 2 && saveBtn) || (formFields.length >= 3);"
+                            + "const result = isEnabledPrimary || isEnabledFallback;"
+                            + "if (result) { console.log('[waitForProveedorSection] ✓ Sección ya habilitada, detectada sin espera'); }"
+                            + "return result || null;"
             );
             return found != null;
         });
