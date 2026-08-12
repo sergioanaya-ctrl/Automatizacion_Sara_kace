@@ -91,6 +91,7 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio |
       | PROVEEDOR PRUEBA | TOMA SERVICIO |
+       And cambia a estado "Programado"
     And cambia a estado "Aceptado y en desplazamiento"
     And se han creado tareas de monitoreo automáticamente
     And editamos la primera tarea de monitoreo a estado "Cerrada"

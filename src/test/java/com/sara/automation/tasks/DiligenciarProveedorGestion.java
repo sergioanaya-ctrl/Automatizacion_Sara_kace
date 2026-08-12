@@ -182,11 +182,29 @@ public class DiligenciarProveedorGestion implements Task {
             intentosClic++;
             System.out.println("  [DiligenciarProveedorGestion] Intento " + intentosClic + " de abrir modal de proveedor...");
 
+            // CRÍTICO: después de recargar página, usar búsqueda dinámica, no WebElement capturado antes
+            boolean clickExitoso = false;
             try {
                 OneScriptDynamicElements.clickVisibleButtonByText(driver, "Crear");
+                clickExitoso = true;
             } catch (Exception e) {
-                System.out.println("  [DiligenciarProveedorGestion] Fallback a locator de Crear Proveedor");
-                actor.attemptsTo(Click.on(ProveedorPage.BOTON_CREAR_PROVEEDOR));
+                System.out.println("  [DiligenciarProveedorGestion] clickVisibleButtonByText falló, intentando búsqueda dinámica...");
+                try {
+                    // Búsqueda dinámica del botón después de recarga
+                    Object btnResult = ((JavascriptExecutor) driver).executeScript(
+                            "const botones = Array.from(document.querySelectorAll('button'));"
+                                    + "const renderizado = el => !!el && el.offsetParent !== null;"
+                                    + "const btn = botones.find(b => renderizado(b) && b.textContent.trim().toLowerCase().includes('crear') && (b.getAttribute('ref') || '').includes('gestion'));"
+                                    + "if (btn) { btn.click(); return true; }"
+                                    + "return false;"
+                    );
+                    if (btnResult instanceof Boolean && (Boolean) btnResult) {
+                        clickExitoso = true;
+                        System.out.println("  [DiligenciarProveedorGestion] ✓ Clic dinámico exitoso");
+                    }
+                } catch (Exception e2) {
+                    System.out.println("  [DiligenciarProveedorGestion] ⚠ Ambos métodos de clic fallaron: " + e2.getMessage());
+                }
             }
 
             // Esperar a que se carguen los selectores
