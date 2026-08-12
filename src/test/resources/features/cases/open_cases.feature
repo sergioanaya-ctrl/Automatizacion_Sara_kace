@@ -57,3 +57,59 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And se han creado tareas de monitoreo automáticamente
     And cambia a estado "Concluido"
     And cambia a estado "Finalizado"
+
+  @batch4
+  Scenario: Alt 1 - Flujo con Monitoreo primero (antes de Finalización y CNM)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PROVEEDOR PRUEBA | TOMA SERVICIO |
+    And creamos una novedad
+    And cambia a estado "Programado"
+    And cambia a estado "Aceptado y en desplazamiento"
+    And se han creado tareas de monitoreo automáticamente
+    And diligenciamos la finalizacion
+    And diligenciamos la documentacion cnm
+    And cambia a estado "Concluido"
+    And cambia a estado "Finalizado"
+
+  @batch5
+  Scenario: Alt 2 - Crear tarea de monitoreo y editarla a estado Cerrada
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PROVEEDOR PRUEBA | TOMA SERVICIO |
+    And cambia a estado "Aceptado y en desplazamiento"
+    And se han creado tareas de monitoreo automáticamente
+    And editamos la primera tarea de monitoreo a estado "Cerrada"
+    And cambia a estado "Concluido"
+
+  @batch6
+  Scenario: Alt 3 - Flujo minimalista (solo Estados y Monitoreo, sin otros submódulos)
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio |
+      | ANTIOQUIA | MEDELLIN | NO | NO | AUTOS | GRUA |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio |
+      | PROVEEDOR PRUEBA | TOMA SERVICIO |
+    And cambia a estado "Programado"
+    And cambia a estado "Aceptado y en desplazamiento"
+    And se han creado tareas de monitoreo automáticamente
+    And cambia a estado "Concluido"
+    And cambia a estado "Finalizado"

@@ -2,6 +2,7 @@ package com.sara.automation.stepdefinitions;
 
 import com.sara.automation.interactions.estadoscaso.CambiarEstadoCaso;
 import com.sara.automation.tasks.BuscarExpediente;
+import com.sara.automation.tasks.EditarTareaDeMonitoreo;
 import com.sara.automation.tasks.ValidarTareasDeMonitoreoCreadas;
 import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.CrearCasoReclamaciones;
@@ -260,6 +261,13 @@ public class CasesStepDefinitions {
         // Las tareas se crean automáticamente en el backend tras cambios de estado
         // A veces se crean 3, a veces más; solo validamos que exista al menos una
         actor.attemptsTo(ValidarTareasDeMonitoreoCreadas.ahora());
+    }
+
+    @When("editamos la primera tarea de monitoreo a estado {string}")
+    public void editamosPrimeraTareaDeMonitoreo(String nuevoEstado) {
+        // Edita la primera tarea de monitoreo existente: abre el formulario,
+        // cambia el estado (Cerrada, Cancelada, etc.) y guarda
+        actor.attemptsTo(EditarTareaDeMonitoreo.aEstado(nuevoEstado));
     }
 
     @When("cerramos sesion del usuario")

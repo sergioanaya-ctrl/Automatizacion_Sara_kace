@@ -1,5 +1,6 @@
 package com.sara.automation.tasks;
 
+import com.sara.automation.ui.TareasDeMonitoreoPage;
 import com.sara.automation.utils.ResilientFormActions;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
@@ -30,11 +31,10 @@ import static net.serenitybdd.screenplay.Tasks.instrumented;
  *   3. Espera a que la tabla se cargue
  *   4. Verifica que tbody tenga al menos 1 fila (no esté vacía)
  *   5. Si falla: AssertionError con mensaje claro
+ *
+ * Selectores centralizados en: TareasDeMonitoreoPage
  */
 public class ValidarTareasDeMonitoreoCreadas implements Task {
-
-    private static final By TAB_TAREAS = By.cssSelector("a[href='#tareasDeMonitoreo']");
-    private static final By TABLA_TAREAS = By.cssSelector(".data-table__table tbody");
 
     public static Performable ahora() {
         return instrumented(ValidarTareasDeMonitoreoCreadas.class);
@@ -52,25 +52,25 @@ public class ValidarTareasDeMonitoreoCreadas implements Task {
         entrarAlIframe(driver, wait);
 
         // 2. Abrir pestaña "Tareas de monitoreo"
-        ResilientFormActions.clickConReintentoStaleSafe(driver, TAB_TAREAS, TAB_TAREAS, 20, 3);
+        ResilientFormActions.clickConReintentoStaleSafe(driver, TareasDeMonitoreoPage.TAB_TAREAS, TareasDeMonitoreoPage.TAB_TAREAS, 20, 3);
         System.out.println("  [ValidarTareasDeMonitoreoCreadas] ✓ Pestaña 'Tareas de monitoreo' abierta");
         sleep(1000); // tabla puede tardar en renderizar
 
         // 3. Esperar a que tabla se cargue
         wait.until(d -> {
-            List<WebElement> tbody = d.findElements(TABLA_TAREAS);
+            List<WebElement> tbody = d.findElements(TareasDeMonitoreoPage.TABLA_TAREAS);
             return !tbody.isEmpty() && tbody.get(0).isDisplayed();
         });
         System.out.println("  [ValidarTareasDeMonitoreoCreadas] ✓ Tabla cargada");
 
         // 4. Validar que hay al menos 1 fila
-        List<WebElement> filas = driver.findElements(By.cssSelector(".data-table__table tbody tr"));
+        List<WebElement> filas = driver.findElements(TareasDeMonitoreoPage.FILAS_TABLA);
         if (filas.isEmpty()) {
             throw new AssertionError("No se encontraron tareas de monitoreo creadas. La tabla está vacía.");
         }
 
         // Validar que no sea el mensaje "No hay subcasos disponibles"
-        String textoTabla = driver.findElement(TABLA_TAREAS).getText();
+        String textoTabla = driver.findElement(TareasDeMonitoreoPage.TABLA_TAREAS).getText();
         if (textoTabla.contains("No hay") || textoTabla.contains("disponibles")) {
             throw new AssertionError("Tabla de tareas vacía: " + textoTabla);
         }
@@ -101,13 +101,13 @@ public class ValidarTareasDeMonitoreoCreadas implements Task {
     private void entrarAlIframe(WebDriver driver, WebDriverWait wait) {
         boolean encontrado = wait.until(d -> {
             d.switchTo().defaultContent();
-            if (!d.findElements(TAB_TAREAS).isEmpty()) {
+            if (!d.findElements(TareasDeMonitoreoPage.TAB_TAREAS).isEmpty()) {
                 return true;
             }
             for (WebElement frame : d.findElements(By.id("form_onescript_iframe"))) {
                 try {
                     d.switchTo().frame(frame);
-                    if (!d.findElements(TAB_TAREAS).isEmpty()) {
+                    if (!d.findElements(TareasDeMonitoreoPage.TAB_TAREAS).isEmpty()) {
                         return true;
                     }
                 } catch (Exception ignored) {
