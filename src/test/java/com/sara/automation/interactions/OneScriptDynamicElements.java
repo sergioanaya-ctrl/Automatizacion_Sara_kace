@@ -15,6 +15,10 @@ public final class OneScriptDynamicElements {
     }
 
     public static void waitForProveedorSection(WebDriver driver, Duration timeout) {
+        waitForProveedorSectionWithReturn(driver, timeout);
+    }
+
+    public static boolean waitForProveedorSectionWithReturn(WebDriver driver, Duration timeout) {
         long startTime = System.currentTimeMillis();
         long timeoutMs = timeout.toMillis();
 
@@ -33,7 +37,7 @@ public final class OneScriptDynamicElements {
                 if (result != null) {
                     System.out.println("[waitForProveedorSection] ✓ Selectores listos - modal completamente cargada");
                     sleep(200);
-                    return;
+                    return true; // ÉXITO
                 }
             } catch (Exception e) {
                 // Script falló, esperar siguiente iteración
@@ -42,10 +46,10 @@ public final class OneScriptDynamicElements {
             sleep(300);
         }
 
-        // Timeout completado: pero continuar de todas formas
-        // OneScript puede ser lento, así que después de esperar, asumimos que está listo
-        System.out.println("[waitForProveedorSection] ⚠ Timeout esperando selectores, pero la modal debería estar disponible (OneScript lento)");
+        // Timeout completado: retornar false para indicar que falló
+        System.out.println("[waitForProveedorSection] ⚠ Timeout esperando selectores (modal puede estar vacía)");
         sleep(200);
+        return false; // TIMEOUT
     }
 
     public static void clickVisibleButtonByText(WebDriver driver, String text) {

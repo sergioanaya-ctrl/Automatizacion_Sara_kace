@@ -175,14 +175,45 @@ public class DiligenciarProveedorGestion implements Task {
         }
 
         System.out.println("  [DiligenciarProveedorGestion] Clic en Crear para abrir modal de proveedor...");
-        try {
-            OneScriptDynamicElements.clickVisibleButtonByText(driver, "Crear");
-        } catch (Exception e) {
-            System.out.println("  [DiligenciarProveedorGestion] Fallback a locator de Crear Proveedor");
-            actor.attemptsTo(Click.on(ProveedorPage.BOTON_CREAR_PROVEEDOR));
+        int intentosClic = 0;
+        boolean modalListOK = false;
+
+        while (intentosClic < 2 && !modalListOK) {
+            intentosClic++;
+            System.out.println("  [DiligenciarProveedorGestion] Intento " + intentosClic + " de abrir modal de proveedor...");
+
+            try {
+                OneScriptDynamicElements.clickVisibleButtonByText(driver, "Crear");
+            } catch (Exception e) {
+                System.out.println("  [DiligenciarProveedorGestion] Fallback a locator de Crear Proveedor");
+                actor.attemptsTo(Click.on(ProveedorPage.BOTON_CREAR_PROVEEDOR));
+            }
+
+            // Esperar a que se carguen los selectores
+            boolean selectoresLisosOTimeouts = OneScriptDynamicElements.waitForProveedorSectionWithReturn(driver, Duration.ofSeconds(20));
+
+            if (selectoresLisosOTimeouts) {
+                modalListOK = true;
+                System.out.println("  [DiligenciarProveedorGestion] ✓ Modal lista en intento " + intentosClic);
+            } else if (intentosClic < 2) {
+                // Modal abierta pero no renderizó bien - RECARGAR PÁGINA
+                System.out.println("  [DiligenciarProveedorGestion] ⚠ Modal vacía en intento " + intentosClic + ", recargar página para reintentar...");
+                driver.switchTo().defaultContent();
+                driver.navigate().refresh();
+                System.out.println("  [DiligenciarProveedorGestion] Página recargada, esperando a que se estabilice...");
+                sleep(3000); // Dar tiempo a que la página recargue
+
+                // Volver a entrar al iframe
+                driver.switchTo().defaultContent();
+                WebElement iframe = driver.findElement(By.id("form_onescript_iframe"));
+                driver.switchTo().frame(iframe);
+                System.out.println("  [DiligenciarProveedorGestion] De vuelta en el iframe, reiniciando flujo de proveedor...");
+            }
         }
 
-        OneScriptDynamicElements.waitForProveedorSection(driver, Duration.ofSeconds(20));
+        if (!modalListOK) {
+            System.out.println("  [DiligenciarProveedorGestion] ⚠ Modal no cargó bien después de " + intentosClic + " intentos, continuando de todas formas...");
+        }
 
         OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-respuesta_de_proveedor", servicio);
         OneScriptDynamicElements.selectCustomDropdownByComponentClass(driver, "formio-component-nombre", nombreProveedor);
