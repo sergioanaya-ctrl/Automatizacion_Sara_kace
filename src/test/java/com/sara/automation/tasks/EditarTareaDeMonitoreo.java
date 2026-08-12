@@ -238,6 +238,37 @@ public class EditarTareaDeMonitoreo implements Task {
 
                 sleep(500);
 
+                // Verificar si "Se generó queja" tiene valor "SÍ", y si es así, llenar "Radicado de la queja"
+                try {
+                    List<WebElement> seGeneroQuejaControls = driver.findElements(
+                            By.cssSelector("div.custom-dropdown-control"));
+                    // Buscar el que muestre "SÍ" (generalmente el cuarto dropdown es "Se generó queja")
+                    boolean quejaEnSi = false;
+                    for (WebElement control : seGeneroQuejaControls) {
+                        String texto = control.getText().trim().toUpperCase();
+                        if (texto.equals("SÍ")) {
+                            quejaEnSi = true;
+                            break;
+                        }
+                    }
+
+                    if (quejaEnSi) {
+                        System.out.println("  [EditarTareaDeMonitoreo] ✓ 'Se generó queja' es SÍ, llenando 'Radicado de la queja'...");
+                        List<WebElement> radicadoInputs = driver.findElements(
+                                By.xpath("//input[contains(@name, 'radicado_de_la_queja')]"));
+                        if (!radicadoInputs.isEmpty()) {
+                            String radicado = "QUEJA-" + System.currentTimeMillis();
+                            radicadoInputs.get(0).clear();
+                            radicadoInputs.get(0).sendKeys(radicado);
+                            System.out.println("  [EditarTareaDeMonitoreo] ✓ Radicado llenado: " + radicado);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("  [EditarTareaDeMonitoreo] ⚠ Error verificando/llenando Radicado de la queja: " + e.getMessage());
+                }
+
+                sleep(500);
+
                 System.out.println("  [EditarTareaDeMonitoreo] Buscando botón 'Guardar' del dialog...");
                 WebElement btnGuardarFila = wait.until(ExpectedConditions.elementToBeClickable(
                         By.xpath("//div[contains(@class, 'formio-dialog-content')]//button[contains(text(), 'Guardar')]")));
@@ -277,7 +308,7 @@ public class EditarTareaDeMonitoreo implements Task {
     /**
      * Selecciona una opción VÁLIDA en un "custom-select" con buscador, reutilizando la misma
      * utilidad ya probada para Departamento/Municipio en creación de casos
-     * (OneScriptDynamicElements.selectFirstOptionOfControl).
+     * (OneScriptDynamicElements.selectRandomOptionOfControl).
      */
     private void seleccionarOpcionCustomDropdown(WebDriver driver, WebDriverWait wait, String selectorContenedor, String etiqueta) {
         System.out.println("  [EditarTareaDeMonitoreo] >> Dropdown '" + etiqueta + "' (" + selectorContenedor + ")");
@@ -287,7 +318,7 @@ public class EditarTareaDeMonitoreo implements Task {
                     By.cssSelector(selectorContenedor + " .custom-dropdown-control")));
             System.out.println("  [EditarTareaDeMonitoreo]    ✓ Control encontrado, texto actual: \"" + control.getText() + "\"");
 
-            String seleccionado = OneScriptDynamicElements.selectFirstOptionOfControl(driver, control);
+            String seleccionado = OneScriptDynamicElements.selectRandomOptionOfControl(driver, control);
             sleep(300);
 
             String textoFinal = leerTextoControl(driver, selectorContenedor);

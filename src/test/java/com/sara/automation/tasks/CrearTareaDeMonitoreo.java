@@ -396,8 +396,7 @@ public class CrearTareaDeMonitoreo implements Task {
     private static final String[][] DROPDOWNS_EDITGRID = {
             {"#custom-select-ehshd4", "Monitoreo con"},
             {"#custom-select-ecxhl4l", "Momento del servicio"},
-            {"#custom-select-esi7kdj", "Respuesta a monitoreo"},
-            {"#custom-select-esfdm2m", "Se generó queja"}
+            {"#custom-select-esi7kdj", "Respuesta a monitoreo"}
     };
 
     private void crearFilaEditGridAleatorio(WebDriver driver, WebDriverWait wait) {
@@ -426,11 +425,15 @@ public class CrearTareaDeMonitoreo implements Task {
                     System.out.println("  [CrearTareaDeMonitoreo] ¿Dialog de fila abierto? " + dialogAbierto);
                 }
 
-                // Seleccionar opciones aleatorias en los 4 dropdowns, con verificación posterior
+                // Seleccionar opciones aleatorias en los primeros 3 dropdowns
                 for (String[] dd : DROPDOWNS_EDITGRID) {
                     seleccionarOpcionCustomDropdown(driver, wait, dd[0], dd[1]);
                     sleep(400);
                 }
+
+                // "Se generó queja" siempre en "NO" para evitar campo obligatorio "Radicado de la queja"
+                seleccionarOpcionFija(driver, wait, "#custom-select-esfdm2m", "Se generó queja", "NO");
+                sleep(400);
 
                 // Log de verificación: leer el texto actual de cada control tras la selección
                 System.out.println("  [CrearTareaDeMonitoreo] --- Verificación de dropdowns tras selección ---");
@@ -438,6 +441,7 @@ public class CrearTareaDeMonitoreo implements Task {
                     String textoActual = leerTextoControl(driver, dd[0]);
                     System.out.println("  [CrearTareaDeMonitoreo]   " + dd[1] + " => \"" + textoActual + "\"");
                 }
+                System.out.println("  [CrearTareaDeMonitoreo]   Se generó queja => \"" + leerTextoControl(driver, "#custom-select-esfdm2m") + "\"");
 
                 // Llenar observaciones con texto simple
                 List<WebElement> textareas = driver.findElements(By.cssSelector(".formio-dialog-content textarea"));
@@ -449,6 +453,8 @@ public class CrearTareaDeMonitoreo implements Task {
                 } else {
                     System.out.println("  [CrearTareaDeMonitoreo] ⚠ No se encontraron las 2 textareas esperadas");
                 }
+
+                sleep(500);
 
                 sleep(500);
 
@@ -509,7 +515,7 @@ public class CrearTareaDeMonitoreo implements Task {
     /**
      * Selecciona una opción VÁLIDA (no vacía, no "sin resultados") en un "custom-select" con buscador,
      * reutilizando la misma utilidad ya probada para Departamento/Municipio en creación de casos
-     * (OneScriptDynamicElements.selectFirstOptionOfControl): abre el control con clic NATIVO (no JS,
+     * (OneScriptDynamicElements.selectRandomOptionOfControl): abre el control con clic NATIVO (no JS,
      * porque estos componentes solo cargan opciones de forma asíncrona ante eventos "trusted"), y
      * espera activamente a que aparezca al menos una opción real antes de elegirla.
      */
@@ -521,7 +527,7 @@ public class CrearTareaDeMonitoreo implements Task {
                     By.cssSelector(selectorContenedor + " .custom-dropdown-control")));
             System.out.println("  [CrearTareaDeMonitoreo]    ✓ Control encontrado, texto actual: \"" + control.getText() + "\"");
 
-            String seleccionado = OneScriptDynamicElements.selectFirstOptionOfControl(driver, control);
+            String seleccionado = OneScriptDynamicElements.selectRandomOptionOfControl(driver, control);
             sleep(300);
 
             String textoFinal = leerTextoControl(driver, selectorContenedor);
@@ -548,6 +554,28 @@ public class CrearTareaDeMonitoreo implements Task {
                             + "document.querySelectorAll('ul.custom-dropdown-list').forEach(ul => ul.style.display = 'none');");
             sleep(300);
         } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * Selecciona una opción específica por texto en un custom-select con buscador.
+     */
+    private void seleccionarOpcionFija(WebDriver driver, WebDriverWait wait, String selectorContenedor, String etiqueta, String textoOpcion) {
+        System.out.println("  [CrearTareaDeMonitoreo] >> Dropdown '" + etiqueta + "' => forzando \"" + textoOpcion + "\"");
+        try {
+            WebElement control = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.cssSelector(selectorContenedor + " .custom-dropdown-control")));
+            control.click();
+            sleep(400);
+            // Buscar la opción por texto exacto en la lista desplegada
+            WebElement opcion = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//ul[contains(@class,'custom-dropdown-list')]//li[normalize-space(text())='" + textoOpcion + "']")));
+            opcion.click();
+            sleep(300);
+            String textoFinal = leerTextoControl(driver, selectorContenedor);
+            System.out.println("  [CrearTareaDeMonitoreo]    ✓ " + etiqueta + " fijado a \"" + textoFinal + "\"");
+        } catch (Exception e) {
+            System.out.println("  [CrearTareaDeMonitoreo]    ✗ Error fijando '" + etiqueta + "' a \"" + textoOpcion + "\": " + e.getMessage());
         }
     }
 

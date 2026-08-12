@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public final class OneScriptDynamicElements {
 
@@ -193,6 +194,33 @@ public final class OneScriptDynamicElements {
         });
         String texto = primera.getText().trim();
         clickWithJs(driver, primera);
+        sleep(150);
+        return texto;
+    }
+
+    /**
+     * Igual que {@link #selectFirstOptionOfControl(WebDriver, WebElement)} (misma espera activa
+     * de opciones VÁLIDAS, descartando placeholders/"cargando"/"sin resultados"), pero elige una
+     * opción ALEATORIA entre las visibles en vez de siempre la primera. Útil para diligenciar
+     * campos con datos de prueba variados (p. ej. los dropdowns del editGrid de monitoreo).
+     */
+    @SuppressWarnings("unchecked")
+    public static String selectRandomOptionOfControl(WebDriver driver, WebElement control) {
+        clickWithJs(driver, control);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        List<WebElement> opciones = wait.until(d -> {
+            Object found = ((JavascriptExecutor) d).executeScript(
+                    "const malos = ['cargando','loading','no hay','sin resultados','no results','no se encontr','elige una','seleccion'];"
+                            + "const items = Array.from(document.querySelectorAll('ul.custom-dropdown-list li, div.custom-dropdown-item, div[role=\\\"option\\\"]'));"
+                            + "const visible = items.filter(el => el.offsetParent !== null && el.textContent.trim().length > 0"
+                            + "    && !malos.some(m => el.textContent.trim().toLowerCase().includes(m)));"
+                            + "return visible.length ? visible : null;");
+            List<WebElement> lista = found instanceof List ? (List<WebElement>) found : null;
+            return (lista != null && !lista.isEmpty()) ? lista : null;
+        });
+        WebElement elegida = opciones.get(new java.util.Random().nextInt(opciones.size()));
+        String texto = elegida.getText().trim();
+        clickWithJs(driver, elegida);
         sleep(150);
         return texto;
     }
