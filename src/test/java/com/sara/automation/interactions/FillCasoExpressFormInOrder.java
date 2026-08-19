@@ -59,24 +59,41 @@ public class FillCasoExpressFormInOrder implements Interaction {
     private final String gestor;
     private final String linea;
     private final String servicio;
+    // Datos personales del solicitante: si el feature los provee (no null/no vacíos) se usan
+    // tal cual; si no, se generan aleatorios como hasta ahora (comportamiento por defecto).
+    private final String nombreSolicitante;
+    private final String cedulaSolicitante;
+    private final String telefono1;
+    private final String placa;
     private String observacionFinal;
 
-    public FillCasoExpressFormInOrder(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
+    public FillCasoExpressFormInOrder(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio,
+                                       String nombreSolicitante, String cedulaSolicitante, String telefono1, String placa) {
         this.departamento = departamento;
         this.municipio = municipio;
         this.serviciosEspeciales = serviciosEspeciales;
         this.gestor = gestor;
         this.linea = linea;
         this.servicio = servicio;
+        this.nombreSolicitante = nombreSolicitante;
+        this.cedulaSolicitante = cedulaSolicitante;
+        this.telefono1 = telefono1;
+        this.placa = placa;
         this.observacionFinal = null;
     }
 
     public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
-        return instrumented(FillCasoExpressFormInOrder.class, departamento, municipio, serviciosEspeciales, gestor, linea, servicio);
+        return withManualLists(departamento, municipio, serviciosEspeciales, gestor, linea, servicio, null, null, null, null);
+    }
+
+    public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio,
+                                                String nombreSolicitante, String cedulaSolicitante, String telefono1, String placa) {
+        return instrumented(FillCasoExpressFormInOrder.class, departamento, municipio, serviciosEspeciales, gestor, linea, servicio,
+                nombreSolicitante, cedulaSolicitante, telefono1, placa);
     }
 
     public static Performable randomData() {
-        return instrumented(FillCasoExpressFormInOrder.class, null, null, null, null, null, null);
+        return instrumented(FillCasoExpressFormInOrder.class, null, null, null, null, null, null, null, null, null, null);
     }
 
     @Override
@@ -113,6 +130,10 @@ public class FillCasoExpressFormInOrder implements Interaction {
         guardarFormulario(actor);
     }
 
+    private boolean tieneValor(String valor) {
+        return valor != null && !valor.trim().isEmpty();
+    }
+
     private boolean tieneListasManuales() {
         return departamento != null && municipio != null && serviciosEspeciales != null
                 && gestor != null && linea != null && servicio != null;
@@ -122,11 +143,13 @@ public class FillCasoExpressFormInOrder implements Interaction {
         String numeroExpediente = generarNumeroExpediente15();
         // Guardamos el expediente generado para reutilizarlo más adelante (búsqueda tras re-login).
         ExpedienteContext.setExpediente(numeroExpediente);
-        String nombreSolicitante = generarNombreSolicitanteReal();
-        String cedulaSolicitante = randomDigitos(10);
-        String telefono1 = "3" + randomDigitos(9);
+        // TABLA MANDA: si el feature trae valor no vacío para estos campos, se usa tal cual;
+        // si no, se genera aleatorio como antes (compatibilidad con escenarios que no los pasan).
+        String nombreSolicitante = tieneValor(this.nombreSolicitante) ? this.nombreSolicitante.trim() : generarNombreSolicitanteReal();
+        String cedulaSolicitante = tieneValor(this.cedulaSolicitante) ? this.cedulaSolicitante.trim() : randomDigitos(10);
+        String telefono1 = tieneValor(this.telefono1) ? this.telefono1.trim() : "3" + randomDigitos(9);
         String telefono2 = "3" + randomDigitos(9);
-        String placa = generarPlacaColombiana();
+        String placa = tieneValor(this.placa) ? this.placa.trim() : generarPlacaColombiana();
 
         WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
         

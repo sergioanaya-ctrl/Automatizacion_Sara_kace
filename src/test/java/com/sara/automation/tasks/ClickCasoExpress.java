@@ -36,23 +36,32 @@ public class ClickCasoExpress implements Task {
     private final String gestor;
     private final String linea;
     private final String servicio;
+    // Datos personales del solicitante, opcionales desde el feature (null = generar aleatorio).
+    private final String nombreSolicitante;
+    private final String cedulaSolicitante;
+    private final String telefono1;
+    private final String placa;
 
     public ClickCasoExpress() {
-        this.departamento = null;
-        this.municipio = null;
-        this.serviciosEspeciales = null;
-        this.gestor = null;
-        this.linea = null;
-        this.servicio = null;
+        this(null, null, null, null, null, null, null, null, null, null);
     }
 
     public ClickCasoExpress(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
+        this(departamento, municipio, serviciosEspeciales, gestor, linea, servicio, null, null, null, null);
+    }
+
+    public ClickCasoExpress(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio,
+                             String nombreSolicitante, String cedulaSolicitante, String telefono1, String placa) {
         this.departamento = departamento;
         this.municipio = municipio;
         this.serviciosEspeciales = serviciosEspeciales;
         this.gestor = gestor;
         this.linea = linea;
         this.servicio = servicio;
+        this.nombreSolicitante = nombreSolicitante;
+        this.cedulaSolicitante = cedulaSolicitante;
+        this.telefono1 = telefono1;
+        this.placa = placa;
     }
 
     public static Performable now() {
@@ -61,6 +70,12 @@ public class ClickCasoExpress implements Task {
 
     public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
         return instrumented(ClickCasoExpress.class, departamento, municipio, serviciosEspeciales, gestor, linea, servicio);
+    }
+
+    public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio,
+                                                String nombreSolicitante, String cedulaSolicitante, String telefono1, String placa) {
+        return instrumented(ClickCasoExpress.class, departamento, municipio, serviciosEspeciales, gestor, linea, servicio,
+                nombreSolicitante, cedulaSolicitante, telefono1, placa);
     }
 
     @Override
@@ -90,7 +105,11 @@ public class ClickCasoExpress implements Task {
                     serviciosEspeciales,
                     gestor,
                     linea,
-                    servicio
+                    servicio,
+                    nombreSolicitante,
+                    cedulaSolicitante,
+                    telefono1,
+                    placa
             ));
         } else {
             actor.attemptsTo(FillCasoExpressFormInOrder.randomData());
