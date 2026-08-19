@@ -170,13 +170,25 @@ public class CasesStepDefinitions {
         List<Map<String, String>> rows = dataTable.asMaps(String.class, String.class);
         Map<String, String> row = rows.get(0);
 
+        // Datos personales del solicitante: OPCIONALES en el feature. Si la columna no está
+        // presente o viene vacía, se pasa null y FillCasoExpressFormInOrder genera un valor
+        // aleatorio como hasta ahora (no rompe los escenarios que no las incluyen).
+        String nombreSolicitante = valorOpcional(row, "nombre_solicitante");
+        String cedulaSolicitante = valorOpcional(row, "cedula_solicitante");
+        String telefono1 = valorOpcional(row, "telefono_1");
+        String placa = valorOpcional(row, "placa");
+
         actor.attemptsTo(ClickCasoExpress.withManualLists(
                 required(row, "departamento_solicita"),
                 required(row, "municipio_solicita"),
                 row.getOrDefault("servicios_especiales", ""),
                 required(row, "gestor_coordinacion"),
                 required(row, "linea"),
-                required(row, "servicio")
+                required(row, "servicio"),
+                nombreSolicitante,
+                cedulaSolicitante,
+                telefono1,
+                placa
         ));
     }
 
@@ -225,6 +237,11 @@ public class CasesStepDefinitions {
     public void diligenciamosLaDocumentacionCnm() {
         // Pestaña Documentación CNM -> Crear -> primera opción de cada dropdown + observación -> guardar.
         actor.attemptsTo(CrearRegistroEnTab.en("#documentacionCnm", "Documentación CNM"));
+    }
+
+    private String valorOpcional(Map<String, String> row, String key) {
+        String value = row.get(key);
+        return (value == null || value.trim().isEmpty()) ? null : value.trim();
     }
 
     private String required(Map<String, String> row, String key) {
