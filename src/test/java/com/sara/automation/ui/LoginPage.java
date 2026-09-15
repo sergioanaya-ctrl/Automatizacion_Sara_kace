@@ -7,7 +7,7 @@ public class LoginPage {
 
     // Generic locators for compatibility
     public static final Target USERNAME = Target.the("Campo de usuario")
-            .located(By.cssSelector("input[name='username'], input[id='username'], input[name='email'], input[type='email']"));
+            .located(By.cssSelector("input[name='username'], input[id='username'], input[name='email'], input[type='email'], [placeholder='Enter username']"));
 
     public static final Target PASSWORD = Target.the("Campo de contraseña")
             .located(By.cssSelector("input[name='password'], input[type='password']"));

@@ -104,8 +104,8 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And realiza login con credenciales
     And navega a agent
     And diligencia caso express completo desde feature
-      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio | nombre_solicitante       | cedula_solicitante | telefono_1 | placa  |
-      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS | GRUA     | Sergio Luis Anaya Romero | 1015411162         | 3103904286 | AVK81H |
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea | servicio | nombre_solicitante       | cedula_solicitante | telefono_1 | telefono_2 | placa  |
+      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | AUTOS | GRUA     | Sergio Luis Anaya Romero | 1015411162         | 3103904286 | 3103904286 | AVK81H |
     And diligenciamos el proveedor
       | Nombre del proveedor | Servicio      |
       | PROVEEDOR PRUEBA     | TOMA SERVICIO |
@@ -113,5 +113,26 @@ Feature: Creacion de Expedientes en el sistema de gestion de casos
     And cambia a estado "Aceptado y en desplazamiento"
     And se han creado tareas de monitoreo automáticamente
     And creamos una tarea de monitoreo a estado "Pendiente TM"
+    And cambia a estado "Concluido"
+    And cambia a estado "Finalizado"
+
+  # La pestaña "Renting" SOLO se renderiza cuando el caso se crea con la linea RENTING.
+  # Servicios disponibles para esa linea: GRUA, GRUA MOTOS, GRUA PESADOS PEQUENO CARGA DE 0 A 4.5 TON,
+  # GRUA PESADOS MEDIANO - CARGA DE 4.5 A 12 TON, GRUA PESADOS GRANDE CARGA DE 12 MAS TON.
+  @batch7
+  Scenario: Renting - Creacion de caso con linea RENTING y registro en el submodulo Renting
+    Given el actor tiene un navegador disponible
+    When abre la pagina de casos
+    And realiza login con credenciales
+    And navega a agent
+    And diligencia caso express completo desde feature
+      | departamento_solicita | municipio_solicita | servicios_especiales | gestor_coordinacion | linea   | servicio | nombre_solicitante       | cedula_solicitante | telefono_1 | telefono_2 | placa  |
+      | ANTIOQUIA             | MEDELLIN           | NO                   | NO                  | RENTING | GRUA     | Sergio Luis Anaya Romero | 1015411162         | 3103904286 | 3103904286 | AVK81H |
+    And diligenciamos el proveedor
+      | Nombre del proveedor | Servicio      |
+      | PROVEEDOR PRUEBA     | TOMA SERVICIO |
+    And diligenciamos renting
+    And cambia a estado "Programado"
+    And cambia a estado "Aceptado y en desplazamiento"
     And cambia a estado "Concluido"
     And cambia a estado "Finalizado"
