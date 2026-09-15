@@ -40,18 +40,19 @@ public class ClickCasoExpress implements Task {
     private final String nombreSolicitante;
     private final String cedulaSolicitante;
     private final String telefono1;
+    private final String telefono2;
     private final String placa;
 
     public ClickCasoExpress() {
-        this(null, null, null, null, null, null, null, null, null, null);
+        this(null, null, null, null, null, null, null, null, null, null, null);
     }
 
     public ClickCasoExpress(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
-        this(departamento, municipio, serviciosEspeciales, gestor, linea, servicio, null, null, null, null);
+        this(departamento, municipio, serviciosEspeciales, gestor, linea, servicio, null, null, null, null, null);
     }
 
     public ClickCasoExpress(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio,
-                             String nombreSolicitante, String cedulaSolicitante, String telefono1, String placa) {
+                             String nombreSolicitante, String cedulaSolicitante, String telefono1, String telefono2, String placa) {
         this.departamento = departamento;
         this.municipio = municipio;
         this.serviciosEspeciales = serviciosEspeciales;
@@ -61,6 +62,7 @@ public class ClickCasoExpress implements Task {
         this.nombreSolicitante = nombreSolicitante;
         this.cedulaSolicitante = cedulaSolicitante;
         this.telefono1 = telefono1;
+        this.telefono2 = telefono2;
         this.placa = placa;
     }
 
@@ -73,9 +75,9 @@ public class ClickCasoExpress implements Task {
     }
 
     public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio,
-                                                String nombreSolicitante, String cedulaSolicitante, String telefono1, String placa) {
+                                                String nombreSolicitante, String cedulaSolicitante, String telefono1, String telefono2, String placa) {
         return instrumented(ClickCasoExpress.class, departamento, municipio, serviciosEspeciales, gestor, linea, servicio,
-                nombreSolicitante, cedulaSolicitante, telefono1, placa);
+                nombreSolicitante, cedulaSolicitante, telefono1, telefono2, placa);
     }
 
     @Override
@@ -109,6 +111,7 @@ public class ClickCasoExpress implements Task {
                     nombreSolicitante,
                     cedulaSolicitante,
                     telefono1,
+                    telefono2,
                     placa
             ));
         } else {

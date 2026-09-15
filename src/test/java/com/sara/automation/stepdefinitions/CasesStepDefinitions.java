@@ -10,6 +10,7 @@ import com.sara.automation.tasks.ClickCasoExpress;
 import com.sara.automation.tasks.CrearCasoReclamaciones;
 import com.sara.automation.tasks.CrearNovedadProveedor;
 import com.sara.automation.tasks.CrearRegistroEnTab;
+import com.sara.automation.tasks.CrearRegistroRenting;
 import com.sara.automation.tasks.DiligenciarProveedorGestion;
 import com.sara.automation.tasks.GestionConceptosProveedor;
 import com.sara.automation.tasks.GestionarReclamacion;
@@ -103,7 +104,9 @@ public class CasesStepDefinitions {
         ExpedienteContext.clear();
     }
 
-    /** Anexa "escenario -> proveedor" a target/proveedores_asignados.txt (thread-safe). */
+    /**
+     * Anexa "escenario -> proveedor" a target/proveedores_asignados.txt (thread-safe).
+     */
     private void registrarProveedorAsignado(String escenario, ProveedorPoolManager.Proveedor proveedor) {
         String linea = escenario + " -> " + proveedor.getUsuario() + " (" + proveedor.getNombreFormulario() + ")"
                 + System.lineSeparator();
@@ -176,6 +179,7 @@ public class CasesStepDefinitions {
         String nombreSolicitante = valorOpcional(row, "nombre_solicitante");
         String cedulaSolicitante = valorOpcional(row, "cedula_solicitante");
         String telefono1 = valorOpcional(row, "telefono_1");
+        String telefono2 = valorOpcional(row, "telefono_2");
         String placa = valorOpcional(row, "placa");
 
         actor.attemptsTo(ClickCasoExpress.withManualLists(
@@ -188,6 +192,7 @@ public class CasesStepDefinitions {
                 nombreSolicitante,
                 cedulaSolicitante,
                 telefono1,
+                telefono2,
                 placa
         ));
     }
@@ -353,6 +358,14 @@ public class CasesStepDefinitions {
     public void diligenciamosEscalamientosSura() {
         // Pestaña Escalamientos sura → Crear → primera opción de cada dropdown + observación → guardar.
         actor.attemptsTo(CrearRegistroEnTab.en("#escalamientosSura", "Escalamientos sura"));
+    }
+
+    @When("diligenciamos renting")
+    public void diligenciamosRenting() {
+        // Pestaña Renting → Crear → responsable, Motivo, Tipo de llamada, Estado del escalamiento
+        // + observación → guardar. Requiere que el caso se haya creado con la línea RENTING:
+        // con otra línea la pestaña no se renderiza y la tarea falla indicándolo.
+        actor.attemptsTo(CrearRegistroRenting.now());
     }
 
     @Then("Se valida que quede en estado {string}")

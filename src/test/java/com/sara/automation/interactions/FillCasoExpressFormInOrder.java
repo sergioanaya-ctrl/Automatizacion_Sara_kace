@@ -64,11 +64,12 @@ public class FillCasoExpressFormInOrder implements Interaction {
     private final String nombreSolicitante;
     private final String cedulaSolicitante;
     private final String telefono1;
+    private final String telefono2;
     private final String placa;
     private String observacionFinal;
 
     public FillCasoExpressFormInOrder(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio,
-                                       String nombreSolicitante, String cedulaSolicitante, String telefono1, String placa) {
+                                       String nombreSolicitante, String cedulaSolicitante, String telefono1, String telefono2, String placa) {
         this.departamento = departamento;
         this.municipio = municipio;
         this.serviciosEspeciales = serviciosEspeciales;
@@ -78,22 +79,23 @@ public class FillCasoExpressFormInOrder implements Interaction {
         this.nombreSolicitante = nombreSolicitante;
         this.cedulaSolicitante = cedulaSolicitante;
         this.telefono1 = telefono1;
+        this.telefono2 = telefono2;
         this.placa = placa;
         this.observacionFinal = null;
     }
 
     public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio) {
-        return withManualLists(departamento, municipio, serviciosEspeciales, gestor, linea, servicio, null, null, null, null);
+        return withManualLists(departamento, municipio, serviciosEspeciales, gestor, linea, servicio, null, null, null, null, null);
     }
 
     public static Performable withManualLists(String departamento, String municipio, String serviciosEspeciales, String gestor, String linea, String servicio,
-                                                String nombreSolicitante, String cedulaSolicitante, String telefono1, String placa) {
+                                                String nombreSolicitante, String cedulaSolicitante, String telefono1, String telefono2, String placa) {
         return instrumented(FillCasoExpressFormInOrder.class, departamento, municipio, serviciosEspeciales, gestor, linea, servicio,
-                nombreSolicitante, cedulaSolicitante, telefono1, placa);
+                nombreSolicitante, cedulaSolicitante, telefono1, telefono2, placa);
     }
 
     public static Performable randomData() {
-        return instrumented(FillCasoExpressFormInOrder.class, null, null, null, null, null, null, null, null, null, null);
+        return instrumented(FillCasoExpressFormInOrder.class, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     @Override
@@ -148,7 +150,7 @@ public class FillCasoExpressFormInOrder implements Interaction {
         String nombreSolicitante = tieneValor(this.nombreSolicitante) ? this.nombreSolicitante.trim() : generarNombreSolicitanteReal();
         String cedulaSolicitante = tieneValor(this.cedulaSolicitante) ? this.cedulaSolicitante.trim() : randomDigitos(10);
         String telefono1 = tieneValor(this.telefono1) ? this.telefono1.trim() : "3" + randomDigitos(9);
-        String telefono2 = "3" + randomDigitos(9);
+        String telefono2 = tieneValor(this.telefono2) ? this.telefono2.trim() : "3" + randomDigitos(9);
         String placa = tieneValor(this.placa) ? this.placa.trim() : generarPlacaColombiana();
 
         WebDriver driver = net.serenitybdd.screenplay.abilities.BrowseTheWeb.as(actor).getDriver();
